@@ -82,7 +82,7 @@ export const PricingTiers: React.FC = () => {
 
   return (
     <section id="pricing-section" style={{ padding: '5rem 0', background: 'var(--bg-main)' }}>
-      <div className="container">
+      <div className="container" style={{ maxWidth: '1280px' }}>
         
         {/* Header */}
         <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 3.5rem auto' }}>
@@ -111,6 +111,7 @@ export const PricingTiers: React.FC = () => {
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 position: 'relative',
+                padding: '1.25rem 1.5rem',
                 border: tier.isPopular ? '2px solid var(--accent-terracotta)' : tier.isPromo ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)'
               }}
             >
@@ -118,17 +119,17 @@ export const PricingTiers: React.FC = () => {
                 
                 {/* Badge if present */}
                 {tier.badge && (
-                  <div className={`badge ${tier.badgeColor}`} style={{ marginBottom: '1rem' }}>
+                  <div className={`badge ${tier.badgeColor}`} style={{ marginBottom: '0.75rem' }}>
                     {tier.isPromo ? <Sparkles size={12} /> : <Star size={12} />} {tier.badge}
                   </div>
                 )}
 
-                <h3 style={{ fontSize: '1.35rem', marginBottom: '0.5rem', fontFamily: 'var(--font-sans)', fontWeight: 700 }}>
+                <h3 style={{ fontSize: '1.3rem', marginBottom: '0.35rem', fontFamily: 'var(--font-sans)', fontWeight: 700 }}>
                   {tier.title}
                 </h3>
 
-                <div style={{ margin: '1rem 0', display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
-                  <span style={{ fontSize: '2.5rem', fontWeight: 800, color: tier.isPromo ? 'var(--accent-emerald)' : 'var(--text-main)', fontFamily: 'var(--font-serif)' }}>
+                <div style={{ margin: '0.75rem 0', display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
+                  <span style={{ fontSize: '2.35rem', fontWeight: 800, color: tier.isPromo ? 'var(--accent-emerald)' : 'var(--text-main)', fontFamily: 'var(--font-serif)' }}>
                     {tier.price}
                   </span>
                   <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
@@ -136,14 +137,14 @@ export const PricingTiers: React.FC = () => {
                   </span>
                 </div>
 
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.5rem', minHeight: '40px' }}>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '1.25rem', minHeight: '38px' }}>
                   {tier.description}
                 </p>
 
                 {/* Features List */}
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
+                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem' }}>
                   {tier.features.map((feat, idx) => (
-                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: 'var(--text-main)', fontSize: '0.88rem' }}>
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: 'var(--text-main)', fontSize: '0.86rem' }}>
                       <Check size={16} style={{ color: 'var(--accent-emerald)', flexShrink: 0, marginTop: '2px' }} />
                       <span>{feat}</span>
                     </li>
@@ -156,7 +157,7 @@ export const PricingTiers: React.FC = () => {
               <button
                 onClick={() => startBooking(tier.id)}
                 className={`btn ${tier.btnClass}`}
-                style={{ width: '100%', padding: '0.85rem', fontSize: '0.92rem' }}
+                style={{ width: '100%', padding: '0.8rem', fontSize: '0.92rem' }}
               >
                 {tier.ctaText}
               </button>
