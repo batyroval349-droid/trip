@@ -305,6 +305,23 @@ input[type="range"]::-webkit-slider-thumb:hover {
   .container {
     padding: 0 1.25rem;
   }
+  .shield-outer-card {
+    padding: 1.25rem !important;
+    border-radius: var(--radius-lg) !important;
+  }
+  .shield-summary-banner {
+    padding: 1.25rem !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1.25rem !important;
+  }
+  .shield-summary-actions {
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+  .shield-summary-actions button {
+    width: 100% !important;
+  }
 }
 
 /* Animations */

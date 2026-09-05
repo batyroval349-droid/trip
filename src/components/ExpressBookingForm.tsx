@@ -32,12 +32,12 @@ export const ExpressBookingForm: React.FC = () => {
 
   const availableDates = getAvailableDates();
   const timeSlots = [
-    '10:00 - 10:40',
-    '12:00 - 12:40',
-    '14:00 - 14:40',
-    '16:00 - 16:40',
-    '18:00 - 18:40',
-    '20:00 - 20:40'
+    '10:00 - 11:00',
+    '12:00 - 13:00',
+    '14:00 - 15:00',
+    '16:00 - 17:00',
+    '18:00 - 19:00',
+    '20:00 - 21:00'
   ];
 
   const [formData, setFormData] = useState({

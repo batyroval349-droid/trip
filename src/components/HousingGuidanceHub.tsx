@@ -6,7 +6,7 @@ import {
   FileCheck,
   KeyRound,
   ShieldCheck,
-  AlertTriangle,
+  ShieldAlert,
   Banknote,
   Zap,
   Building2,
@@ -80,7 +80,7 @@ export const HousingGuidanceHub: React.FC = () => {
       shield: t('shieldRisk3Shield' as any)
     },
     {
-      icon: AlertTriangle,
+      icon: ShieldAlert,
       title: t('shieldRisk4Title' as any),
       cost: t('shieldRisk4Cost' as any),
       desc: t('shieldRisk4Desc' as any),
@@ -196,7 +196,7 @@ export const HousingGuidanceHub: React.FC = () => {
 
         {/* Tier 2: The Monumental Financial Shield Container */}
         <div
-          className="glass-card"
+          className="glass-card shield-outer-card"
           style={{
             padding: '2.5rem',
             background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%)',
@@ -243,8 +243,8 @@ export const HousingGuidanceHub: React.FC = () => {
                         width: '32px',
                         height: '32px',
                         borderRadius: '8px',
-                        background: 'rgba(239, 68, 68, 0.08)',
-                        color: '#DC2626',
+                        background: 'rgba(194, 94, 32, 0.09)',
+                        color: 'var(--accent-terracotta)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
@@ -254,8 +254,9 @@ export const HousingGuidanceHub: React.FC = () => {
                       <span style={{
                         fontSize: '0.82rem',
                         fontWeight: 700,
-                        color: '#DC2626',
-                        background: 'rgba(239, 68, 68, 0.08)',
+                        color: '#9C4611',
+                        background: 'rgba(194, 94, 32, 0.09)',
+                        border: '1px solid rgba(194, 94, 32, 0.2)',
                         padding: '0.2rem 0.55rem',
                         borderRadius: '9999px'
                       }}>
@@ -296,6 +297,7 @@ export const HousingGuidanceHub: React.FC = () => {
 
           {/* Bottom Summary Banner (Emerald Container) */}
           <div
+            className="shield-summary-banner"
             style={{
               background: 'linear-gradient(135deg, var(--accent-emerald) 0%, #115E59 100%)',
               padding: '1.6rem 2rem',
@@ -321,7 +323,7 @@ export const HousingGuidanceHub: React.FC = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div className="shield-summary-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', minWidth: '280px' }}>
               <button
                 onClick={() => startBooking('tier3')}
                 className="btn btn-terracotta"
@@ -330,6 +332,10 @@ export const HousingGuidanceHub: React.FC = () => {
                   fontSize: '0.95rem',
                   fontWeight: 700,
                   whiteSpace: 'nowrap',
+                  minHeight: '48px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
                 }}
               >
@@ -338,13 +344,21 @@ export const HousingGuidanceHub: React.FC = () => {
               <button
                 onClick={() => setViewMode('express_booking')}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'rgba(255,255,255,0.85)',
-                  fontSize: '0.78rem',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.22)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: '#FFFFFF',
+                  fontSize: '0.8rem',
+                  fontWeight: 500,
                   cursor: 'pointer',
-                  textDecoration: 'underline',
-                  padding: 0
+                  padding: '0.5rem 0.85rem',
+                  minHeight: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  lineHeight: 1.3,
+                  transition: 'background 0.2s ease'
                 }}
               >
                 {t('shieldCallPrompt' as any)}

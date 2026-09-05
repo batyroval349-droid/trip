@@ -52,14 +52,16 @@ export const PricingTiers: React.FC = () => {
       badgeColor: 'badge-terracotta',
       badgeIcon: Star,
       description: t('tier3Desc'),
+      bonusPack: t('tier3BonusPack' as any),
       features: [
         { strong: language === 'ru' ? 'Интерактивный калькулятор' : 'Interactive calculator', text: language === 'ru' ? 'бюджета в личном кабинете' : 'in your client dashboard' },
         { strong: language === 'ru' ? 'Проверенный риелтор' : 'Verified partner-realtor', text: language === 'ru' ? 'реальные варианты жилья' : 'real vetted housing options' },
         { strong: language === 'ru' ? 'Персональный чек-лист' : 'Personalized checklist', text: language === 'ru' ? 'документы, визы, сроки' : 'documents, visas, timelines' },
         { strong: language === 'ru' ? 'Подбор районов' : 'Neighborhood matching', text: language === 'ru' ? 'и инфраструктуры под ваш стиль' : 'and lifestyle infrastructure' },
+        { strong: language === 'ru' ? 'Санитарный & семейный фильтр' : 'Sanitary & family filter', text: language === 'ru' ? 'проверка на скрытую плесень, шум и безопасность балконов' : 'inspection for hidden mold, noise & balcony safety' },
         { strong: language === 'ru' ? 'Чат-сопровождение' : '1 month chat support', text: language === 'ru' ? 'и консультации — 1 месяц' : 'and founder advisory' }
       ],
-      ctaText: language === 'ru' ? 'Выбрать тариф' : 'Select Plan',
+      ctaText: language === 'ru' ? 'Зафиксировать сопровождение ($490) →' : 'Lock in Relocation ($490) →',
       isHero: true,
       btnClass: 'btn-terracotta'
     },
@@ -153,11 +155,28 @@ export const PricingTiers: React.FC = () => {
                 </div>
 
                 {/* 4. Uniform Description Row */}
-                <div style={{ minHeight: '4.8rem', display: 'flex', alignItems: 'flex-start', marginBottom: '1.15rem' }}>
+                <div style={{ minHeight: '4.8rem', display: 'flex', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                   <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
                     {tier.description}
                   </p>
                 </div>
+
+                {/* Optional Bonus Pack Pill */}
+                {tier.bonusPack && (
+                  <div style={{
+                    marginBottom: '1.1rem',
+                    padding: '0.55rem 0.75rem',
+                    background: 'rgba(194, 94, 32, 0.09)',
+                    border: '1px solid rgba(194, 94, 32, 0.28)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    color: 'var(--accent-terracotta)',
+                    lineHeight: 1.35
+                  }}>
+                    {tier.bonusPack}
+                  </div>
+                )}
 
                 {/* 5. Features List with bold scannable anchors */}
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem', padding: 0 }}>
@@ -179,9 +198,13 @@ export const PricingTiers: React.FC = () => {
                 className={`btn ${tier.btnClass}`}
                 style={{
                   width: '100%',
-                  padding: '0.8rem',
+                  padding: '0.85rem',
                   fontSize: '0.92rem',
-                  fontWeight: tier.isHero ? 700 : 600
+                  fontWeight: tier.isHero ? 700 : 600,
+                  minHeight: '48px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
                 {tier.ctaText}

@@ -33,9 +33,9 @@ const MainContent: React.FC = () => {
             <Hero />
             <WhyUs />
             <DashboardPreview />
+            <HousingGuidanceHub />
             <PricingTiers />
             <AdditionalServices />
-            <HousingGuidanceHub />
             <FAQSection />
           </div>
         )}

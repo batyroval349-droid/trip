@@ -14,6 +14,7 @@ export const PaymentModal: React.FC = () => {
 
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto' | 'sbp'>('card');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   if (!isPaymentModalOpen) return null;
 
@@ -219,22 +220,48 @@ export const PaymentModal: React.FC = () => {
         )}
 
         {/* Security badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
           <Lock size={13} style={{ color: 'var(--accent-emerald)' }} />
           <span>{language === 'ru' ? 'Безопасное соединение. Чек и доступ придут на указанный Email.' : 'Secure payment. Receipt and access will be sent to your Email.'}</span>
         </div>
 
+        {/* Due Diligence & Legal Terms Checkbox */}
+        <label style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '0.65rem',
+          fontSize: '0.78rem',
+          color: 'var(--text-muted)',
+          marginBottom: '1.25rem',
+          cursor: 'pointer',
+          lineHeight: 1.4
+        }}>
+          <input
+            type="checkbox"
+            checked={agreedToTerms}
+            onChange={(e) => setAgreedToTerms(e.target.checked)}
+            style={{ marginTop: '2px', accentColor: 'var(--accent-emerald)', cursor: 'pointer' }}
+          />
+          <span>
+            {language === 'ru'
+              ? 'Я подтверждаю заказ и понимаю, что сервис оказывает экспертное дистанционное консультирование и проверку Due Diligence, а окончательный договор аренды заключается напрямую с собственником жилья.'
+              : 'I confirm my order and understand that the service provides remote expert advisory and Due Diligence review, while final lease contracts are executed directly with property owners.'}
+          </span>
+        </label>
+
         {/* Pay Button */}
         <button
           onClick={handlePay}
-          disabled={isProcessing}
+          disabled={isProcessing || !agreedToTerms}
           className="btn btn-primary"
           style={{
             width: '100%',
             padding: '1rem',
             fontSize: '1.05rem',
             justifyContent: 'center',
-            gap: '0.6rem'
+            gap: '0.6rem',
+            opacity: (!agreedToTerms || isProcessing) ? 0.6 : 1,
+            cursor: (!agreedToTerms || isProcessing) ? 'not-allowed' : 'pointer'
           }}
         >
           {isProcessing ? (

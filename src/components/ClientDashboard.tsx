@@ -14,7 +14,7 @@ import { PendingRecommendationNotice } from './dashboard/PendingRecommendationNo
 import { LayoutDashboard, MapPin, Compass, DollarSign, Calendar, Home, BookOpen, MessageSquare, ArrowRight, CheckCircle2, Lock, Clock, Sparkles } from 'lucide-react';
 
 export const ClientDashboard: React.FC = () => {
-  const { project, t, language, upgradeToRelocation } = useApp();
+  const { project, t, language, upgradeToRelocation, setViewMode } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'city' | 'neighborhoods' | 'budget' | 'roadmap' | 'housing' | 'resources'>('overview');
   const isTravelPlan = project.tierId === 'tier2';
   
@@ -22,9 +22,33 @@ export const ClientDashboard: React.FC = () => {
   const isPlanPublished = project.status === 'plan_ready' || project.status === 'in_progress' || project.status === 'completed';
 
   return (
-    <section style={{ padding: '2.5rem 0 5rem 0', background: 'var(--bg-main)' }}>
+    <section style={{ padding: '2rem 0 5rem 0', background: 'var(--bg-main)' }}>
       <div className="container">
         
+        {/* Return to Home / Pricing for seamless UX navigation */}
+        <div style={{ marginBottom: '1.25rem' }}>
+          <button
+            onClick={() => setViewMode('marketing')}
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--accent-emerald)',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0.45rem 0.9rem',
+              borderRadius: 'var(--radius-sm)',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            ← {language === 'ru' ? 'Назад на главную к тарифам' : 'Back to Home / Pricing'}
+          </button>
+        </div>
+
         {/* Workspace Top Header & Status Tracker */}
         <DashboardHeader />
 
