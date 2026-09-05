@@ -17,7 +17,8 @@ export const PricingTiers: React.FC = () => {
         t('tier1Feat1'),
         t('tier1Feat2'),
         t('tier1Feat3'),
-        t('tier1Feat4')
+        t('tier1Feat4'),
+        t('tier1Feat5' as any)
       ],
       ctaText: t('pricingCTA'),
       isPromo: true,
@@ -35,7 +36,8 @@ export const PricingTiers: React.FC = () => {
         t('tier2Feat2'),
         t('tier2Feat3'),
         t('tier2Feat4'),
-        t('tier2Feat5' as any)
+        t('tier2Feat5' as any),
+        t('tier2Feat6' as any)
       ],
       ctaText: t('pricingCTA'),
       isPromo: false,
@@ -52,9 +54,7 @@ export const PricingTiers: React.FC = () => {
         t('tier3Feat1'),
         t('tier3Feat2'),
         t('tier3Feat3'),
-        t('tier3Feat4'),
-        t('tier3Feat5'),
-        t('tier3Feat6')
+        t('tier3Feat4')
       ],
       ctaText: t('pricingCTA'),
       isPromo: false,
@@ -143,7 +143,7 @@ export const PricingTiers: React.FC = () => {
                 {/* Features List */}
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
                   {tier.features.map((feat, idx) => (
-                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: 'var(--text-main)' }}>
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: 'var(--text-main)', fontSize: '0.88rem' }}>
                       <Check size={16} style={{ color: 'var(--accent-emerald)', flexShrink: 0, marginTop: '2px' }} />
                       <span>{feat}</span>
                     </li>
@@ -165,8 +165,37 @@ export const PricingTiers: React.FC = () => {
           ))}
         </div>
 
-        {/* Rule 48 Disclaimer under pricing */}
-        <div style={{ textAlign: 'center', marginTop: '3rem', fontSize: '0.84rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+        {/* Disclaimer under Card 3 stretching to Card 4 */}
+        <div style={{
+          marginTop: '1.5rem',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '1.5rem'
+        }}>
+          <div className="desktop-placeholder" style={{ gridColumn: 'span 2' }} />
+          <div
+            className="relocation-disclaimer-box"
+            style={{
+              gridColumn: '3 / span 2',
+              background: 'rgba(194, 94, 32, 0.07)',
+              border: '1px solid var(--border-terracotta)',
+              borderRadius: 'var(--radius-md)',
+              padding: '0.85rem 1.25rem',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '0.65rem',
+              fontSize: '0.84rem',
+              color: 'var(--text-muted)',
+              lineHeight: 1.5
+            }}
+          >
+            <ShieldCheck size={18} style={{ color: 'var(--accent-terracotta)', flexShrink: 0, marginTop: '2px' }} />
+            <span>{t('pricingRelocationDisclaimer' as any)}</span>
+          </div>
+        </div>
+
+        {/* General Remote Notice */}
+        <div style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '0.84rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
           <ShieldCheck size={16} style={{ color: 'var(--accent-emerald)' }} />
           <span>{t('pricingRemoteNotice')}</span>
         </div>

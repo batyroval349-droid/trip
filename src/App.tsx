@@ -5,6 +5,7 @@ import { Hero } from './components/Hero';
 import { WhyUs } from './components/WhyUs';
 import { DashboardPreview } from './components/DashboardPreview';
 import { PricingTiers } from './components/PricingTiers';
+import { AdditionalServices } from './components/AdditionalServices';
 import { HousingGuidanceHub } from './components/HousingGuidanceHub';
 import { FAQSection } from './components/FAQSection';
 import { QuestionnaireForm } from './components/QuestionnaireForm';
@@ -33,6 +34,7 @@ const MainContent: React.FC = () => {
             <WhyUs />
             <DashboardPreview />
             <PricingTiers />
+            <AdditionalServices />
             <HousingGuidanceHub />
             <FAQSection />
           </div>
