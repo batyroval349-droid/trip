@@ -16,7 +16,7 @@ import { DEMO_CLIENT_PROJECT, UI_STRINGS } from '../translations/content';
 import { INITIAL_ADMIN_CLIENTS } from '../translations/adminClientsData';
 
 export const TIERS_CONFIG: Record<TierId, { id: TierId; price: number; name: { en: string; ru: string } }> = {
-  tier1: { id: 'tier1', price: 50, name: { en: 'Should I Move to Vietnam? (40 Min)', ru: 'Стоит ли переезжать во Вьетнам? (40 мин)' } },
+  tier1: { id: 'tier1', price: 50, name: { en: 'Should I Move to Vietnam? (60 Min)', ru: 'Стоит ли переезжать во Вьетнам? (60 мин)' } },
   tier2: { id: 'tier2', price: 290, name: { en: 'Personal Travel Planning', ru: 'Персональное планирование поездки' } },
   tier3: { id: 'tier3', price: 490, name: { en: 'Vietnam Relocation Planning', ru: 'Планирование релокации во Вьетнам' } },
   tier4: { id: 'tier4', price: 890, name: { en: 'Relocation Concierge', ru: 'Консьерж-сопровождение релокации' } }
@@ -263,7 +263,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           ...prev,
           clientName: matched.name,
           email: matched.email,
-          serviceName: { en: '40-Min Strategic Consultation ($50)', ru: 'Стратегическая консультация 40 мин ($50)' },
+          serviceName: { en: '60-Min Strategic Consultation ($50)', ru: 'Стратегическая консультация 60 мин ($50)' },
           consultationBooking: matched.booking
         }));
       }
@@ -288,7 +288,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const submitExpressBooking = (booking: ExpressConsultationBooking) => {
-    // 40-minute consultation ($50) does not include client workspace access.
+    // 60-minute consultation ($50) does not include client workspace access.
     // Save booking for founder admin records
     try {
       const saved = localStorage.getItem('indochine_consultations');

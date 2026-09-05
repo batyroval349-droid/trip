@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Check, Sparkles, Star, Zap, ShieldCheck } from 'lucide-react';
+import { Check, Sparkles, Star, Zap, ShieldCheck, Compass } from 'lucide-react';
 
 export const PricingTiers: React.FC = () => {
   const { t, startBooking, language } = useApp();
@@ -12,36 +12,37 @@ export const PricingTiers: React.FC = () => {
       price: t('tier1Price'),
       badge: t('tier1Badge'),
       badgeColor: 'badge-emerald',
+      badgeIcon: Sparkles,
       description: t('tier1Desc'),
       features: [
-        t('tier1Feat1'),
-        t('tier1Feat2'),
-        t('tier1Feat3'),
-        t('tier1Feat4'),
-        t('tier1Feat5' as any)
+        { strong: language === 'ru' ? '60 минут' : '60 minutes', text: language === 'ru' ? 'личной видео-встречи с основателем' : '1-on-1 personal video call with founder' },
+        { strong: language === 'ru' ? 'Оценка целесообразности' : 'Feasibility assessment', text: language === 'ru' ? 'переезда под ваши цели' : 'tailored to your personal goals' },
+        { strong: language === 'ru' ? 'Обзор городов' : 'City & season overview', text: language === 'ru' ? 'и сезонов под ваши задачи' : 'matched to your profile' },
+        { strong: language === 'ru' ? 'Резюме рекомендаций' : 'Written summary', text: language === 'ru' ? 'с выводами после созвона' : 'of key takeaways after the call' },
+        { strong: language === 'ru' ? 'Скидка на пакет' : 'Package discount', text: language === 'ru' ? 'поездки/релокации при заказе за 7 дней' : 'on travel or relocation within 7 days' }
       ],
-      ctaText: t('pricingCTA'),
-      isPromo: true,
-      btnClass: 'btn-primary'
+      ctaText: language === 'ru' ? 'Записаться на звонок' : 'Book a Call',
+      isHero: false,
+      btnClass: 'btn-secondary'
     },
     {
       id: 'tier2',
       title: t('tier2Title'),
       price: t('tier2Price'),
-      badge: null,
-      badgeColor: '',
+      badge: t('tier2Badge' as any) || (language === 'ru' ? 'Маршрут 1–30 дней' : '1–30 Day Route'),
+      badgeColor: 'badge-subtle',
+      badgeIcon: Compass,
       description: t('tier2Desc'),
       features: [
-        t('tier2Feat1'),
-        t('tier2Feat2'),
-        t('tier2Feat3'),
-        t('tier2Feat4'),
-        t('tier2Feat5' as any),
-        t('tier2Feat6' as any)
+        { strong: language === 'ru' ? 'Маршрут 1–30 дней' : '1–30 day itinerary', text: language === 'ru' ? 'под ваши даты и бюджет' : 'tailored to dates and budget' },
+        { strong: language === 'ru' ? 'Подбор городов' : 'City selection', text: language === 'ru' ? 'и локаций под ваши интересы' : 'matched to your interests' },
+        { strong: language === 'ru' ? 'Связь и SIM/eSIM' : 'SIM / eSIM guidance', text: language === 'ru' ? 'рекомендации и адреса точек' : 'recommendations and store spots' },
+        { strong: language === 'ru' ? 'Поддержка в WhatsApp' : 'WhatsApp support', text: language === 'ru' ? 'на всё время вашего путешествия' : 'throughout your trip duration' },
+        { strong: language === 'ru' ? '1 корректировка' : '1 route revision', text: language === 'ru' ? 'маршрута + экстренные контакты' : '+ emergency contacts list' }
       ],
-      ctaText: t('pricingCTA'),
-      isPromo: false,
-      btnClass: 'btn-primary'
+      ctaText: language === 'ru' ? 'Выбрать тариф' : 'Select Plan',
+      isHero: false,
+      btnClass: 'btn-secondary'
     },
     {
       id: 'tier3',
@@ -49,17 +50,18 @@ export const PricingTiers: React.FC = () => {
       price: t('tier3Price'),
       badge: t('tier3Badge'),
       badgeColor: 'badge-terracotta',
+      badgeIcon: Star,
       description: t('tier3Desc'),
       features: [
-        t('tier3Feat1'),
-        t('tier3Feat2'),
-        t('tier3Feat3'),
-        t('tier3Feat4')
+        { strong: language === 'ru' ? 'Интерактивный калькулятор' : 'Interactive calculator', text: language === 'ru' ? 'бюджета в личном кабинете' : 'in your client dashboard' },
+        { strong: language === 'ru' ? 'Проверенный риелтор' : 'Verified partner-realtor', text: language === 'ru' ? 'реальные варианты жилья' : 'real vetted housing options' },
+        { strong: language === 'ru' ? 'Персональный чек-лист' : 'Personalized checklist', text: language === 'ru' ? 'документы, визы, сроки' : 'documents, visas, timelines' },
+        { strong: language === 'ru' ? 'Подбор районов' : 'Neighborhood matching', text: language === 'ru' ? 'и инфраструктуры под ваш стиль' : 'and lifestyle infrastructure' },
+        { strong: language === 'ru' ? 'Чат-сопровождение' : '1 month chat support', text: language === 'ru' ? 'и консультации — 1 месяц' : 'and founder advisory' }
       ],
-      ctaText: t('pricingCTA'),
-      isPromo: false,
-      isPopular: true,
-      btnClass: 'btn-primary'
+      ctaText: language === 'ru' ? 'Выбрать тариф' : 'Select Plan',
+      isHero: true,
+      btnClass: 'btn-terracotta'
     },
     {
       id: 'tier4',
@@ -67,16 +69,18 @@ export const PricingTiers: React.FC = () => {
       price: t('tier4Price'),
       badge: t('tier4Badge'),
       badgeColor: 'badge-emerald',
+      badgeIcon: Star,
       description: t('tier4Desc'),
       features: [
-        t('tier4Feat1'),
-        t('tier4Feat2'),
-        t('tier4Feat3'),
-        t('tier4Feat4')
+        { strong: language === 'ru' ? 'Всё из тарифа Релокация' : 'Everything in Relocation', text: language === 'ru' ? 'полный комплект материалов' : 'complete planning package' },
+        { strong: language === 'ru' ? 'Приоритетная связь' : 'Priority communication', text: language === 'ru' ? 'в WhatsApp и Telegram' : 'in WhatsApp & Telegram' },
+        { strong: language === 'ru' ? 'Сопровождение показов' : 'Viewing accompaniment', text: language === 'ru' ? 'жилья через риелтора-партнёра' : 'via our partner-realtor' },
+        { strong: language === 'ru' ? '1 месяц поддержки' : '1 month adaptation', text: language === 'ru' ? 'по бюджету и адаптации' : 'budget & local settlement' },
+        { strong: language === 'ru' ? 'Помощь по прилёту' : 'Arrival assistance', text: language === 'ru' ? 'решение срочных бытовых вопросов' : 'urgent practical setup help' }
       ],
-      ctaText: t('pricingCTA'),
-      isPromo: false,
-      btnClass: 'btn-primary'
+      ctaText: language === 'ru' ? 'Выбрать VIP' : 'Select VIP',
+      isHero: false,
+      btnClass: 'btn-secondary'
     }
   ];
 
@@ -90,7 +94,6 @@ export const PricingTiers: React.FC = () => {
             <Zap size={14} /> {language === 'ru' ? 'Прозрачные тарифы' : 'Transparent Pricing'}
           </div>
           
-          {/* Sentence Case Title requested by user! */}
           <h2 style={{ fontSize: '2.4rem', marginBottom: '1rem' }}>
             {t('pricingTitle')}
           </h2>
@@ -100,64 +103,86 @@ export const PricingTiers: React.FC = () => {
           </p>
         </div>
 
-        {/* Pricing Cards Grid */}
+        {/* Pricing Cards Grid with perfect horizontal baseline alignment */}
         <div className="grid-4" style={{ alignItems: 'stretch' }}>
           {tiers.map((tier) => (
             <div
               key={tier.id}
-              className={`glass-card ${tier.isPopular ? 'glass-card-terracotta' : ''} ${tier.isPromo ? 'glass-card-emerald' : ''}`}
+              className={`glass-card ${tier.isHero ? 'glass-card-terracotta' : ''}`}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 position: 'relative',
-                padding: '1.25rem 1.5rem',
-                border: tier.isPopular ? '2px solid var(--accent-terracotta)' : tier.isPromo ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)'
+                padding: '1.25rem 1.4rem',
+                border: tier.isHero ? '2px solid var(--accent-terracotta)' : '1px solid var(--border-subtle)',
+                boxShadow: tier.isHero ? '0 10px 30px rgba(194, 94, 32, 0.12)' : 'var(--shadow-card)',
+                transition: 'all 0.25s ease'
               }}
             >
               <div>
                 
-                {/* Badge if present */}
-                {tier.badge && (
-                  <div className={`badge ${tier.badgeColor}`} style={{ marginBottom: '0.75rem' }}>
-                    {tier.isPromo ? <Sparkles size={12} /> : <Star size={12} />} {tier.badge}
+                {/* 1. Uniform Badge Row */}
+                <div style={{ minHeight: '28px', display: 'flex', alignItems: 'center', marginBottom: '0.65rem' }}>
+                  <div className={`badge ${tier.badgeColor}`} style={{ fontSize: '0.78rem', padding: '0.28rem 0.75rem' }}>
+                    <tier.badgeIcon size={12} /> {tier.badge}
                   </div>
-                )}
+                </div>
 
-                <h3 style={{ fontSize: '1.3rem', marginBottom: '0.35rem', fontFamily: 'var(--font-sans)', fontWeight: 700 }}>
-                  {tier.title}
-                </h3>
+                {/* 2. Uniform Title Row (Ensures prices align across all cards) */}
+                <div style={{ minHeight: '3.6rem', display: 'flex', alignItems: 'flex-start', marginBottom: '0.35rem' }}>
+                  <h3 style={{ fontSize: '1.22rem', fontFamily: 'var(--font-sans)', fontWeight: 700, lineHeight: 1.25, color: 'var(--text-main)' }}>
+                    {tier.title}
+                  </h3>
+                </div>
 
-                <div style={{ margin: '0.75rem 0', display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
-                  <span style={{ fontSize: '2.35rem', fontWeight: 800, color: tier.isPromo ? 'var(--accent-emerald)' : 'var(--text-main)', fontFamily: 'var(--font-serif)' }}>
+                {/* 3. Uniform Price Row (Horizontal baseline across all cards) */}
+                <div style={{ minHeight: '44px', display: 'flex', alignItems: 'baseline', gap: '0.4rem', margin: '0.5rem 0 0.75rem 0' }}>
+                  <span style={{
+                    fontSize: '2.35rem',
+                    fontWeight: 800,
+                    color: tier.isHero ? 'var(--accent-terracotta)' : 'var(--text-main)',
+                    fontFamily: 'var(--font-serif)',
+                    lineHeight: 1
+                  }}>
                     {tier.price}
                   </span>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
                     / {tier.id === 'tier1' ? (language === 'ru' ? 'звонок' : 'call') : (language === 'ru' ? 'проект' : 'project')}
                   </span>
                 </div>
 
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '1.25rem', minHeight: '38px' }}>
-                  {tier.description}
-                </p>
+                {/* 4. Uniform Description Row */}
+                <div style={{ minHeight: '4.8rem', display: 'flex', alignItems: 'flex-start', marginBottom: '1.15rem' }}>
+                  <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
+                    {tier.description}
+                  </p>
+                </div>
 
-                {/* Features List */}
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem' }}>
+                {/* 5. Features List with bold scannable anchors */}
+                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem', padding: 0 }}>
                   {tier.features.map((feat, idx) => (
-                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: 'var(--text-main)', fontSize: '0.86rem' }}>
-                      <Check size={16} style={{ color: 'var(--accent-emerald)', flexShrink: 0, marginTop: '2px' }} />
-                      <span>{feat}</span>
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: 'var(--text-main)', fontSize: '0.84rem', lineHeight: 1.35 }}>
+                      <Check size={16} style={{ color: tier.isHero ? 'var(--accent-terracotta)' : 'var(--accent-emerald)', flexShrink: 0, marginTop: '1px' }} />
+                      <span>
+                        <strong style={{ fontWeight: 600, color: 'var(--text-main)' }}>{feat.strong}</strong> {feat.text}
+                      </span>
                     </li>
                   ))}
                 </ul>
 
               </div>
 
-              {/* Action Button - Simply 'Выбрать' as requested by user! */}
+              {/* 6. Action Button */}
               <button
                 onClick={() => startBooking(tier.id)}
                 className={`btn ${tier.btnClass}`}
-                style={{ width: '100%', padding: '0.8rem', fontSize: '0.92rem' }}
+                style={{
+                  width: '100%',
+                  padding: '0.8rem',
+                  fontSize: '0.92rem',
+                  fontWeight: tier.isHero ? 700 : 600
+                }}
               >
                 {tier.ctaText}
               </button>

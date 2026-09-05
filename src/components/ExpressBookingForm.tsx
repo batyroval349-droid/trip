@@ -126,7 +126,7 @@ export const ExpressBookingForm: React.FC = () => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Тариф' : 'Tier'}:</span>
-                <strong>{language === 'ru' ? 'Экспресс-консультация (40 мин • $50)' : 'Express Consultation (40 min • $50)'}</strong>
+                <strong>{language === 'ru' ? 'Экспресс-консультация (60 мин • $50)' : 'Express Consultation (60 min • $50)'}</strong>
               </div>
             </div>
 
@@ -191,7 +191,7 @@ export const ExpressBookingForm: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
             <div>
               <div className="badge badge-emerald" style={{ marginBottom: '0.5rem' }}>
-                <Clock size={14} /> {language === 'ru' ? '40 минут • $50' : '40 Min • $50'}
+                <Clock size={14} /> {language === 'ru' ? '60 минут • $50' : '60 Min • $50'}
               </div>
               <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
                 {t('expressFormTitle')}

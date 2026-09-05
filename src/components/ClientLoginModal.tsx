@@ -182,7 +182,7 @@ export const ClientLoginModal: React.FC = () => {
             className="btn btn-secondary"
             style={{ fontSize: '0.82rem', padding: '0.5rem 1rem', display: 'inline-flex', gap: '0.4rem' }}
           >
-            {language === 'ru' ? 'Записаться на 40-мин консультацию ($50)' : 'Book 40-Min Consultation ($50)'} <ArrowRight size={14} />
+            {language === 'ru' ? 'Записаться на 60-мин консультацию ($50)' : 'Book 60-Min Consultation ($50)'} <ArrowRight size={14} />
           </button>
         </div>
 

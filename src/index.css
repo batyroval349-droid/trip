@@ -289,7 +289,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
 }
 
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
+  .desktop-nav {
+    display: none !important;
+  }
   .grid-4, .grid-3, .grid-2 {
     grid-template-columns: 1fr;
   }
