@@ -58,7 +58,6 @@ export const PricingTiers: React.FC = () => {
         { strong: language === 'ru' ? 'Проверенный риелтор' : 'Verified partner-realtor', text: language === 'ru' ? 'реальные варианты жилья' : 'real vetted housing options' },
         { strong: language === 'ru' ? 'Персональный чек-лист' : 'Personalized checklist', text: language === 'ru' ? 'документы, визы, сроки' : 'documents, visas, timelines' },
         { strong: language === 'ru' ? 'Подбор районов' : 'Neighborhood matching', text: language === 'ru' ? 'и инфраструктуры под ваш стиль' : 'and lifestyle infrastructure' },
-        { strong: language === 'ru' ? 'Санитарный & семейный фильтр' : 'Sanitary & family filter', text: language === 'ru' ? 'проверка на скрытую плесень, шум и безопасность балконов' : 'inspection for hidden mold, noise & balcony safety' },
         { strong: language === 'ru' ? 'Чат-сопровождение' : '1 month chat support', text: language === 'ru' ? 'и консультации — 1 месяц' : 'and founder advisory' }
       ],
       ctaText: language === 'ru' ? 'Зафиксировать сопровождение ($490) →' : 'Lock in Relocation ($490) →',
@@ -87,7 +86,39 @@ export const PricingTiers: React.FC = () => {
   ];
 
   return (
-    <section id="pricing-section" style={{ padding: '5rem 0', background: 'var(--bg-main)' }}>
+    <section
+      id="pricing-section"
+      style={{
+        padding: '4rem 0 5rem 0',
+        background: '#FFFFFF',
+        borderTop: '1px solid var(--border-subtle)',
+        position: 'relative'
+      }}
+    >
+      {/* Distinct Section Separator Badge */}
+      <div style={{
+        position: 'absolute',
+        top: '-13px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: '#FFFFFF',
+        border: '1px solid var(--border-subtle)',
+        borderRadius: '9999px',
+        padding: '0.2rem 1rem',
+        fontSize: '0.72rem',
+        fontWeight: 700,
+        letterSpacing: '0.06em',
+        color: 'var(--text-muted)',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.4rem',
+        zIndex: 2
+      }}>
+        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-terracotta)' }} />
+        {language === 'ru' ? 'ТАРИФЫ И СТОИМОСТЬ' : 'PRICING & PLANS'}
+      </div>
+
       <div className="container" style={{ maxWidth: '1280px' }}>
         
         {/* Header */}
@@ -116,9 +147,11 @@ export const PricingTiers: React.FC = () => {
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 position: 'relative',
-                padding: '1.25rem 1.4rem',
-                border: tier.isHero ? '2px solid var(--accent-terracotta)' : '1px solid var(--border-subtle)',
-                boxShadow: tier.isHero ? '0 10px 30px rgba(194, 94, 32, 0.12)' : 'var(--shadow-card)',
+                padding: '1.35rem 1.4rem',
+                background: tier.isHero ? 'linear-gradient(180deg, #FFFFFF 0%, #FFF7ED 100%)' : '#FAF8F5',
+                border: tier.isHero ? '2px solid var(--accent-terracotta)' : '2px solid var(--border-subtle)',
+                boxShadow: tier.isHero ? '0 12px 32px rgba(194, 94, 32, 0.14)' : '0 3px 12px rgba(28, 45, 42, 0.04)',
+                borderRadius: 'var(--radius-lg)',
                 transition: 'all 0.25s ease'
               }}
             >
@@ -138,18 +171,20 @@ export const PricingTiers: React.FC = () => {
                   </h3>
                 </div>
 
-                {/* 3. Uniform Price Row (Horizontal baseline across all cards) */}
-                <div style={{ minHeight: '44px', display: 'flex', alignItems: 'baseline', gap: '0.4rem', margin: '0.5rem 0 0.75rem 0' }}>
+                {/* 3. Uniform Price Row (Straight lining digits, no floating/descenders) */}
+                <div style={{ minHeight: '44px', display: 'flex', alignItems: 'baseline', gap: '0.35rem', margin: '0.5rem 0 0.75rem 0' }}>
                   <span style={{
-                    fontSize: '2.35rem',
+                    fontSize: '2.4rem',
                     fontWeight: 800,
                     color: tier.isHero ? 'var(--accent-terracotta)' : 'var(--text-main)',
-                    fontFamily: 'var(--font-serif)',
+                    fontFamily: 'var(--font-sans)',
+                    fontVariantNumeric: 'lining-nums tabular-nums',
+                    letterSpacing: '-0.03em',
                     lineHeight: 1
                   }}>
                     {tier.price}
                   </span>
-                  <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                  <span style={{ fontSize: '0.86rem', fontWeight: 500, color: 'var(--text-muted)' }}>
                     / {tier.id === 'tier1' ? (language === 'ru' ? 'звонок' : 'call') : (language === 'ru' ? 'проект' : 'project')}
                   </span>
                 </div>

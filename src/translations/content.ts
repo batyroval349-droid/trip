@@ -568,7 +568,6 @@ export const UI_STRINGS = {
     tier3Feat3: 'Personalized checklist: documents, visas, timelines',
     tier3Feat4: 'Neighborhood & lifestyle infrastructure matching',
     tier3Feat5: 'Chat-based guidance & support — 1 month',
-    tier3Feat6: 'Sanitary mold inspection & family balcony safety filter',
 
     tier4Title: 'VIP Relocation Concierge',
     tier4Price: '$890',
@@ -976,7 +975,6 @@ export const UI_STRINGS = {
     tier3Feat3: 'Персональный чек-лист: документы, визы, сроки',
     tier3Feat4: 'Подбор районов и инфраструктуры под ваш образ жизни',
     tier3Feat5: 'Поддержка и консультации в чате — 1 месяц',
-    tier3Feat6: 'Санитарная проверка на плесень и детский фильтр безопасности',
 
     tier4Title: 'VIP-сопровождение релокации',
     tier4Price: '$890',

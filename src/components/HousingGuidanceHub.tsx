@@ -89,7 +89,7 @@ export const HousingGuidanceHub: React.FC = () => {
   ];
 
   return (
-    <section id="process-shield-section" style={{ padding: '5.5rem 0', background: '#FAF8F5' }}>
+    <section id="process-shield-section" style={{ padding: '5rem 0 3.5rem 0', background: '#FAF8F5' }}>
       <div className="container" style={{ maxWidth: '1280px' }}>
         
         {/* Section Header */}
