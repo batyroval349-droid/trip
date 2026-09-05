@@ -58,6 +58,57 @@ h1, h2, h3, .font-serif {
   font-family: var(--font-sans);
 }
 
+/* Form Controls & Typography */
+input, textarea, select, button {
+  font-family: var(--font-sans);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+select,
+textarea {
+  font-family: var(--font-sans) !important;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  color: var(--text-main) !important;
+  line-height: 1.55 !important;
+  letter-spacing: 0.01em !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+textarea {
+  font-family: var(--font-sans) !important;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  line-height: 1.6 !important;
+  color: var(--text-main) !important;
+  letter-spacing: 0.01em !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  font-family: var(--font-sans) !important;
+  font-size: 0.86rem !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  color: var(--text-dim) !important;
+  opacity: 0.85;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent-emerald) !important;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12) !important;
+}
+
 /* Base Layout */
 .container {
   max-width: 1200px;

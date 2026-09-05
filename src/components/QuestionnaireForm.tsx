@@ -9,6 +9,32 @@ export const QuestionnaireForm: React.FC = () => {
 
   const [formData, setFormData] = useState<ClientQuestionnaire>(project.questionnaire);
 
+  // Elegant, restrained typography matching the site aesthetics (non-italic, regular 400 weight, compact 0.9rem)
+  const fieldStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '0.75rem 1rem',
+    borderRadius: 'var(--radius-sm)',
+    background: '#FFFFFF',
+    border: '1px solid var(--border-subtle)',
+    color: 'var(--text-main)',
+    fontFamily: 'var(--font-sans)',
+    fontSize: '0.9rem',
+    fontWeight: 400,
+    fontStyle: 'normal',
+    lineHeight: 1.55,
+    letterSpacing: '0.01em',
+    outline: 'none',
+    boxSizing: 'border-box',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease'
+  };
+
+  const textareaFieldStyle: React.CSSProperties = {
+    ...fieldStyle,
+    resize: 'vertical',
+    minHeight: '76px',
+    lineHeight: 1.6
+  };
+
   const handleChange = (field: keyof ClientQuestionnaire, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -119,7 +145,7 @@ export const QuestionnaireForm: React.FC = () => {
                     required
                     value={formData.name}
                     onChange={(e) => handleChange('name', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   />
                 </div>
 
@@ -130,7 +156,7 @@ export const QuestionnaireForm: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   />
                 </div>
 
@@ -142,7 +168,7 @@ export const QuestionnaireForm: React.FC = () => {
                     placeholder="••••••••"
                     value={formData.password || ''}
                     onChange={(e) => handleChange('password', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   />
                 </div>
 
@@ -152,7 +178,7 @@ export const QuestionnaireForm: React.FC = () => {
                     type="text"
                     value={formData.country}
                     onChange={(e) => handleChange('country', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   />
                 </div>
 
@@ -163,7 +189,7 @@ export const QuestionnaireForm: React.FC = () => {
                     placeholder={language === 'ru' ? 'Например: 15 октября 2026' : 'e.g. October 15, 2026'}
                     value={formData.travelDates}
                     onChange={(e) => handleChange('travelDates', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   />
                 </div>
 
@@ -174,7 +200,7 @@ export const QuestionnaireForm: React.FC = () => {
                     placeholder={language === 'ru' ? 'Например: 1 месяц / 6 месяцев' : 'e.g. 1 month / 6 months'}
                     value={formData.duration}
                     onChange={(e) => handleChange('duration', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   />
                 </div>
 
@@ -186,7 +212,7 @@ export const QuestionnaireForm: React.FC = () => {
                     max={10}
                     value={formData.travelersCount}
                     onChange={(e) => handleChange('travelersCount', parseInt(e.target.value) || 1)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   />
                 </div>
               </div>
@@ -206,7 +232,7 @@ export const QuestionnaireForm: React.FC = () => {
                     step={100}
                     value={formData.monthlyBudgetUSD}
                     onChange={(e) => handleChange('monthlyBudgetUSD', parseInt(e.target.value) || 1200)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   />
                 </div>
 
@@ -215,7 +241,7 @@ export const QuestionnaireForm: React.FC = () => {
                   <select
                     value={formData.environmentPreference}
                     onChange={(e) => handleChange('environmentPreference', e.target.value as any)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                    style={fieldStyle}
                   >
                     <option value="beach">{language === 'ru' ? 'Побережье и пляж' : 'Beach Coastal Vibe'}</option>
                     <option value="city">{language === 'ru' ? 'Динамичный мегаполис' : 'Vibrant City & Nightlife'}</option>
@@ -267,7 +293,7 @@ export const QuestionnaireForm: React.FC = () => {
                   placeholder={language === 'ru' ? 'Например: UX-дизайнер на удалёнке, звонки по США' : 'e.g. Remote UX Designer with US team calls'}
                   value={formData.workSituation}
                   onChange={(e) => handleChange('workSituation', e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)' }}
+                  style={fieldStyle}
                 />
               </div>
             </div>
@@ -286,7 +312,7 @@ export const QuestionnaireForm: React.FC = () => {
                     placeholder={language === 'ru' ? 'Например: 1BR апартаменты с балконом или видом на море, рабочим столом' : 'e.g. 1BR serviced apartment with ocean view, gym, desk'}
                     value={formData.accommodationType}
                     onChange={(e) => handleChange('accommodationType', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)', resize: 'vertical' }}
+                    style={textareaFieldStyle}
                   />
                 </div>
 
@@ -297,7 +323,7 @@ export const QuestionnaireForm: React.FC = () => {
                     placeholder={language === 'ru' ? 'Например: Пляж пешком, стабильный оптоволоконный Wi-Fi, тихие ночи' : 'e.g. Walkability to beach, fast fiber Wi-Fi, quiet nights'}
                     value={formData.priorities}
                     onChange={(e) => handleChange('priorities', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)', resize: 'vertical' }}
+                    style={textareaFieldStyle}
                   />
                 </div>
 
@@ -308,7 +334,7 @@ export const QuestionnaireForm: React.FC = () => {
                     placeholder={language === 'ru' ? 'Например: Безопасность депозита, интернет в сезон дождей' : 'e.g. Deposit safety, internet reliability during storm season'}
                     value={formData.concerns}
                     onChange={(e) => handleChange('concerns', e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', color: 'var(--text-main)', resize: 'vertical' }}
+                    style={textareaFieldStyle}
                   />
                 </div>
               </div>
