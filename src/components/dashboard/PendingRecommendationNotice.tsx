@@ -78,13 +78,13 @@ export const PendingRecommendationNotice: React.FC<Props> = ({ sectionName, onGo
         </button>
 
         <a
-          href="https://t.me/indochine_concierge"
+          href="https://t.me/Likqwerty"
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-secondary"
           style={{ fontSize: '0.9rem', padding: '0.75rem 1.25rem' }}
         >
-          <Send size={16} /> Telegram
+          <Send size={16} /> Telegram (@Likqwerty)
         </a>
 
         <a

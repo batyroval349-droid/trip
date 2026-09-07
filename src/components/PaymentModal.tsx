@@ -23,6 +23,7 @@ export const PaymentModal: React.FC = () => {
     selectedTier,
     tiersConfig,
     completePaymentAndUnlock,
+    setIsOfferModalOpen,
     language
   } = useApp();
 
@@ -460,9 +461,31 @@ export const PaymentModal: React.FC = () => {
             style={{ marginTop: '2px', accentColor: 'var(--accent-emerald)', cursor: 'pointer' }}
           />
           <span>
-            {language === 'ru'
-              ? 'Я принимаю условия Публичной оферты. Услуга является дистанционной информационно-консультационной. 1-й этап ($100) — глубокий аудит анкеты и районов (невозвратный после начала работы); 2-й этап — подбор проверенного жилья с аудитом договора и EVN; 3-й этап — сопровождение заселения и гарантийный консьерж.'
-              : 'I accept the Public Offer agreement. The service is remote consulting: Stage 1 ($100) profile & district audit (non-refundable once started); Stage 2 vetted accommodation selection & contract review; Stage 3 arrival concierge.'}
+            {language === 'ru' ? (
+              <>
+                Я принимаю условия{' '}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setIsOfferModalOpen(true); }}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent-emerald)', textDecoration: 'underline', fontWeight: 600, cursor: 'pointer', font: 'inherit' }}
+                >
+                  Публичной оферты
+                </button>
+                . Услуга является дистанционной информационно-консультационной. 1-й этап ($100) — глубокий аудит анкеты и районов (невозвратный после начала работы); 2-й этап — подбор проверенного жилья с аудитом договора и EVN; 3-й этап — сопровождение заселения и гарантийный консьерж.
+              </>
+            ) : (
+              <>
+                I accept the{' '}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setIsOfferModalOpen(true); }}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent-emerald)', textDecoration: 'underline', fontWeight: 600, cursor: 'pointer', font: 'inherit' }}
+                >
+                  Public Offer agreement
+                </button>
+                . The service is remote consulting: Stage 1 ($100) profile & district audit (non-refundable once started); Stage 2 vetted accommodation selection & contract review; Stage 3 arrival concierge.
+              </>
+            )}
           </span>
         </label>
 

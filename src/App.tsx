@@ -15,6 +15,7 @@ import { Footer } from './components/Footer';
 import { FounderLoginModal } from './components/FounderLoginModal';
 import { ClientLoginModal } from './components/ClientLoginModal';
 import { PaymentModal } from './components/PaymentModal';
+import { PublicOfferModal } from './components/PublicOfferModal';
 import { ExpressBookingForm } from './components/ExpressBookingForm';
 
 const MainContent: React.FC = () => {
@@ -26,6 +27,7 @@ const MainContent: React.FC = () => {
       <FounderLoginModal />
       <ClientLoginModal />
       <PaymentModal />
+      <PublicOfferModal />
       
       <main style={{ flex: 1 }}>
         {viewMode === 'marketing' && (

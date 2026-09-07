@@ -63,13 +63,13 @@ export const DashboardHeader: React.FC = () => {
             <MessageCircle size={16} /> {t('dashWhatsAppFounder')}
           </a>
           <a
-            href="https://t.me/indochine_concierge"
+            href="https://t.me/Likqwerty"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-secondary"
             style={{ fontSize: '0.88rem', padding: '0.65rem 1.1rem' }}
           >
-            <Send size={16} /> {t('dashTelegramFounder')}
+            <Send size={16} /> {t('dashTelegramFounder')} (@Likqwerty)
           </a>
         </div>
 

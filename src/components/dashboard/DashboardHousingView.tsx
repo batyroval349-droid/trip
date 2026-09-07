@@ -80,14 +80,14 @@ export const DashboardHousingView: React.FC = () => {
             </p>
 
             <a
-              href="https://t.me/indochine_concierge"
+              href="https://t.me/Likqwerty"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
               style={{ padding: '0.75rem 1.5rem', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <Send size={16} />
-              <span>{language === 'ru' ? 'Написать основателю в Telegram' : 'Message Founder on Telegram'}</span>
+              <span>{language === 'ru' ? 'Написать основателю (@Likqwerty)' : 'Message Founder (@Likqwerty)'}</span>
             </a>
           </div>
         ) : (
@@ -197,13 +197,13 @@ export const DashboardHousingView: React.FC = () => {
                   {/* Booking Contact */}
                   <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
                     <a
-                      href="https://t.me/indochine_concierge"
+                      href="https://t.me/Likqwerty"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-primary"
                       style={{ flex: 1, padding: '0.65rem', fontSize: '0.86rem', justifyContent: 'center' }}
                     >
-                      <Send size={14} /> Назначить просмотр с основателем
+                      <Send size={14} /> Назначить просмотр (@Likqwerty)
                     </a>
                   </div>
                 </div>

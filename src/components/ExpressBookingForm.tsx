@@ -141,13 +141,13 @@ export const ExpressBookingForm: React.FC = () => {
                 <MessageCircle size={16} /> {t('navWhatsApp')}
               </a>
               <a
-                href="https://t.me/indochine_concierge"
+                href="https://t.me/Likqwerty"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-secondary"
                 style={{ fontSize: '0.9rem', padding: '0.75rem 1.25rem' }}
               >
-                <Send size={16} /> {t('navTelegram')}
+                <Send size={16} /> Telegram (@Likqwerty)
               </a>
               <button
                 onClick={() => setViewMode('marketing')}

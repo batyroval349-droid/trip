@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Compass, ShieldCheck, MessageCircle, Send } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const { t, setViewMode, isFounderLoggedIn, setIsFounderModalOpen, isClientUnlocked } = useApp();
+  const { t, setViewMode, isFounderLoggedIn, setIsFounderModalOpen, isClientUnlocked, setIsOfferModalOpen, language } = useApp();
 
   return (
     <footer style={{
@@ -21,8 +21,8 @@ export const Footer: React.FC = () => {
           <div style={{ gridColumn: 'span 2' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', cursor: 'pointer' }} onClick={() => setViewMode('marketing')}>
               <Compass size={24} style={{ color: 'var(--accent-emerald)' }} />
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, color: '#FFFFFF' }}>
-                INDOCHINE <span style={{ color: 'var(--accent-emerald)' }}>REMOTE</span>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 800, letterSpacing: '0.04em', color: '#FFFFFF' }}>
+                VIET<span style={{ color: 'var(--accent-emerald)' }}>RELOC</span>
               </span>
             </div>
             
@@ -41,13 +41,13 @@ export const Footer: React.FC = () => {
                 <MessageCircle size={14} /> WhatsApp
               </a>
               <a
-                href="https://t.me/indochine_concierge"
+                href="https://t.me/Likqwerty"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-secondary"
                 style={{ fontSize: '0.8rem', padding: '0.5rem 0.9rem' }}
               >
-                <Send size={14} /> Telegram
+                <Send size={14} /> Telegram (@Likqwerty)
               </a>
             </div>
           </div>
@@ -63,6 +63,7 @@ export const Footer: React.FC = () => {
               {isClientUnlocked && (
                 <li><button onClick={() => setViewMode('dashboard')} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer' }}>{t('navDashboard')}</button></li>
               )}
+              <li><button onClick={() => setIsOfferModalOpen(true)} style={{ background: 'none', border: 'none', color: 'var(--accent-emerald)', cursor: 'pointer', textAlign: 'left', padding: 0, fontWeight: 500 }}>{language === 'ru' ? '📄 Публичная оферта' : '📄 Terms of Service'}</button></li>
               {isFounderLoggedIn ? (
                 <li><button onClick={() => setViewMode('admin')} style={{ background: 'none', border: 'none', color: 'var(--accent-emerald)', cursor: 'pointer' }}>{t('navAdmin')}</button></li>
               ) : (
@@ -86,7 +87,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Line */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', fontSize: '0.8rem' }}>
           <div>
-            &copy; {new Date().getFullYear()} Indochine Remote. {t('footerRights')}
+            &copy; {new Date().getFullYear()} VietReloc. {t('footerRights')}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <span>{t('footerAesthetics')}</span>

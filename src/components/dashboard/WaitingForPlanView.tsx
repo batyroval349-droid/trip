@@ -104,7 +104,7 @@ export const WaitingForPlanView: React.FC = () => {
 
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
             <a
-              href="https://t.me/indochine_concierge"
+              href="https://t.me/Likqwerty"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-secondary"
@@ -116,7 +116,7 @@ export const WaitingForPlanView: React.FC = () => {
                 color: '#92400E'
               }}
             >
-              <Send size={15} /> Telegram
+              <Send size={15} /> Telegram (@Likqwerty)
             </a>
             <a
               href="https://wa.me/84900000000"

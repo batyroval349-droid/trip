@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Main Homepage (Default RU) -->
+  <url>
+    <loc>https://vietreloc.com/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://vietreloc.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://vietreloc.com/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vietreloc.com/?lang=en" />
+  </url>
+
+  <!-- Pricing & Packages -->
+  <url>
+    <loc>https://vietreloc.com/#pricing-section</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://vietreloc.com/#pricing-section" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://vietreloc.com/?lang=en#pricing-section" />
+  </url>
+
+  <!-- Due Diligence Process & Protocol -->
+  <url>
+    <loc>https://vietreloc.com/#process-section</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://vietreloc.com/#process-section" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://vietreloc.com/?lang=en#process-section" />
+  </url>
+
+  <!-- FAQ Section -->
+  <url>
+    <loc>https://vietreloc.com/#faq-section</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://vietreloc.com/#faq-section" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://vietreloc.com/?lang=en#faq-section" />
+  </url>
+
+</urlset>

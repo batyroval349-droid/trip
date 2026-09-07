@@ -244,7 +244,7 @@ export const AdminDashboard: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div className="badge badge-terracotta" style={{ marginBottom: '0.4rem' }}>
-                <Settings size={14} /> {language === 'ru' ? 'Кабинет основателя • Indochine Remote' : 'Founder Workspace • Indochine Remote'}
+                <Settings size={14} /> {language === 'ru' ? 'Кабинет основателя • VietReloc' : 'Founder Workspace • VietReloc'}
               </div>
               <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', margin: '0.2rem 0' }}>
                 {language === 'ru' ? 'Управление клиентами и объектами' : 'Client Projects & Housing CMS'}

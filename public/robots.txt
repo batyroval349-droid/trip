@@ -1,0 +1,10 @@
+# robots.txt for VietReloc (https://vietreloc.com)
+User-agent: *
+Allow: /
+Disallow: /#admin
+
+# Host
+Host: https://vietreloc.com
+
+# Sitemaps
+Sitemap: https://vietreloc.com/sitemap.xml

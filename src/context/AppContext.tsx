@@ -54,6 +54,8 @@ interface AppContextType {
   tiersConfig: typeof TIERS_CONFIG;
   isPaymentModalOpen: boolean;
   setIsPaymentModalOpen: (open: boolean) => void;
+  isOfferModalOpen: boolean;
+  setIsOfferModalOpen: (open: boolean) => void;
   completePaymentAndUnlock: (method?: 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr') => void;
   upgradeToRelocation: () => void;
   adminClients: AdminClientRecord[];
@@ -114,6 +116,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return 'tier3';
   });
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
+  const [isOfferModalOpen, setIsOfferModalOpen] = useState<boolean>(false);
   const [pendingQuestionnaire, setPendingQuestionnaire] = useState<ClientQuestionnaire | null>(null);
 
   const [adminClients, setAdminClients] = useState<AdminClientRecord[]>(() => {
@@ -663,6 +666,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         tiersConfig: TIERS_CONFIG,
         isPaymentModalOpen,
         setIsPaymentModalOpen,
+        isOfferModalOpen,
+        setIsOfferModalOpen,
         completePaymentAndUnlock,
         upgradeToRelocation,
         adminClients,

@@ -77,8 +77,8 @@ export const Header: React.FC = () => {
             <Compass size={22} />
           </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.22rem', fontWeight: 800, letterSpacing: '0.08em', color: 'var(--text-main)', lineHeight: 1.1 }}>
-              INDOCHINE <span style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>REMOTE</span>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.06em', color: 'var(--text-main)', lineHeight: 1.1 }}>
+              VIET<span style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>RELOC</span>
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
               {language === 'ru' ? 'Консьерж по переезду и путешествиям' : 'Travel & Relocation Concierge'}
