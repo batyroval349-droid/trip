@@ -52,6 +52,17 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
       transportation: 80,
       entertainment: 200
     },
+    verifiedHousing: [],
+    roadmapTasks: [
+      {
+        id: 't-mikhail-1',
+        phase: 'before_arrival',
+        title: { en: 'Apply for 90-day Vietnam e-Visa', ru: 'Оформить e-Visa во Вьетнам на 90 дней' },
+        description: { en: 'Submit through official immigration portal.', ru: 'Подать через официальный портал иммиграции.' },
+        completed: false
+      }
+    ],
+    hasUnpublishedChanges: true,
     createdAt: '2026-09-03',
     updatedAt: '2026-09-03'
   },
@@ -106,6 +117,130 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
       transportation: 90,
       entertainment: 250
     },
+    paidAt: '2026-08-28 14:32:00 UTC',
+    paymentMethod: 'card_ru',
+    hasUnpublishedChanges: false,
+    lastPublishedAt: '2026-09-02 11:15:00 UTC',
+    verifiedHousing: [
+      {
+        id: 'house-danang-1',
+        condoName: 'Hiyori Garden Tower',
+        cityId: 'danang',
+        district: 'Son Tra / My Khe Border',
+        addressSnippet: 'Vo Van Kiet, Son Tra, Da Nang (450m from beach)',
+        monthlyPriceUSD: 520,
+        monthlyPriceVND: 13000000,
+        evnTariffVNDPerKwh: 2800,
+        isDirectEvnMeter: true,
+        depositTerms: {
+          amountUSD: 520,
+          months: 1,
+          refundConditions: {
+            en: '1-month refundable deposit upon 30-day departure notice. Checked against property pink book.',
+            ru: '1 месяц залога с гарантией возврата при предупреждении за 30 дней. Проверен по sổ đỏ.'
+          }
+        },
+        realtorContact: {
+          name: 'Linh Nguyen (Verified Partner)',
+          phoneOrZalo: '+84 905 123 456 (Zalo)',
+          verifiedPartner: true
+        },
+        noiseAudit: {
+          status: 'verified_quiet',
+          inspectedAt: '2026-09-01',
+          notes: {
+            en: 'Inspected on site: Zero construction within 200m radius. Courtyard-facing quiet 14th floor.',
+            ru: 'Проверено на месте: строек в радиусе 200м нет. Тихий 14-й этаж с окнами во внутренний двор.'
+          }
+        },
+        fiberInternetSpeedMbps: {
+          download: 165,
+          upload: 140,
+          provider: 'Viettel'
+        },
+        childFriendlyFeatures: ['Elevator with keycard', 'Gated pool & play zone', 'Quiet inverter AC'],
+        photoUrls: [
+          'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80'
+        ],
+        videoTourUrl: 'https://youtube.com',
+        founderReview: {
+          en: 'Japanese quality standard condominium. Very rare to find official EVN rates and true soundproofing in Da Nang.',
+          ru: 'ЖК японского стандарта качества. Редкий случай прямого государственного тарифа EVN и настоящей шумоизоляции в Дананге.'
+        },
+        contractAudited: true,
+        isTopPick: true,
+        publishedToClient: true,
+        createdAt: '2026-08-30'
+      },
+      {
+        id: 'house-danang-2',
+        condoName: 'The Monarchy (Block B)',
+        cityId: 'danang',
+        district: 'An Trung / Han River',
+        addressSnippet: 'Tran Hung Dao, An Hai Tay, Da Nang',
+        monthlyPriceUSD: 460,
+        monthlyPriceVND: 11500000,
+        evnTariffVNDPerKwh: 3000,
+        isDirectEvnMeter: true,
+        depositTerms: {
+          amountUSD: 460,
+          months: 1,
+          refundConditions: {
+            en: '1-month refundable deposit, written clause on inspection handover.',
+            ru: '1 месяц возвратного залога с письменным актом приема-передачи.'
+          }
+        },
+        realtorContact: {
+          name: 'Tran Minh Real Estate',
+          phoneOrZalo: '+84 912 345 678 (Zalo)',
+          verifiedPartner: true
+        },
+        noiseAudit: {
+          status: 'acceptable_minor_traffic',
+          inspectedAt: '2026-08-31',
+          notes: {
+            en: 'River view side is very peaceful. Avoid street-facing units on lower floors.',
+            ru: 'Сторона с видом на реку очень спокойная. Избегать юнитов с окнами на дорогу на нижних этажах.'
+          }
+        },
+        fiberInternetSpeedMbps: {
+          download: 120,
+          upload: 110,
+          provider: 'FPT Telecom'
+        },
+        childFriendlyFeatures: ['Gated complex', 'Large landscaped podium', '24/7 security reception'],
+        photoUrls: [
+          'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80'
+        ],
+        founderReview: {
+          en: 'High demand building near Dragon Bridge. Excellent for sunset river walks.',
+          ru: 'Популярный жилой комплекс у Драконьего моста. Прекрасен для вечерних прогулок по набережной.'
+        },
+        contractAudited: true,
+        isTopPick: false,
+        publishedToClient: true,
+        createdAt: '2026-08-31'
+      }
+    ],
+    roadmapTasks: [
+      {
+        id: 't-anna-1',
+        phase: 'before_arrival',
+        title: { en: 'Vietnam e-Visa approved for 90 days', ru: 'Одобрена e-Visa во Вьетнам на 90 дней' },
+        description: { en: 'Visa issued and downloaded to PDF.', ru: 'Виза выпущена и сохранена в PDF.' },
+        completed: true
+      },
+      {
+        id: 't-anna-2',
+        phase: 'week_of_arrival',
+        title: { en: 'Inspect Hiyori Tower unit #1402', ru: 'Очный осмотр квартиры в Hiyori Tower №1402' },
+        description: { en: 'Check water pressure and Wi-Fi speed.', ru: 'Проверка напора воды и скорости Wi-Fi.' },
+        completed: false
+      }
+    ],
     createdAt: '2026-08-28',
     updatedAt: '2026-09-02'
   },
@@ -160,6 +295,71 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
       transportation: 150,
       entertainment: 400
     },
+    paidAt: '2026-08-25 09:12:00 UTC',
+    paymentMethod: 'crypto_usdt',
+    hasUnpublishedChanges: true,
+    lastPublishedAt: '2026-08-29 16:00:00 UTC',
+    verifiedHousing: [
+      {
+        id: 'house-nhatrang-1',
+        condoName: 'Gold Coast Nha Trang (Tower South)',
+        cityId: 'nhatrang',
+        district: 'Loc Tho / Central Beach',
+        addressSnippet: '01 Tran Hung Dao, Loc Tho, Nha Trang',
+        monthlyPriceUSD: 680,
+        monthlyPriceVND: 17000000,
+        evnTariffVNDPerKwh: 3100,
+        isDirectEvnMeter: true,
+        depositTerms: {
+          amountUSD: 680,
+          months: 1,
+          refundConditions: {
+            en: '1-month refundable security deposit with bilingual notarized contract.',
+            ru: '1 месяц возвратного залога по двуязычному договору с описью техники.'
+          }
+        },
+        realtorContact: {
+          name: 'Nha Trang Home Agency (Bao)',
+          phoneOrZalo: '+84 935 889 911 (Zalo)',
+          verifiedPartner: true
+        },
+        noiseAudit: {
+          status: 'verified_quiet',
+          inspectedAt: '2026-08-28',
+          notes: {
+            en: 'Double glazed soundproof windows installed. High floor facing bay.',
+            ru: 'Двойные стеклопакеты с улучшенной шумоизоляцией. Высокий этаж с видом на залив.'
+          }
+        },
+        fiberInternetSpeedMbps: {
+          download: 200,
+          upload: 180,
+          provider: 'VNPT'
+        },
+        childFriendlyFeatures: ['Modern shopping mall on floors 1-4', 'Rooftop pool', 'Card-access elevators'],
+        photoUrls: [
+          'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'
+        ],
+        founderReview: {
+          en: 'Top choice in central Nha Trang. Direct shopping mall access downstairs, 3 min walk to the beach.',
+          ru: 'Флагманский комплекс в центре Нячанга. Внизу ТЦ, море через дорогу, отличная шумоизоляция.'
+        },
+        contractAudited: true,
+        isTopPick: true,
+        publishedToClient: true,
+        createdAt: '2026-08-28'
+      }
+    ],
+    roadmapTasks: [
+      {
+        id: 't-dmitry-1',
+        phase: 'before_arrival',
+        title: { en: 'Draft bilingual 12-month lease contract', ru: 'Составить двуязычный договор аренды на 12 месяцев' },
+        description: { en: 'Lock fixed EVN rates and deposit return protocol.', ru: 'Зафиксировать тариф EVN и возврат залога.' },
+        completed: true
+      }
+    ],
     createdAt: '2026-08-25',
     updatedAt: '2026-09-01'
   },
@@ -213,6 +413,70 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
       transportation: 70,
       entertainment: 150
     },
+    paidAt: '2026-04-15 10:00:00 UTC',
+    paymentMethod: 'card_intl',
+    hasUnpublishedChanges: false,
+    lastPublishedAt: '2026-05-20 12:00:00 UTC',
+    verifiedHousing: [
+      {
+        id: 'house-danang-studio-1',
+        condoName: 'An Thuong Studio Residence',
+        cityId: 'danang',
+        district: 'An Thuong Expat Quarter',
+        addressSnippet: 'An Thuong 4, My An, Ngu Hanh Son, Da Nang',
+        monthlyPriceUSD: 380,
+        monthlyPriceVND: 9500000,
+        evnTariffVNDPerKwh: 3000,
+        isDirectEvnMeter: true,
+        depositTerms: {
+          amountUSD: 380,
+          months: 1,
+          refundConditions: {
+            en: '1-month refundable deposit, fully returned upon checkout.',
+            ru: '1 месяц залога, возвращен в полном объеме при выезде.'
+          }
+        },
+        realtorContact: {
+          name: 'Da Nang Expat Stays',
+          phoneOrZalo: '+84 905 999 111 (Zalo)',
+          verifiedPartner: true
+        },
+        noiseAudit: {
+          status: 'verified_quiet',
+          inspectedAt: '2026-04-18',
+          notes: {
+            en: 'Quiet side street, walking distance to cafes and beach.',
+            ru: 'Тихая улица, 3 минуты пешком до пляжа и Enouvo коворкинга.'
+          }
+        },
+        fiberInternetSpeedMbps: {
+          download: 140,
+          upload: 120,
+          provider: 'Viettel'
+        },
+        childFriendlyFeatures: [],
+        photoUrls: [
+          'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80'
+        ],
+        founderReview: {
+          en: 'Super cozy studio for a single remote engineer. 100% deposit returned.',
+          ru: 'Уютная студия для соло-разработчика. Залог возвращен в день выезда без задержек.'
+        },
+        contractAudited: true,
+        isTopPick: true,
+        publishedToClient: true,
+        createdAt: '2026-04-18'
+      }
+    ],
+    roadmapTasks: [
+      {
+        id: 't-sergey-1',
+        phase: 'week_of_arrival',
+        title: { en: 'Sign lease contract & move in', ru: 'Подписать договор аренды и заселиться' },
+        description: { en: 'Lease executed with landlord.', ru: 'Договор подписан, ключи получены.' },
+        completed: true
+      }
+    ],
     createdAt: '2026-04-15',
     updatedAt: '2026-05-20'
   }

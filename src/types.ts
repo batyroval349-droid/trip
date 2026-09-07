@@ -105,6 +105,54 @@ export interface ResourceItem {
   founderNote?: { en: string; ru: string };
 }
 
+export type NoiseAuditStatus =
+  | 'verified_quiet'
+  | 'acceptable_minor_traffic'
+  | 'minor_renovation_nearby'
+  | 'high_construction_risk'
+  | 'construction_alert'
+  | 'unverified';
+
+export interface VerifiedHousingItem {
+  id: string;
+  condoName: string;
+  cityId: string;
+  district: string;
+  addressSnippet: string;
+  monthlyPriceUSD: number;
+  monthlyPriceVND: number;
+  evnTariffVNDPerKwh: number; // e.g. 2800 (State tariff) or 4000 (markup)
+  isDirectEvnMeter: boolean; // Direct meter from EVN
+  depositTerms: {
+    amountUSD: number;
+    months: number;
+    refundConditions: { en: string; ru: string };
+  };
+  realtorContact: {
+    name: string;
+    phoneOrZalo: string;
+    verifiedPartner: boolean;
+  };
+  noiseAudit: {
+    status: NoiseAuditStatus;
+    inspectedAt: string; // Date of inspection
+    notes: { en: string; ru: string };
+  };
+  fiberInternetSpeedMbps: {
+    download: number;
+    upload: number;
+    provider: 'Viettel' | 'VNPT' | 'FPT' | 'FPT Telecom' | 'Other' | string;
+  };
+  childFriendlyFeatures: string[];
+  photoUrls: string[];
+  videoTourUrl?: string;
+  founderReview: { en: string; ru: string };
+  contractAudited: boolean;
+  isTopPick: boolean;
+  publishedToClient: boolean;
+  createdAt: string;
+}
+
 export interface ClientProject {
   id: string;
   clientName: string;
@@ -120,9 +168,16 @@ export interface ClientProject {
   userCurrentBudget: BudgetBreakdown;
   roadmapTasks: RoadmapTask[];
   resources: ResourceItem[];
+  verifiedHousing: VerifiedHousingItem[];
   overallFounderNote: { en: string; ru: string };
   consultationBooking?: ExpressConsultationBooking;
   tierId?: TierId;
+  orderId?: string;
+  slaDeadline?: string;
+  paidAt?: string;
+  paymentMethod?: 'prodamus_card' | 'intl_card' | 'crypto_usdt' | 'viet_qr' | string;
+  hasUnpublishedChanges?: boolean;
+  lastPublishedAt?: string;
   updatedAt: string;
 }
 
@@ -141,6 +196,13 @@ export interface AdminClientRecord {
   recommendedCityWhy: { en: string; ru: string };
   overallFounderNote: { en: string; ru: string };
   userCurrentBudget: BudgetBreakdown;
+  verifiedHousing: VerifiedHousingItem[];
+  roadmapTasks: RoadmapTask[];
+  paidAt?: string;
+  paymentMethod?: string;
+  slaDeadline?: string;
+  hasUnpublishedChanges?: boolean;
+  lastPublishedAt?: string;
   createdAt: string;
   updatedAt: string;
 }

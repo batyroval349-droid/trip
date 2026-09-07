@@ -488,11 +488,118 @@ export const DEMO_CLIENT_PROJECT: ClientProject = {
       }
     }
   ],
+  verifiedHousing: [
+    {
+      id: 'house-danang-1',
+      condoName: 'Hiyori Garden Tower',
+      cityId: 'danang',
+      district: 'Son Tra / My Khe Border',
+      addressSnippet: 'Vo Van Kiet, Son Tra, Da Nang (450m from beach)',
+      monthlyPriceUSD: 520,
+      monthlyPriceVND: 13000000,
+      evnTariffVNDPerKwh: 2800,
+      isDirectEvnMeter: true,
+      depositTerms: {
+        amountUSD: 520,
+        months: 1,
+        refundConditions: {
+          en: '1-month refundable deposit upon 30-day departure notice. Checked against property pink book.',
+          ru: '1 месяц залога с гарантией возврата при предупреждении за 30 дней. Проверен по sổ đỏ.'
+        }
+      },
+      realtorContact: {
+        name: 'Linh Nguyen (Verified Partner)',
+        phoneOrZalo: '+84 905 123 456 (Zalo)',
+        verifiedPartner: true
+      },
+      noiseAudit: {
+        status: 'verified_quiet',
+        inspectedAt: '2026-09-04',
+        notes: {
+          en: 'Inspected on site: Zero construction within 200m radius. Courtyard-facing quiet 14th floor.',
+          ru: 'Проверено на месте: строек в радиусе 200м нет. Тихий 14-й этаж с окнами во внутренний двор.'
+        }
+      },
+      fiberInternetSpeedMbps: {
+        download: 165,
+        upload: 140,
+        provider: 'Viettel'
+      },
+      childFriendlyFeatures: ['Elevator with keycard', 'Gated pool & play zone', 'Quiet inverter AC'],
+      photoUrls: [
+        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80'
+      ],
+      videoTourUrl: 'https://youtube.com',
+      founderReview: {
+        en: 'Japanese quality standard condominium. Very rare to find official EVN rates and true soundproofing in Da Nang. Excellent choice for focused remote design work.',
+        ru: 'ЖК японского стандарта качества. Редкий случай прямого государственного тарифа EVN и настоящей шумоизоляции в Дананге. Идеально для комфортной удаленной работы.'
+      },
+      contractAudited: true,
+      isTopPick: true,
+      publishedToClient: true,
+      createdAt: '2026-09-04'
+    },
+    {
+      id: 'house-danang-2',
+      condoName: 'The Monarchy (Block B)',
+      cityId: 'danang',
+      district: 'An Trung / Han River',
+      addressSnippet: 'Tran Hung Dao, An Hai Tay, Da Nang',
+      monthlyPriceUSD: 460,
+      monthlyPriceVND: 11500000,
+      evnTariffVNDPerKwh: 3000,
+      isDirectEvnMeter: true,
+      depositTerms: {
+        amountUSD: 460,
+        months: 1,
+        refundConditions: {
+          en: '1-month refundable deposit, written clause on inspection handover.',
+          ru: '1 месяц возвратного залога с письменным актом приема-передачи.'
+        }
+      },
+      realtorContact: {
+        name: 'Minh Quan (Realtor Partner)',
+        phoneOrZalo: '+84 935 987 654 (Zalo)',
+        verifiedPartner: true
+      },
+      noiseAudit: {
+        status: 'verified_quiet',
+        inspectedAt: '2026-09-02',
+        notes: {
+          en: 'Corner unit away from elevator core. Good sound insulation on dual-glazed windows.',
+          ru: 'Угловая секция вдали от лифтового холла. Хорошие стеклопакеты.'
+        }
+      },
+      fiberInternetSpeedMbps: {
+        download: 140,
+        upload: 110,
+        provider: 'VNPT'
+      },
+      childFriendlyFeatures: ['Large green park inside', 'Shops on ground floor', 'Security 24/7'],
+      photoUrls: [
+        'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80'
+      ],
+      founderReview: {
+        en: 'Solid mid-budget highrise near Dragon Bridge. Great breeze from Han River. Only 4 min ride to An Thuong beach strip.',
+        ru: 'Надежный комплекс у моста Дракона. Свежий бриз с реки Хан, до пляжа Ан Тхыонг 4 минуты на такси/байке.'
+      },
+      contractAudited: true,
+      isTopPick: false,
+      publishedToClient: true,
+      createdAt: '2026-09-02'
+    }
+  ],
   overallFounderNote: {
     en: 'Based on what you shared in your questionnaire about wanting a balance between beach access, quiet focus hours, and an active nomad community, Da Nang is the clear top match. I recommend focusing your accommodation research on An Thuong and Son Tra. Let’s connect on WhatsApp if you have questions while exploring your roadmap!',
     ru: 'На основе вашей анкеты (баланс между пляжем, тишиной для работы в UX и международным сообществом) Дананг — идеальный выбор. Рекомендую сосредоточить поиск жилья на районах Ан Тхыонг и Сон Тра. Пишите мне в WhatsApp/Telegram по любым вопросам!'
   },
-  updatedAt: '2026-09-02'
+  slaDeadline: '2026-09-09T18:00:00.000Z',
+  paidAt: '2026-09-07T18:00:00.000Z',
+  paymentMethod: 'prodamus_card',
+  updatedAt: '2026-09-07'
 };
 
 export const UI_STRINGS = {

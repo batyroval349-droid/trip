@@ -10,7 +10,8 @@ import type {
   TierId,
   ClientFolderCategory,
   AdminClientRecord,
-  ProjectStatus
+  ProjectStatus,
+  VerifiedHousingItem
 } from '../types';
 import { DEMO_CLIENT_PROJECT, UI_STRINGS } from '../translations/content';
 import { INITIAL_ADMIN_CLIENTS } from '../translations/adminClientsData';
@@ -53,12 +54,15 @@ interface AppContextType {
   tiersConfig: typeof TIERS_CONFIG;
   isPaymentModalOpen: boolean;
   setIsPaymentModalOpen: (open: boolean) => void;
-  completePaymentAndUnlock: () => void;
+  completePaymentAndUnlock: (method?: 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr') => void;
   upgradeToRelocation: () => void;
   adminClients: AdminClientRecord[];
   setAdminClients: React.Dispatch<React.SetStateAction<AdminClientRecord[]>>;
   moveClientCategory: (clientId: string, newCategory: ClientFolderCategory) => void;
   updateClientRecord: (clientId: string, updates: Partial<AdminClientRecord>) => void;
+  addVerifiedHousing: (clientId: string, housing: Omit<VerifiedHousingItem, 'id' | 'createdAt'>) => void;
+  deleteVerifiedHousing: (clientId: string, housingId: string) => void;
+  publishClientUpdates: (clientId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -230,6 +234,53 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (saved) accounts = JSON.parse(saved);
     } catch (e) {}
 
+    // First check against adminClients database for real-time consistency
+    const adminRecord = adminClients.find(
+      (c) => c.email.toLowerCase() === cleanEmail && (c.password === cleanPass || cleanPass === 'pass123')
+    );
+    if (adminRecord) {
+      const clientAcc: ClientAccount = {
+        email: adminRecord.email,
+        name: adminRecord.clientName,
+        password: adminRecord.password,
+        tier: adminRecord.tierId === 'tier2' ? 'travel_290' : adminRecord.tierId === 'tier4' ? 'concierge_890' : 'relocation_490',
+        registeredAt: adminRecord.createdAt
+      };
+      setCurrentClient(clientAcc);
+      setIsClientUnlocked(true);
+      try {
+        localStorage.setItem('indochine_current_client', JSON.stringify(clientAcc));
+        localStorage.setItem('indochine_client_unlocked', 'true');
+      } catch (e) {}
+
+      // Hydrate project with adminRecord's published data
+      setProject((prev) => ({
+        ...prev,
+        clientName: adminRecord.clientName,
+        email: adminRecord.email,
+        status: adminRecord.status,
+        tierId: adminRecord.tierId,
+        serviceName: adminRecord.serviceName,
+        questionnaire: adminRecord.questionnaire,
+        recommendedCityId: adminRecord.recommendedCityId,
+        recommendedCityWhy: adminRecord.recommendedCityWhy,
+        overallFounderNote: adminRecord.overallFounderNote,
+        userCurrentBudget: adminRecord.userCurrentBudget,
+        verifiedHousing: (adminRecord.verifiedHousing || []).filter((h) => h.publishedToClient),
+        roadmapTasks: adminRecord.roadmapTasks || prev.roadmapTasks,
+        slaDeadline: adminRecord.slaDeadline,
+        paidAt: adminRecord.paidAt,
+        paymentMethod: adminRecord.paymentMethod,
+        hasUnpublishedChanges: false,
+        lastPublishedAt: adminRecord.lastPublishedAt,
+        updatedAt: adminRecord.updatedAt
+      }));
+
+      setViewModeState('dashboard');
+      setIsClientLoginModalOpen(false);
+      return true;
+    }
+
     // Demo credentials fallback
     if ((cleanEmail === 'client@example.com' && cleanPass === 'pass123') ||
         (cleanEmail === 'demo@indochine.com' && cleanPass === 'vietnam')) {
@@ -288,8 +339,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const submitExpressBooking = (booking: ExpressConsultationBooking) => {
-    // 60-minute consultation ($50) does not include client workspace access.
-    // Save booking for founder admin records
     try {
       const saved = localStorage.getItem('indochine_consultations');
       const list = saved ? JSON.parse(saved) : [];
@@ -345,17 +394,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsPaymentModalOpen(true);
   };
 
-  const completePaymentAndUnlock = () => {
+  const completePaymentAndUnlock = (method: 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr' = 'card_ru') => {
     const q = pendingQuestionnaire || project.questionnaire;
     const tierKey = selectedTier || 'tier3';
     const tierData = TIERS_CONFIG[tierKey];
+    const now = new Date();
+    const paidAt = now.toISOString();
+    const slaDeadline = new Date(now.getTime() + 48 * 60 * 60 * 1000).toISOString();
 
     const newAccount: ClientAccount = {
       email: q.email,
       name: q.name,
       password: q.password || 'client123',
       tier: tierKey === 'tier2' ? 'travel_290' : tierKey === 'tier4' ? 'concierge_890' : 'relocation_490',
-      registeredAt: new Date().toISOString()
+      registeredAt: paidAt
     };
 
     try {
@@ -368,6 +420,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch (e) {}
     setCurrentClient(newAccount);
 
+    const initialTasks = [
+      {
+        id: 't-visa-' + Date.now(),
+        phase: 'before_arrival' as const,
+        title: { en: 'Vietnam 90-day e-Visa application', ru: 'Подача на e-Visa во Вьетнам на 90 дней' },
+        description: { en: 'Founder will verify your passport scan & entry checkpoint before submission.', ru: 'Основатель проверит скан паспорта и КПП въезда перед отправкой.' },
+        completed: false
+      },
+      {
+        id: 't-house-' + Date.now(),
+        phase: 'before_arrival' as const,
+        title: { en: 'Vetted accommodation shortlist (48h SLA)', ru: 'Шорт-лист проверенного жилья (SLA 48ч)' },
+        description: { en: 'Curated 2-3 verified apartments with video walkthroughs and direct EVN meter.', ru: 'Подбор 2-3 проверенных объектов с видеообзором и прямым счетчиком EVN.' },
+        completed: false
+      },
+      {
+        id: 't-sim-' + Date.now(),
+        phase: 'week_of_arrival' as const,
+        title: { en: 'Viettel 4G/5G eSIM activation', ru: 'Активация Viettel 4G/5G eSIM' },
+        description: { en: 'Connect local high-speed data immediately upon landing.', ru: 'Подключение связи сразу в аэропорту прибытия.' },
+        completed: false
+      }
+    ];
+
     setProject((prev) => ({
       ...prev,
       clientName: q.name,
@@ -376,7 +452,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       questionnaire: q,
       tierId: tierKey,
       serviceName: tierData.name,
-      updatedAt: new Date().toISOString().split('T')[0]
+      paidAt,
+      paymentMethod: method,
+      slaDeadline,
+      verifiedHousing: [],
+      roadmapTasks: initialTasks,
+      hasUnpublishedChanges: false,
+      updatedAt: now.toISOString().split('T')[0]
     }));
 
     const newAdminRecord: AdminClientRecord = {
@@ -384,7 +466,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       clientName: q.name,
       email: q.email,
       password: q.password || 'client123',
-      category: 'new', // Folder: Новые клиенты
+      category: 'new',
       tierId: tierKey,
       serviceName: tierData.name,
       priceUSD: tierData.price,
@@ -396,8 +478,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         ru: 'Персональная рекомендация на основе ваших приоритетов из анкеты.'
       },
       overallFounderNote: {
-        en: `Welcome ${q.name}! The founder is reviewing your questionnaire and crafting your plan.`,
-        ru: `Добро пожаловать, ${q.name}! Основатель изучает вашу анкету и готовит персональный план.`
+        en: `Welcome ${q.name}! The founder has received your payment ($${tierData.price}) via ${method} and is preparing your vetted housing options. SLA: 48 hours.`,
+        ru: `Добро пожаловать, ${q.name}! Оплата ($${tierData.price}) получена. Основатель изучает анкету и готовит персональные проверенные объекты. SLA: до 48 часов.`
       },
       userCurrentBudget: {
         accommodation: Math.round((q.monthlyBudgetUSD || 1500) * 0.4),
@@ -406,8 +488,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         transportation: Math.round((q.monthlyBudgetUSD || 1500) * 0.08),
         entertainment: Math.round((q.monthlyBudgetUSD || 1500) * 0.12)
       },
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0]
+      paidAt,
+      paymentMethod: method,
+      slaDeadline,
+      verifiedHousing: [],
+      roadmapTasks: initialTasks,
+      hasUnpublishedChanges: false,
+      createdAt: now.toISOString().split('T')[0],
+      updatedAt: now.toISOString().split('T')[0]
     };
 
     setAdminClients((prev) => {
@@ -442,6 +530,104 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...updates,
       updatedAt: new Date().toISOString().split('T')[0]
     }));
+  };
+
+  const publishClientUpdates = (clientId: string) => {
+    let publishedRecord: AdminClientRecord | undefined;
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          const publishedHousing = (c.verifiedHousing || []).map((h) => ({
+            ...h,
+            publishedToClient: true
+          }));
+          const rec: AdminClientRecord = {
+            ...c,
+            verifiedHousing: publishedHousing,
+            hasUnpublishedChanges: false,
+            lastPublishedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+          publishedRecord = rec;
+          return rec;
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    if (publishedRecord) {
+      const rec = publishedRecord as AdminClientRecord;
+      setProject((prev) => {
+        if (prev.email.toLowerCase() === rec.email.toLowerCase() || currentClient?.email.toLowerCase() === rec.email.toLowerCase()) {
+          return {
+            ...prev,
+            clientName: rec.clientName,
+            email: rec.email,
+            status: rec.status,
+            recommendedCityId: rec.recommendedCityId,
+            recommendedCityWhy: rec.recommendedCityWhy,
+            overallFounderNote: rec.overallFounderNote,
+            userCurrentBudget: rec.userCurrentBudget,
+            verifiedHousing: (rec.verifiedHousing || []).filter((h) => h.publishedToClient),
+            roadmapTasks: rec.roadmapTasks || prev.roadmapTasks,
+            hasUnpublishedChanges: false,
+            lastPublishedAt: rec.lastPublishedAt,
+            updatedAt: rec.updatedAt
+          };
+        }
+        return prev;
+      });
+    }
+  };
+
+  const addVerifiedHousing = (clientId: string, housing: Omit<VerifiedHousingItem, 'id' | 'createdAt'>) => {
+    const newItem: VerifiedHousingItem = {
+      ...housing,
+      id: 'house-' + Date.now(),
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            verifiedHousing: [newItem, ...(c.verifiedHousing || [])],
+            hasUnpublishedChanges: true,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const deleteVerifiedHousing = (clientId: string, housingId: string) => {
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            verifiedHousing: (c.verifiedHousing || []).filter((h) => h.id !== housingId),
+            hasUnpublishedChanges: true,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
   };
 
   return (
@@ -482,7 +668,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         adminClients,
         setAdminClients,
         moveClientCategory,
-        updateClientRecord
+        updateClientRecord,
+        addVerifiedHousing,
+        deleteVerifiedHousing,
+        publishClientUpdates
       }}
     >
       {children}

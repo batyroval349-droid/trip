@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { CreditCard, ShieldCheck, X, CheckCircle2, Lock, Wallet, Zap } from 'lucide-react';
+import {
+  CreditCard,
+  ShieldCheck,
+  X,
+  CheckCircle2,
+  Lock,
+  Wallet,
+  Zap,
+  Building2,
+  ArrowRight,
+  Copy,
+  Check
+} from 'lucide-react';
+
+type PaymentChannel = 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr';
 
 export const PaymentModal: React.FC = () => {
   const {
@@ -12,20 +26,31 @@ export const PaymentModal: React.FC = () => {
     language
   } = useApp();
 
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto' | 'sbp'>('card');
+  const [channel, setChannel] = useState<PaymentChannel>('card_ru');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToOffer, setAgreedToOffer] = useState(false);
+  const [txHash, setTxHash] = useState('');
+  const [copiedText, setCopiedText] = useState<string | null>(null);
 
   if (!isPaymentModalOpen) return null;
 
   const currentTierInfo = tiersConfig[selectedTier] || tiersConfig['tier3'];
+  const priceUSD = currentTierInfo.price;
+  const priceVND = (priceUSD * 25000).toLocaleString('ru-RU');
+  const priceRUB = Math.round(priceUSD * 93).toLocaleString('ru-RU');
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
 
   const handlePay = () => {
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
-      completePaymentAndUnlock();
-    }, 700);
+      completePaymentAndUnlock(channel);
+    }, 850);
   };
 
   return (
@@ -35,26 +60,31 @@ export const PaymentModal: React.FC = () => {
       left: 0,
       width: '100%',
       height: '100%',
-      background: 'rgba(19, 37, 34, 0.7)',
+      background: 'rgba(19, 37, 34, 0.75)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 1000,
-      padding: '1rem'
+      padding: '1rem',
+      overflowY: 'auto'
     }}>
       <div className="glass-card" style={{
-        maxWidth: '520px',
+        maxWidth: '580px',
         width: '100%',
         background: '#FAF8F5',
         border: '1px solid var(--border-emerald)',
-        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
+        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.35)',
         position: 'relative',
-        padding: '2.2rem'
+        padding: '2rem',
+        borderRadius: 'var(--radius-lg)',
+        maxHeight: '92vh',
+        overflowY: 'auto'
       }}>
         {/* Close Button */}
         <button
           onClick={() => setIsPaymentModalOpen(false)}
+          aria-label="Close"
           style={{
             position: 'absolute',
             top: '1.25rem',
@@ -63,21 +93,24 @@ export const PaymentModal: React.FC = () => {
             border: 'none',
             color: 'var(--text-muted)',
             cursor: 'pointer',
-            padding: '4px'
+            padding: '4px',
+            borderRadius: '50%'
           }}
         >
           <X size={20} />
         </button>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.3rem', color: 'var(--accent-emerald)' }}>
-          <ShieldCheck size={24} />
-          <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', margin: 0, color: 'var(--text-main)' }}>
-            {language === 'ru' ? 'Оформление и оплата тарифа' : 'Checkout & Payment'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem', color: 'var(--accent-emerald)' }}>
+          <ShieldCheck size={26} />
+          <h2 style={{ fontSize: '1.45rem', fontFamily: 'var(--font-serif)', margin: 0, color: 'var(--text-main)' }}>
+            {language === 'ru' ? 'Оплата и активация кабинета' : 'Payment & Workspace Activation'}
           </h2>
         </div>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginBottom: '1.5rem' }}>
-          {language === 'ru' ? 'Завершите оплату, чтобы активировать персональный рабочий кабинет.' : 'Complete payment to activate your client workspace.'}
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem', lineHeight: 1.45 }}>
+          {language === 'ru'
+            ? 'Деньги поступают напрямую на официальный расчетный счет или криптовалютный кошелек основателя сервиса.'
+            : 'Payments are settled directly to the founder’s official business account or crypto wallet.'}
         </p>
 
         {/* Order Summary Box */}
@@ -85,191 +118,379 @@ export const PaymentModal: React.FC = () => {
           background: '#FFFFFF',
           border: '1px solid var(--border-subtle)',
           borderRadius: 'var(--radius-md)',
-          padding: '1.25rem',
-          marginBottom: '1.5rem',
+          padding: '1.15rem 1.25rem',
+          marginBottom: '1.35rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
           <div>
-            <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
-              {language === 'ru' ? 'Выбранный пакет' : 'Selected Plan'}
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.06em', fontWeight: 600 }}>
+              {language === 'ru' ? 'Выбранный тариф' : 'Selected Plan'}
             </div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
               {currentTierInfo.name[language]}
             </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)', marginTop: '2px' }}>
-              &bull; {language === 'ru' ? '100% удалённый консалтинг' : '100% remote consulting'}
+            <div style={{ fontSize: '0.78rem', color: 'var(--accent-emerald)', marginTop: '2px' }}>
+              &bull; {language === 'ru' ? 'SLA первого аудита: до 48 часов' : '48h First Delivery SLA'}
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--accent-emerald)', fontFamily: 'var(--font-serif)' }}>
-              ${currentTierInfo.price}
+            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--accent-emerald)', fontFamily: 'var(--font-serif)' }}>
+              ${priceUSD}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              ≈ {priceRUB} ₽ / {priceVND} ₫
             </div>
           </div>
         </div>
 
-        {/* Payment Methods Selector */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.6rem' }}>
-            {language === 'ru' ? 'Способ оплаты' : 'Payment Method'}
+        {/* Payment Channel Selector Tabs */}
+        <div style={{ marginBottom: '1.25rem' }}>
+          <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.6rem' }}>
+            {language === 'ru' ? 'Выберите способ зачисления средств:' : 'Select Settlement Channel:'}
           </label>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.6rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.45rem' }}>
             <button
               type="button"
-              onClick={() => setPaymentMethod('card')}
+              onClick={() => setChannel('card_ru')}
               style={{
-                padding: '0.75rem 0.5rem',
+                padding: '0.65rem 0.35rem',
                 borderRadius: 'var(--radius-sm)',
-                border: paymentMethod === 'card' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                background: paymentMethod === 'card' ? 'var(--accent-emerald-light)' : '#FFFFFF',
-                color: paymentMethod === 'card' ? 'var(--accent-emerald)' : 'var(--text-main)',
+                border: channel === 'card_ru' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                background: channel === 'card_ru' ? 'var(--accent-emerald-light)' : '#FFFFFF',
+                color: channel === 'card_ru' ? 'var(--accent-emerald)' : 'var(--text-main)',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.3rem',
-                fontSize: '0.78rem',
-                fontWeight: 600
+                gap: '0.25rem',
+                fontSize: '0.74rem',
+                fontWeight: 600,
+                transition: 'all 0.2s ease'
               }}
             >
-              <CreditCard size={18} />
-              <span>{language === 'ru' ? 'Карта' : 'Bank Card'}</span>
+              <Zap size={16} />
+              <span>{language === 'ru' ? 'РФ / СБП' : 'RU / SBP'}</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setPaymentMethod('crypto')}
+              onClick={() => setChannel('card_intl')}
               style={{
-                padding: '0.75rem 0.5rem',
+                padding: '0.65rem 0.35rem',
                 borderRadius: 'var(--radius-sm)',
-                border: paymentMethod === 'crypto' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                background: paymentMethod === 'crypto' ? 'var(--accent-emerald-light)' : '#FFFFFF',
-                color: paymentMethod === 'crypto' ? 'var(--accent-emerald)' : 'var(--text-main)',
+                border: channel === 'card_intl' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                background: channel === 'card_intl' ? 'var(--accent-emerald-light)' : '#FFFFFF',
+                color: channel === 'card_intl' ? 'var(--accent-emerald)' : 'var(--text-main)',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.3rem',
-                fontSize: '0.78rem',
-                fontWeight: 600
+                gap: '0.25rem',
+                fontSize: '0.74rem',
+                fontWeight: 600,
+                transition: 'all 0.2s ease'
               }}
             >
-              <Wallet size={18} />
-              <span>USDT / TON</span>
+              <CreditCard size={16} />
+              <span>{language === 'ru' ? 'Зарубеж.' : 'Intl Card'}</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setPaymentMethod('sbp')}
+              onClick={() => setChannel('crypto_usdt')}
               style={{
-                padding: '0.75rem 0.5rem',
+                padding: '0.65rem 0.35rem',
                 borderRadius: 'var(--radius-sm)',
-                border: paymentMethod === 'sbp' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                background: paymentMethod === 'sbp' ? 'var(--accent-emerald-light)' : '#FFFFFF',
-                color: paymentMethod === 'sbp' ? 'var(--accent-emerald)' : 'var(--text-main)',
+                border: channel === 'crypto_usdt' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                background: channel === 'crypto_usdt' ? 'var(--accent-emerald-light)' : '#FFFFFF',
+                color: channel === 'crypto_usdt' ? 'var(--accent-emerald)' : 'var(--text-main)',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.3rem',
-                fontSize: '0.78rem',
-                fontWeight: 600
+                gap: '0.25rem',
+                fontSize: '0.74rem',
+                fontWeight: 600,
+                transition: 'all 0.2s ease'
               }}
             >
-              <Zap size={18} />
-              <span>{language === 'ru' ? 'Перевод' : 'Fast Transfer'}</span>
+              <Wallet size={16} />
+              <span>USDT</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setChannel('viet_qr')}
+              style={{
+                padding: '0.65rem 0.35rem',
+                borderRadius: 'var(--radius-sm)',
+                border: channel === 'viet_qr' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                background: channel === 'viet_qr' ? 'var(--accent-emerald-light)' : '#FFFFFF',
+                color: channel === 'viet_qr' ? 'var(--accent-emerald)' : 'var(--text-main)',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.25rem',
+                fontSize: '0.74rem',
+                fontWeight: 600,
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Building2 size={16} />
+              <span>VietQR</span>
             </button>
           </div>
         </div>
 
-        {/* Selected Method Details Preview */}
-        {paymentMethod === 'card' && (
-          <div style={{ background: '#FFFFFF', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
-            <div style={{ color: 'var(--text-muted)', marginBottom: '0.4rem', fontSize: '0.78rem' }}>
-              {language === 'ru' ? 'Поддерживаются карты Visa, Mastercard, МИР, UnionPay' : 'Visa, Mastercard, Mir, UnionPay supported'}
+        {/* Dynamic Channel Breakdown & Instructions */}
+        {channel === 'card_ru' && (
+          <div style={{
+            background: '#FFFFFF',
+            padding: '1rem',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-subtle)',
+            marginBottom: '1.25rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                {language === 'ru' ? 'Шлюз Prodamus / СБП (Россия)' : 'Prodamus Gateway / SBP (Russia)'}
+              </span>
+              <span style={{ fontSize: '0.72rem', background: '#E0F2FE', color: '#0369A1', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                Чек 54-ФЗ
+              </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'monospace', fontWeight: 600, color: 'var(--text-main)' }}>
-              <span>4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242</span>
-              <span>12/28</span>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
+              {language === 'ru'
+                ? 'Оплата картами МИР, Visa, Mastercard РФ или через СБП без комиссии. Фискальный кассовый чек высылается на вашу почту, а средства зачисляются на официальный расчетный счет основателя на следующий рабочий день.'
+                : 'Payment via Russian Mir, Visa, Mastercard or SBP. Full official 54-FZ tax receipt, funds settled to founder bank account next business day.'}
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
+              <ArrowRight size={14} />
+              <span>{language === 'ru' ? `Сумма к списанию: ${priceRUB} ₽ (фиксировано)` : `Charged: ${priceRUB} RUB (fixed)`}</span>
             </div>
           </div>
         )}
 
-        {paymentMethod === 'crypto' && (
-          <div style={{ background: '#FFFFFF', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
-            <div style={{ color: 'var(--text-muted)', marginBottom: '0.4rem', fontSize: '0.78rem' }}>
-              USDT TRC20 / TON / BTC Network
+        {channel === 'card_intl' && (
+          <div style={{
+            background: '#FFFFFF',
+            padding: '1rem',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-subtle)',
+            marginBottom: '1.25rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                {language === 'ru' ? 'Международные карты (Visa / Mastercard)' : 'International Credit Cards'}
+              </span>
+              <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                MoR Compliance
+              </span>
             </div>
-            <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--accent-emerald)', wordBreak: 'break-all' }}>
-              TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
+              {language === 'ru'
+                ? 'Принимаются любые карты банков СНГ, Европы, ОАЭ, США. Процессинг через Merchant of Record (Lava / Stripe / Tribute), который удерживает НДС покупателя и выводит сумму в USD основателю.'
+                : 'Accepts all international cards. Processed via Merchant of Record (Lava / Stripe / Tribute) compliant with global VAT, settled directly to founder.'}
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
+              <ArrowRight size={14} />
+              <span>{language === 'ru' ? `Сумма к списанию: $${priceUSD}.00 USD` : `Charged: $${priceUSD}.00 USD`}</span>
             </div>
           </div>
         )}
 
-        {paymentMethod === 'sbp' && (
-          <div style={{ background: '#FFFFFF', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
-            <div style={{ color: 'var(--text-muted)', marginBottom: '0.4rem', fontSize: '0.78rem' }}>
-              {language === 'ru' ? 'Быстрый перевод по номеру телефона / реквизитам' : 'Instant transfer by phone / card'}
+        {channel === 'crypto_usdt' && (
+          <div style={{
+            background: '#FFFFFF',
+            padding: '1rem',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-subtle)',
+            marginBottom: '1.25rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                USDT (TRC-20 / TON / BSC)
+              </span>
+              <span style={{ fontSize: '0.72rem', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                Мгновенное зачисление
+              </span>
             </div>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>
-              +84 90 000 0000 &bull; Indochine Concierge
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
+              {language === 'ru'
+                ? 'Прямой перевод на кошелек основателя. Комиссия сети TRC-20 всего ~1-2 USDT.'
+                : 'Direct transfer to founder wallet. Network fee ~1-2 USDT.'}
+            </p>
+            
+            <div style={{
+              background: '#F8FAFC',
+              padding: '0.6rem 0.8rem',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px dashed var(--border-subtle)',
+              marginBottom: '0.6rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>USDT (TRC20) Адрес:</div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.76rem', color: 'var(--accent-emerald)', fontWeight: 700, wordBreak: 'break-all' }}>
+                  TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => copyToClipboard('TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE', 'usdt')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+                title="Copy Address"
+              >
+                {copiedText === 'usdt' ? <Check size={16} color="#0F766E" /> : <Copy size={16} />}
+              </button>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                {language === 'ru' ? 'Хэш транзакции (TxID) или ваш кошелек отправки:' : 'Transaction Hash (TxID):'}
+              </label>
+              <input
+                type="text"
+                value={txHash}
+                onChange={(e) => setTxHash(e.target.value)}
+                placeholder="0x... или e4d5c..."
+                style={{
+                  width: '100%',
+                  padding: '0.45rem 0.6rem',
+                  fontSize: '0.78rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-subtle)',
+                  fontFamily: 'monospace'
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {channel === 'viet_qr' && (
+          <div style={{
+            background: '#FFFFFF',
+            padding: '1rem',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-subtle)',
+            marginBottom: '1.25rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                VietQR / NAPAS 247 (Вьетнамский банк)
+              </span>
+              <span style={{ fontSize: '0.72rem', background: '#FEE2E2', color: '#B91C1C', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                0% Комиссия
+              </span>
+            </div>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
+              {language === 'ru'
+                ? 'Прямой перевод по системе быстрых платежей NAPAS 247 на счет основателя в банке Techcombank / MBBank во Вьетнаме. Идеально для тех, у кого уже есть вьетнамский счет.'
+                : 'Direct transfer via NAPAS 247 to founder account at Techcombank/MBBank in Vietnam in VND.'}
+            </p>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: '#F8FAFC',
+              padding: '0.6rem 0.8rem',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border-subtle)'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Techcombank (Vietnam) &bull; Назначение: INDOCHINE-{priceUSD}</div>
+                <div style={{ fontFamily: 'monospace', fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-emerald)' }}>
+                  1903 8888 2470 19 &bull; {priceVND} VND
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => copyToClipboard('19038888247019', 'vietqr')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px' }}
+              >
+                {copiedText === 'vietqr' ? <Check size={16} color="#0F766E" /> : <Copy size={16} />}
+              </button>
             </div>
           </div>
         )}
 
         {/* Security badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-          <Lock size={13} style={{ color: 'var(--accent-emerald)' }} />
-          <span>{language === 'ru' ? 'Безопасное соединение. Чек и доступ придут на указанный Email.' : 'Secure payment. Receipt and access will be sent to your Email.'}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          <Lock size={13} style={{ color: 'var(--accent-emerald)', flexShrink: 0 }} />
+          <span>
+            {language === 'ru'
+              ? 'Защищенный протокол передачи данных. Логин и пароль от кабинета генерируются автоматически.'
+              : 'Secure encrypted session. Login credentials to your workspace are generated automatically.'}
+          </span>
         </div>
 
-        {/* Due Diligence & Legal Terms Checkbox */}
+        {/* Public Offer & Non-Refundable Terms Checkbox */}
         <label style={{
           display: 'flex',
           alignItems: 'flex-start',
           gap: '0.65rem',
-          fontSize: '0.78rem',
+          fontSize: '0.76rem',
           color: 'var(--text-muted)',
-          marginBottom: '1.25rem',
+          marginBottom: '1.35rem',
           cursor: 'pointer',
-          lineHeight: 1.4
+          lineHeight: 1.45,
+          background: 'rgba(255, 255, 255, 0.6)',
+          padding: '0.75rem',
+          borderRadius: 'var(--radius-sm)',
+          border: '1px solid var(--border-subtle)'
         }}>
           <input
             type="checkbox"
-            checked={agreedToTerms}
-            onChange={(e) => setAgreedToTerms(e.target.checked)}
+            checked={agreedToOffer}
+            onChange={(e) => setAgreedToOffer(e.target.checked)}
             style={{ marginTop: '2px', accentColor: 'var(--accent-emerald)', cursor: 'pointer' }}
           />
           <span>
             {language === 'ru'
-              ? 'Я подтверждаю заказ и понимаю, что сервис оказывает экспертное дистанционное консультирование и проверку Due Diligence, а окончательный договор аренды заключается напрямую с собственником жилья.'
-              : 'I confirm my order and understand that the service provides remote expert advisory and Due Diligence review, while final lease contracts are executed directly with property owners.'}
+              ? 'Я принимаю условия Публичной оферты. Услуга является дистанционной информационно-консультационной. 1-й этап ($100) — глубокий аудит анкеты и районов (невозвратный после начала работы); 2-й этап — подбор проверенного жилья с аудитом договора и EVN; 3-й этап — сопровождение заселения и гарантийный консьерж.'
+              : 'I accept the Public Offer agreement. The service is remote consulting: Stage 1 ($100) profile & district audit (non-refundable once started); Stage 2 vetted accommodation selection & contract review; Stage 3 arrival concierge.'}
           </span>
         </label>
 
         {/* Pay Button */}
         <button
           onClick={handlePay}
-          disabled={isProcessing || !agreedToTerms}
+          disabled={isProcessing || !agreedToOffer}
           className="btn btn-primary"
           style={{
             width: '100%',
-            padding: '1rem',
+            padding: '0.95rem',
             fontSize: '1.05rem',
             justifyContent: 'center',
             gap: '0.6rem',
-            opacity: (!agreedToTerms || isProcessing) ? 0.6 : 1,
-            cursor: (!agreedToTerms || isProcessing) ? 'not-allowed' : 'pointer'
+            opacity: (!agreedToOffer || isProcessing) ? 0.6 : 1,
+            cursor: (!agreedToOffer || isProcessing) ? 'not-allowed' : 'pointer'
           }}
         >
           {isProcessing ? (
-            <span>{language === 'ru' ? 'Обработка платежа...' : 'Processing payment...'}</span>
+            <span>{language === 'ru' ? 'Обработка и активация...' : 'Processing & activating...'}</span>
           ) : (
             <>
               <CheckCircle2 size={18} />
-              <span>{language === 'ru' ? `Оплатить $${currentTierInfo.price} и открыть кабинет` : `Pay $${currentTierInfo.price} & Open Workspace`}</span>
+              <span>
+                {language === 'ru'
+                  ? `Оплатить $${priceUSD} и активировать кабинет`
+                  : `Pay $${priceUSD} & Activate Workspace`}
+              </span>
             </>
           )}
         </button>
