@@ -64,23 +64,20 @@ export const Header: React.FC = () => {
           style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', cursor: 'pointer' }}
         >
           <img
-            src="/logo-icon.jpg"
+            src="/logo-icon-transparent.png"
             alt="VietReloc"
             style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '10px',
+              width: '58px',
+              height: '58px',
               objectFit: 'contain',
-              background: '#FFFFFF',
-              boxShadow: '0 4px 12px rgba(15, 118, 110, 0.15)',
-              border: '1px solid rgba(15, 118, 110, 0.2)'
+              filter: 'drop-shadow(0 4px 10px rgba(15, 118, 110, 0.22))'
             }}
           />
           <div>
-            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.06em', color: 'var(--text-main)', lineHeight: 1.1 }}>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.45rem', fontWeight: 800, letterSpacing: '0.05em', color: 'var(--text-main)', lineHeight: 1.1 }}>
               VIET<span style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>RELOC</span>
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', letterSpacing: '0.03em', marginTop: '2px' }}>
               {language === 'ru' ? 'Консьерж по переезду и путешествиям' : 'Travel & Relocation Concierge'}
             </div>
           </div>
