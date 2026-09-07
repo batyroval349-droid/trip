@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Compass, ShieldCheck, MessageCircle, Send } from 'lucide-react';
+import { ShieldCheck, MessageCircle, Send } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { t, setViewMode, isFounderLoggedIn, setIsFounderModalOpen, isClientUnlocked, setIsOfferModalOpen, language } = useApp();
@@ -19,11 +19,22 @@ export const Footer: React.FC = () => {
           
           {/* Col 1: Brand */}
           <div style={{ gridColumn: 'span 2' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem', cursor: 'pointer' }} onClick={() => setViewMode('marketing')}>
-              <Compass size={24} style={{ color: 'var(--accent-emerald)' }} />
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', fontWeight: 800, letterSpacing: '0.04em', color: '#FFFFFF' }}>
-                VIET<span style={{ color: 'var(--accent-emerald)' }}>RELOC</span>
-              </span>
+            <div 
+              style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem', cursor: 'pointer' }} 
+              onClick={() => {
+                setViewMode('marketing');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              <img
+                src="/logo-dark-transparent.png"
+                alt="VietReloc"
+                style={{
+                  height: '58px',
+                  maxWidth: '280px',
+                  objectFit: 'contain'
+                }}
+              />
             </div>
             
             <p style={{ fontSize: '0.9rem', lineHeight: 1.6, maxWidth: '440px', marginBottom: '1.5rem', color: '#A3B8B5' }}>

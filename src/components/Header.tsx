@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Compass, UserCheck, Settings, Menu, X, Sparkles, LogOut, LogIn } from 'lucide-react';
+import { UserCheck, Settings, Menu, X, Sparkles, LogOut, LogIn } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const {
@@ -63,19 +63,19 @@ export const Header: React.FC = () => {
           }}
           style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', cursor: 'pointer' }}
         >
-          <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, var(--accent-emerald) 0%, #115E59 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#FAF8F5',
-            boxShadow: '0 4px 12px rgba(15, 118, 110, 0.25)'
-          }}>
-            <Compass size={22} />
-          </div>
+          <img
+            src="/logo-icon.jpg"
+            alt="VietReloc"
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '10px',
+              objectFit: 'contain',
+              background: '#FFFFFF',
+              boxShadow: '0 4px 12px rgba(15, 118, 110, 0.15)',
+              border: '1px solid rgba(15, 118, 110, 0.2)'
+            }}
+          />
           <div>
             <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.06em', color: 'var(--text-main)', lineHeight: 1.1 }}>
               VIET<span style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>RELOC</span>

@@ -413,7 +413,7 @@ export const PaymentModal: React.FC = () => {
               border: '1px solid var(--border-subtle)'
             }}>
               <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Techcombank (Vietnam) &bull; Назначение: INDOCHINE-{priceUSD}</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Techcombank (Vietnam) &bull; Назначение: VIETRELOC-{priceUSD}</div>
                 <div style={{ fontFamily: 'monospace', fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-emerald)' }}>
                   1903 8888 2470 19 &bull; {priceVND} VND
                 </div>
