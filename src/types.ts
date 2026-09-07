@@ -5,16 +5,41 @@ export type TierId = 'tier1' | 'tier2' | 'tier3' | 'tier4';
 export type ClientFolderCategory = 'new' | 'active' | 'completed';
 
 export interface ExpressConsultationBooking {
+  id: string;
   name: string;
   messenger: string;
   email: string;
   password?: string;
   topic: string;
-  bookingDate: string;
-  bookingTime: string;
+  bookingDate: string; // YYYY-MM-DD
+  bookingTime: string; // e.g. '14:00 - 15:00'
   meetingPlatform: 'Zoom' | 'Google Meet';
   bookedAt: string;
   priceUSD: number;
+  status: 'confirmed' | 'completed' | 'cancelled';
+  founderNotes?: string;
+}
+
+export interface BlockedSlotItem {
+  id: string;
+  date: string; // YYYY-MM-DD
+  time: string; // e.g. '14:00 - 15:00'
+  reason?: string;
+}
+
+export interface FounderScheduleConfig {
+  workingDaysOfWeek: number[]; // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+  defaultSlots: string[]; // e.g. ['10:00 - 11:00', '12:00 - 13:00', '14:00 - 15:00', '16:00 - 17:00', '18:00 - 19:00', '20:00 - 21:00']
+  blackoutDates: string[]; // YYYY-MM-DD
+  blockedSlots: BlockedSlotItem[];
+  telegramBotToken?: string;
+  telegramChatId?: string;
+}
+
+export interface SlotAvailability {
+  time: string;
+  status: 'available' | 'booked' | 'blocked';
+  booking?: ExpressConsultationBooking;
 }
 
 export interface ClientAccount {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type {
   ViewMode,
   Language,
@@ -6,6 +6,9 @@ import type {
   BudgetBreakdown,
   ClientQuestionnaire,
   ExpressConsultationBooking,
+  FounderScheduleConfig,
+  BlockedSlotItem,
+  SlotAvailability,
   ClientAccount,
   TierId,
   ClientFolderCategory,
@@ -23,6 +26,52 @@ export const TIERS_CONFIG: Record<TierId, { id: TierId; price: number; name: { e
   tier4: { id: 'tier4', price: 890, name: { en: 'Relocation Concierge', ru: 'Консьерж-сопровождение релокации' } }
 };
 
+export const DEFAULT_SCHEDULE_CONFIG: FounderScheduleConfig = {
+  workingDaysOfWeek: [1, 2, 3, 4, 5, 6], // Mon-Sat (1 to 6). Sunday (0) is off.
+  defaultSlots: [
+    '10:00 - 11:00',
+    '12:00 - 13:00',
+    '14:00 - 15:00',
+    '16:00 - 17:00',
+    '18:00 - 19:00',
+    '20:00 - 21:00'
+  ],
+  blackoutDates: [],
+  blockedSlots: [],
+  telegramBotToken: '',
+  telegramChatId: ''
+};
+
+export const INITIAL_DEMO_BOOKINGS: ExpressConsultationBooking[] = [
+  {
+    id: 'book-101',
+    name: 'Алексей Мельников',
+    email: 'alex.melnikov@gmail.com',
+    messenger: '@alex_reloc_tg',
+    topic: 'Переезд с семьей и ребенком 4 года в Дананг, выбор района Ан Тхуонг vs Ми Кхе и детский сад',
+    bookingDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+    bookingTime: '14:00 - 15:00',
+    meetingPlatform: 'Google Meet',
+    bookedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+    priceUSD: 50,
+    status: 'confirmed',
+    founderNotes: 'Интересуется кондоминиумами Monarchy и Hiyori.'
+  },
+  {
+    id: 'book-102',
+    name: 'Екатерина Романова',
+    email: 'katerina.design@gmail.com',
+    messenger: '@kat_design_viet',
+    topic: 'Зимовка в Нячанге для дизайнера: стабильный интернет 100+ Мбит/с, коворкинги и аренда байка',
+    bookingDate: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
+    bookingTime: '16:00 - 17:00',
+    meetingPlatform: 'Zoom',
+    bookedAt: new Date(Date.now() - 3600000 * 14).toISOString(),
+    priceUSD: 50,
+    status: 'confirmed'
+  }
+];
+
 interface AppContextType {
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
@@ -33,7 +82,26 @@ interface AppContextType {
   updateUserBudget: (newBudget: BudgetBreakdown) => void;
   toggleTaskCompletion: (taskId: string) => void;
   submitQuestionnaire: (q: ClientQuestionnaire) => void;
-  submitExpressBooking: (booking: ExpressConsultationBooking) => void;
+  submitExpressBooking: (booking: Omit<ExpressConsultationBooking, 'id' | 'status' | 'bookedAt'>) => Promise<ExpressConsultationBooking>;
+  cancelConsultationBooking: (bookingId: string) => void;
+  completeConsultationBooking: (bookingId: string) => void;
+  consultationBookings: ExpressConsultationBooking[];
+  scheduleConfig: FounderScheduleConfig;
+  updateScheduleConfig: (updates: Partial<FounderScheduleConfig>) => void;
+  toggleWorkingDay: (dayIndex: number) => void;
+  addDefaultSlot: (slot: string) => void;
+  removeDefaultSlot: (slot: string) => void;
+  toggleBlackoutDate: (dateStr: string) => void;
+  blockSlot: (dateStr: string, timeStr: string, reason?: string) => void;
+  unblockSlot: (blockedId: string) => void;
+  getDateSlotAvailability: (dateStr: string) => {
+    isWorkingDay: boolean;
+    isBlackout: boolean;
+    totalSlots: number;
+    availableCount: number;
+    slots: SlotAvailability[];
+  };
+  sendTestTelegramNotification: () => Promise<{ success: boolean; message: string }>;
   startBooking: (tierId: string) => void;
   updateAdminProject: (updates: Partial<ClientProject>) => void;
   t: (key: keyof typeof UI_STRINGS['en']) => string;
@@ -127,6 +195,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return INITIAL_ADMIN_CLIENTS;
   });
 
+  const [consultationBookings, setConsultationBookings] = useState<ExpressConsultationBooking[]>(() => {
+    try {
+      const saved = localStorage.getItem('vietreloc_consultations') || localStorage.getItem('indochine_consultations');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return INITIAL_DEMO_BOOKINGS;
+  });
+
+  const [scheduleConfig, setScheduleConfig] = useState<FounderScheduleConfig>(() => {
+    try {
+      const saved = localStorage.getItem('vietreloc_schedule_config');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return DEFAULT_SCHEDULE_CONFIG;
+  });
+
   const moveClientCategory = (clientId: string, newCategory: ClientFolderCategory) => {
     setAdminClients((prev) => {
       const updated = prev.map((c) =>
@@ -193,7 +277,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return;
     }
     setViewModeState(mode);
+    try {
+      if (mode === 'express_booking') window.location.hash = 'express-booking';
+      else if (mode === 'admin') window.location.hash = 'admin';
+      else if (mode === 'dashboard') window.location.hash = 'dashboard';
+      else if (mode === 'questionnaire') window.location.hash = 'questionnaire';
+      else if (mode === 'marketing') window.location.hash = '';
+    } catch (e) {}
   };
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#express-booking' || hash === '#booking') {
+        setViewModeState('express_booking');
+      } else if (hash === '#admin') {
+        if (isFounderLoggedIn) {
+          setViewModeState('admin');
+        } else {
+          setIsFounderModalOpen(true);
+        }
+      } else if (hash === '#dashboard') {
+        setViewModeState('dashboard');
+      } else if (hash === '#questionnaire') {
+        setViewModeState('questionnaire');
+      }
+    };
+
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, [isFounderLoggedIn]);
 
   const loginFounder = (user: string, pass: string): boolean => {
     const cleanUser = user.trim().toLowerCase();
@@ -341,12 +455,235 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const submitExpressBooking = (booking: ExpressConsultationBooking) => {
+  const updateScheduleConfig = (updates: Partial<FounderScheduleConfig>) => {
+    setScheduleConfig((prev) => {
+      const updated = { ...prev, ...updates };
+      try {
+        localStorage.setItem('vietreloc_schedule_config', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const toggleWorkingDay = (dayIndex: number) => {
+    setScheduleConfig((prev) => {
+      const exists = prev.workingDaysOfWeek.includes(dayIndex);
+      const newDays = exists
+        ? prev.workingDaysOfWeek.filter((d) => d !== dayIndex)
+        : [...prev.workingDaysOfWeek, dayIndex].sort((a, b) => a - b);
+      const updated = { ...prev, workingDaysOfWeek: newDays };
+      try {
+        localStorage.setItem('vietreloc_schedule_config', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const addDefaultSlot = (slot: string) => {
+    const clean = slot.trim();
+    if (!clean || scheduleConfig.defaultSlots.includes(clean)) return;
+    setScheduleConfig((prev) => {
+      const updated = { ...prev, defaultSlots: [...prev.defaultSlots, clean] };
+      try {
+        localStorage.setItem('vietreloc_schedule_config', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const removeDefaultSlot = (slot: string) => {
+    setScheduleConfig((prev) => {
+      const updated = { ...prev, defaultSlots: prev.defaultSlots.filter((s) => s !== slot) };
+      try {
+        localStorage.setItem('vietreloc_schedule_config', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const toggleBlackoutDate = (dateStr: string) => {
+    setScheduleConfig((prev) => {
+      const exists = prev.blackoutDates.includes(dateStr);
+      const updatedDates = exists
+        ? prev.blackoutDates.filter((d) => d !== dateStr)
+        : [...prev.blackoutDates, dateStr];
+      const updated = { ...prev, blackoutDates: updatedDates };
+      try {
+        localStorage.setItem('vietreloc_schedule_config', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const blockSlot = (dateStr: string, timeStr: string, reason?: string) => {
+    const newBlock: BlockedSlotItem = {
+      id: 'block-' + Date.now(),
+      date: dateStr,
+      time: timeStr,
+      reason
+    };
+    setScheduleConfig((prev) => {
+      const updated = { ...prev, blockedSlots: [...prev.blockedSlots, newBlock] };
+      try {
+        localStorage.setItem('vietreloc_schedule_config', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const unblockSlot = (blockedId: string) => {
+    setScheduleConfig((prev) => {
+      const updated = { ...prev, blockedSlots: prev.blockedSlots.filter((b) => b.id !== blockedId) };
+      try {
+        localStorage.setItem('vietreloc_schedule_config', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const cancelConsultationBooking = (bookingId: string) => {
+    setConsultationBookings((prev) => {
+      const updated = prev.map((b) =>
+        b.id === bookingId ? { ...b, status: 'cancelled' as const } : b
+      );
+      try {
+        localStorage.setItem('vietreloc_consultations', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const completeConsultationBooking = (bookingId: string) => {
+    setConsultationBookings((prev) => {
+      const updated = prev.map((b) =>
+        b.id === bookingId ? { ...b, status: 'completed' as const } : b
+      );
+      try {
+        localStorage.setItem('vietreloc_consultations', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const getDateSlotAvailability = (dateStr: string) => {
+    const isBlackout = scheduleConfig.blackoutDates.includes(dateStr);
+    const parts = dateStr.split('-');
+    const dateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    const dayOfWeek = dateObj.getDay();
+    const isWorkingDay = !isBlackout && scheduleConfig.workingDaysOfWeek.includes(dayOfWeek);
+
+    const activeBookingsForDate = consultationBookings.filter(
+      (b) => b.bookingDate === dateStr && b.status !== 'cancelled'
+    );
+
+    const slots: SlotAvailability[] = scheduleConfig.defaultSlots.map((slotTime) => {
+      const isBlocked = isBlackout || !isWorkingDay || scheduleConfig.blockedSlots.some(
+        (bl) => bl.date === dateStr && bl.time === slotTime
+      );
+      if (isBlocked) {
+        return { time: slotTime, status: 'blocked' };
+      }
+
+      const matchingBooking = activeBookingsForDate.find((b) => b.bookingTime === slotTime);
+      if (matchingBooking) {
+        return { time: slotTime, status: 'booked', booking: matchingBooking };
+      }
+
+      return { time: slotTime, status: 'available' };
+    });
+
+    const availableCount = slots.filter((s) => s.status === 'available').length;
+
+    return {
+      isWorkingDay,
+      isBlackout,
+      totalSlots: slots.length,
+      availableCount,
+      slots
+    };
+  };
+
+  const submitExpressBooking = async (
+    data: Omit<ExpressConsultationBooking, 'id' | 'status' | 'bookedAt'>
+  ): Promise<ExpressConsultationBooking> => {
+    const newBooking: ExpressConsultationBooking = {
+      ...data,
+      id: 'book-' + Date.now(),
+      status: 'confirmed',
+      bookedAt: new Date().toISOString()
+    };
+
+    setConsultationBookings((prev) => {
+      const updated = [newBooking, ...prev];
+      try {
+        localStorage.setItem('vietreloc_consultations', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    setProject((prev) => ({
+      ...prev,
+      consultationBooking: newBooking
+    }));
+
+    // Trigger Telegram notification if token & chat_id exist
+    if (scheduleConfig.telegramBotToken && scheduleConfig.telegramChatId) {
+      try {
+        const text = `🔔 *Новая запись на экспресс-консультацию ($50)*\n\n` +
+          `👤 *Клиент:* ${newBooking.name}\n` +
+          `📅 *Дата:* ${newBooking.bookingDate}\n` +
+          `⏰ *Время:* ${newBooking.bookingTime}\n` +
+          `💻 *Платформа:* ${newBooking.meetingPlatform}\n` +
+          `💬 *Контакт:* ${newBooking.messenger} (${newBooking.email})\n` +
+          `🎯 *Тема:* ${newBooking.topic || 'Общая консультация'}\n` +
+          `💳 *Сумма:* $50 (VietReloc)`;
+
+        const cleanMessenger = newBooking.messenger.replace('@', '').trim();
+        const inlineKeyboard = cleanMessenger ? [
+          [{ text: '💬 Открыть диалог в Telegram', url: `https://t.me/${cleanMessenger}` }]
+        ] : [];
+
+        await fetch(`https://api.telegram.org/bot${scheduleConfig.telegramBotToken.trim()}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: scheduleConfig.telegramChatId.trim(),
+            text,
+            parse_mode: 'Markdown',
+            reply_markup: inlineKeyboard.length > 0 ? { inline_keyboard: inlineKeyboard } : undefined
+          })
+        });
+      } catch (err) {
+        console.warn('Telegram API send error:', err);
+      }
+    }
+
+    return newBooking;
+  };
+
+  const sendTestTelegramNotification = async (): Promise<{ success: boolean; message: string }> => {
+    if (!scheduleConfig.telegramBotToken || !scheduleConfig.telegramChatId) {
+      return { success: false, message: 'Заполните Bot Token и Chat ID' };
+    }
     try {
-      const saved = localStorage.getItem('indochine_consultations');
-      const list = saved ? JSON.parse(saved) : [];
-      localStorage.setItem('indochine_consultations', JSON.stringify([booking, ...list]));
-    } catch (e) {}
+      const res = await fetch(`https://api.telegram.org/bot${scheduleConfig.telegramBotToken.trim()}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: scheduleConfig.telegramChatId.trim(),
+          text: `🟢 *Тестовое уведомление VietReloc*\n\nСвязка с Telegram-ботом работает отлично! Сюда будут мгновенно приходить все записи клиентов на созвоны за $50.`,
+          parse_mode: 'Markdown'
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        return { success: true, message: 'Тестовое сообщение успешно доставлено в ваш Telegram!' };
+      } else {
+        return { success: false, message: `Ошибка Telegram: ${data.description || 'Неверный токен или Chat ID'}` };
+      }
+    } catch (err: any) {
+      return { success: false, message: `Сетевая ошибка: ${err.message}` };
+    }
   };
 
   const startBooking = (tierId: string) => {
@@ -676,7 +1013,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateClientRecord,
         addVerifiedHousing,
         deleteVerifiedHousing,
-        publishClientUpdates
+        publishClientUpdates,
+        consultationBookings,
+        scheduleConfig,
+        updateScheduleConfig,
+        toggleWorkingDay,
+        addDefaultSlot,
+        removeDefaultSlot,
+        toggleBlackoutDate,
+        blockSlot,
+        unblockSlot,
+        cancelConsultationBooking,
+        completeConsultationBooking,
+        getDateSlotAvailability,
+        sendTestTelegramNotification
       }}
     >
       {children}

@@ -26,8 +26,10 @@ import {
   Volume2,
   Zap,
   ShieldCheck,
-  Check
+  Check,
+  Calendar
 } from 'lucide-react';
+import { AdminScheduleView } from './AdminScheduleView';
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -37,9 +39,11 @@ export const AdminDashboard: React.FC = () => {
     addVerifiedHousing,
     deleteVerifiedHousing,
     publishClientUpdates,
+    consultationBookings,
     language
   } = useApp();
 
+  const [adminSection, setAdminSection] = useState<'relocation_clients' | 'schedule_calls'>('relocation_clients');
   const [activeFolder, setActiveFolder] = useState<ClientFolderCategory>('active');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [activeSubTab, setActiveSubTab] = useState<'plan' | 'housing'>('housing');
@@ -262,9 +266,82 @@ export const AdminDashboard: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Top Section Nav Switcher */}
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '1.25rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setAdminSection('relocation_clients')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.65rem 1.25rem',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '0.92rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                border: adminSection === 'relocation_clients' ? '2px solid var(--accent-terracotta)' : '1px solid var(--border-subtle)',
+                background: adminSection === 'relocation_clients' ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
+                color: adminSection === 'relocation_clients' ? 'var(--accent-terracotta)' : 'var(--text-muted)',
+                boxShadow: adminSection === 'relocation_clients' ? '0 4px 12px rgba(194,94,32,0.12)' : 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <FileText size={16} />
+              <span>{language === 'ru' ? 'Клиенты и квартиры (CMS)' : 'Client Projects & CMS'}</span>
+              <span style={{
+                background: adminSection === 'relocation_clients' ? 'var(--accent-terracotta)' : '#9CA3AF',
+                color: '#fff',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                padding: '1px 7px',
+                borderRadius: '9999px'
+              }}>
+                {adminClients.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setAdminSection('schedule_calls')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.65rem 1.25rem',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '0.92rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                border: adminSection === 'schedule_calls' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                background: adminSection === 'schedule_calls' ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
+                color: adminSection === 'schedule_calls' ? 'var(--accent-emerald)' : 'var(--text-muted)',
+                boxShadow: adminSection === 'schedule_calls' ? '0 4px 12px rgba(15,118,110,0.15)' : 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Calendar size={16} />
+              <span>{language === 'ru' ? 'Расписание и звонки ($50)' : 'Schedule & Calls ($50)'}</span>
+              {consultationBookings.filter(b => b.status === 'confirmed').length > 0 && (
+                <span style={{
+                  background: 'var(--accent-emerald)',
+                  color: '#fff',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  padding: '1px 7px',
+                  borderRadius: '9999px'
+                }}>
+                  {consultationBookings.filter(b => b.status === 'confirmed').length}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Folders Navigation Bar */}
+        {adminSection === 'schedule_calls' ? (
+          <AdminScheduleView />
+        ) : (
+          <>
+            {/* Folders Navigation Bar */}
         <div style={{
           display: 'flex',
           gap: '0.75rem',
@@ -957,6 +1034,8 @@ export const AdminDashboard: React.FC = () => {
               </div>
             ))}
           </div>
+        )}
+          </>
         )}
 
         {/* Modal: Add Verified Housing Form */}
