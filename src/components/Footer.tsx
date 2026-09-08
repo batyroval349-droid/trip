@@ -74,7 +74,7 @@ export const Footer: React.FC = () => {
               {isClientUnlocked && (
                 <li><button onClick={() => setViewMode('dashboard')} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer' }}>{t('navDashboard')}</button></li>
               )}
-              <li><button onClick={() => setIsOfferModalOpen(true)} style={{ background: 'none', border: 'none', color: 'var(--accent-emerald)', cursor: 'pointer', textAlign: 'left', padding: 0, fontWeight: 500 }}>{language === 'ru' ? '📄 Публичная оферта' : '📄 Terms of Service'}</button></li>
+              <li><button onClick={() => setIsOfferModalOpen(true)} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{language === 'ru' ? 'Публичная оферта' : 'Terms of Service'}</button></li>
               {isFounderLoggedIn ? (
                 <li><button onClick={() => setViewMode('admin')} style={{ background: 'none', border: 'none', color: 'var(--accent-emerald)', cursor: 'pointer' }}>{t('navAdmin')}</button></li>
               ) : (

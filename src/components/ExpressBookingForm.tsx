@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { ArrowLeft, Calendar, Clock, Video, CheckCircle2, MessageCircle, Send, Lock, Ban, CalendarPlus } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Video, CheckCircle2, Lock, Ban, CalendarPlus } from 'lucide-react';
 import type { ExpressConsultationBooking } from '../types';
 
 export const ExpressBookingForm: React.FC = () => {
@@ -179,7 +179,7 @@ export const ExpressBookingForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Actions: Google Calendar + Telegram + Home */}
+            {/* Actions: Google Calendar + Home */}
             <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <a
                 href={gCalUrl}
@@ -191,30 +191,10 @@ export const ExpressBookingForm: React.FC = () => {
                 <CalendarPlus size={18} /> {language === 'ru' ? 'Добавить в Google Календарь' : 'Add to Google Calendar'}
               </a>
 
-              <a
-                href="https://t.me/Likqwerty"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-secondary"
-                style={{ fontSize: '0.95rem', padding: '0.85rem 1.35rem', background: '#FFFFFF' }}
-              >
-                <Send size={16} /> Telegram
-              </a>
-
-              <a
-                href="https://wa.me/84900000000"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-secondary"
-                style={{ fontSize: '0.95rem', padding: '0.85rem 1.35rem', background: '#FFFFFF' }}
-              >
-                <MessageCircle size={16} /> WhatsApp
-              </a>
-
               <button
                 onClick={() => setViewMode('marketing')}
                 className="btn btn-secondary"
-                style={{ fontSize: '0.95rem', padding: '0.85rem 1.35rem', background: '#FFFFFF' }}
+                style={{ fontSize: '0.95rem', padding: '0.85rem 1.45rem', background: '#FFFFFF' }}
               >
                 {language === 'ru' ? 'На главную' : 'Back to Home'}
               </button>
