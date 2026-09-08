@@ -87,7 +87,7 @@ export const DashboardHousingView: React.FC = () => {
               style={{ padding: '0.75rem 1.5rem', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <Send size={16} />
-              <span>{language === 'ru' ? 'Написать основателю (@Likqwerty)' : 'Message Founder (@Likqwerty)'}</span>
+              <span>Telegram</span>
             </a>
           </div>
         ) : (
@@ -203,7 +203,7 @@ export const DashboardHousingView: React.FC = () => {
                       className="btn btn-primary"
                       style={{ flex: 1, padding: '0.65rem', fontSize: '0.86rem', justifyContent: 'center' }}
                     >
-                      <Send size={14} /> Назначить просмотр (@Likqwerty)
+                      <Send size={14} /> Telegram
                     </a>
                   </div>
                 </div>

@@ -794,8 +794,8 @@ export const UI_STRINGS = {
     dashContactFounder: 'Direct Contact with Founder',
     dashWorkspaceBadge: 'Personal Relocation Workspace',
     dashTargetArrival: 'Target Arrival',
-    dashWhatsAppFounder: 'WhatsApp Founder',
-    dashTelegramFounder: 'Telegram Founder',
+    dashWhatsAppFounder: 'WhatsApp',
+    dashTelegramFounder: 'Telegram',
 
     // Dashboard Overview Widgets
     widgetDestTitle: 'Destination Match',
@@ -1201,8 +1201,8 @@ export const UI_STRINGS = {
     dashContactFounder: 'Связаться с основателем',
     dashWorkspaceBadge: 'Личный кабинет релокации',
     dashTargetArrival: 'Планируемый приезд',
-    dashWhatsAppFounder: 'Написать в WhatsApp',
-    dashTelegramFounder: 'Написать в Telegram',
+    dashWhatsAppFounder: 'WhatsApp',
+    dashTelegramFounder: 'Telegram',
 
     // Dashboard Overview Widgets
     widgetDestTitle: 'Рекомендованный город',

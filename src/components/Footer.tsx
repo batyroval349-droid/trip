@@ -58,7 +58,7 @@ export const Footer: React.FC = () => {
                 className="btn btn-secondary"
                 style={{ fontSize: '0.8rem', padding: '0.5rem 0.9rem' }}
               >
-                <Send size={14} /> Telegram (@Likqwerty)
+                <Send size={14} /> Telegram
               </a>
             </div>
           </div>

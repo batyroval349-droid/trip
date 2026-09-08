@@ -69,7 +69,7 @@ export const DashboardHeader: React.FC = () => {
             className="btn btn-secondary"
             style={{ fontSize: '0.88rem', padding: '0.65rem 1.1rem' }}
           >
-            <Send size={16} /> {t('dashTelegramFounder')} (@Likqwerty)
+            <Send size={16} /> {t('dashTelegramFounder')}
           </a>
         </div>
 

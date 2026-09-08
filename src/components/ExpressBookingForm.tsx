@@ -95,16 +95,7 @@ export const ExpressBookingForm: React.FC = () => {
   };
 
   if (isSubmitted && submittedBooking) {
-    // 1. Pre-filled Telegram text
-    const tgText = encodeURIComponent(
-      `Здравствуйте! Я забронировал(а) экспресс-консультацию VietReloc на ${submittedBooking.bookingDate} в ${submittedBooking.bookingTime} (${submittedBooking.meetingPlatform}).\n\n` +
-      `👤 Клиент: ${submittedBooking.name}\n` +
-      `🎯 Тема: ${submittedBooking.topic || 'Релокация во Вьетнам'}\n` +
-      `💬 Контакт: ${submittedBooking.messenger} (${submittedBooking.email})`
-    );
-    const tgUrl = `https://t.me/Likqwerty?text=${tgText}`;
-
-    // 2. Google Calendar Event URL
+    // Google Calendar Event URL
     const dateClean = submittedBooking.bookingDate.replace(/-/g, '');
     const [startHourStr] = submittedBooking.bookingTime.split(':')[0].trim().split(' ');
     const startHourNum = parseInt(startHourStr, 10) || 14;
@@ -114,7 +105,7 @@ export const ExpressBookingForm: React.FC = () => {
     const gCalDates = `${dateClean}T${startIsoHour}0000Z/${dateClean}T${endIsoHour}0000Z`;
     const gCalTitle = encodeURIComponent(`VietReloc: Экспресс-консультация (${submittedBooking.name})`);
     const gCalDetails = encodeURIComponent(
-      `Экспресс-консультация по переезду во Вьетнам с основателем VietReloc (@Likqwerty).\nПлатформа: ${submittedBooking.meetingPlatform}\nТема: ${submittedBooking.topic}`
+      `Экспресс-консультация по переезду во Вьетнам VietReloc.\nПлатформа: ${submittedBooking.meetingPlatform}\nТема: ${submittedBooking.topic}`
     );
     const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${gCalTitle}&dates=${gCalDates}&details=${gCalDetails}&location=${encodeURIComponent(submittedBooking.meetingPlatform)}`;
 
@@ -144,8 +135,8 @@ export const ExpressBookingForm: React.FC = () => {
 
             <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.6, maxWidth: '560px', margin: '0 auto 2rem auto' }}>
               {language === 'ru'
-                ? 'Слот зафиксирован за вами. Чтобы моментально подтвердить запись и получить ссылку на созвон, нажмите кнопку ниже и отправьте готовое сообщение основателю в Telegram.'
-                : 'Your slot is secured. To instantly confirm and receive your video call link, click below to send the pre-filled message to the founder on Telegram.'}
+                ? 'Слот зафиксирован за вами в системе. Ссылка на видеосозвон (Google Meet / Zoom) поступит на ваш Email и в указанный мессенджер перед началом встречи.'
+                : 'Your slot is secured. The video meeting link (Google Meet / Zoom) will be sent to your Email and messenger prior to the scheduled call.'}
             </p>
 
             {/* Booking Summary Card */}
@@ -188,61 +179,45 @@ export const ExpressBookingForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Actions: Primary Telegram Button with prefilled text */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', alignItems: 'center' }}>
-              
+            {/* Actions: Google Calendar + Telegram + Home */}
+            <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <a
-                href={tgUrl}
+                href={gCalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary"
-                style={{
-                  width: '100%',
-                  maxWidth: '460px',
-                  padding: '1.1rem 1.75rem',
-                  fontSize: '1.05rem',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.75rem',
-                  boxShadow: '0 8px 20px rgba(15, 118, 110, 0.28)'
-                }}
+                style={{ fontSize: '0.95rem', padding: '0.85rem 1.6rem', boxShadow: '0 6px 16px rgba(15, 118, 110, 0.22)' }}
               >
-                <Send size={18} />
-                {language === 'ru' ? 'Подтвердить запись в Telegram (@Likqwerty)' : 'Confirm via Telegram (@Likqwerty)'}
+                <CalendarPlus size={18} /> {language === 'ru' ? 'Добавить в Google Календарь' : 'Add to Google Calendar'}
               </a>
 
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <a
-                  href={gCalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-secondary"
-                  style={{ fontSize: '0.88rem', padding: '0.65rem 1.1rem', background: '#FFFFFF' }}
-                >
-                  <CalendarPlus size={16} /> {language === 'ru' ? 'Добавить в Google Календарь' : 'Add to Google Calendar'}
-                </a>
+              <a
+                href="https://t.me/Likqwerty"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+                style={{ fontSize: '0.95rem', padding: '0.85rem 1.35rem', background: '#FFFFFF' }}
+              >
+                <Send size={16} /> Telegram
+              </a>
 
-                <a
-                  href="https://wa.me/84900000000"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-secondary"
-                  style={{ fontSize: '0.88rem', padding: '0.65rem 1.1rem', background: '#FFFFFF' }}
-                >
-                  <MessageCircle size={16} /> WhatsApp
-                </a>
+              <a
+                href="https://wa.me/84900000000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+                style={{ fontSize: '0.95rem', padding: '0.85rem 1.35rem', background: '#FFFFFF' }}
+              >
+                <MessageCircle size={16} /> WhatsApp
+              </a>
 
-                <button
-                  onClick={() => setViewMode('marketing')}
-                  className="btn btn-secondary"
-                  style={{ fontSize: '0.88rem', padding: '0.65rem 1.1rem', background: '#FFFFFF' }}
-                >
-                  {language === 'ru' ? 'На главную' : 'Back to Home'}
-                </button>
-              </div>
-
+              <button
+                onClick={() => setViewMode('marketing')}
+                className="btn btn-secondary"
+                style={{ fontSize: '0.95rem', padding: '0.85rem 1.35rem', background: '#FFFFFF' }}
+              >
+                {language === 'ru' ? 'На главную' : 'Back to Home'}
+              </button>
             </div>
 
           </div>

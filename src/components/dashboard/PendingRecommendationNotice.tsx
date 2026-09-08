@@ -84,7 +84,7 @@ export const PendingRecommendationNotice: React.FC<Props> = ({ sectionName, onGo
           className="btn btn-secondary"
           style={{ fontSize: '0.9rem', padding: '0.75rem 1.25rem' }}
         >
-          <Send size={16} /> Telegram (@Likqwerty)
+          <Send size={16} /> Telegram
         </a>
 
         <a

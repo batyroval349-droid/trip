@@ -116,7 +116,7 @@ export const WaitingForPlanView: React.FC = () => {
                 color: '#92400E'
               }}
             >
-              <Send size={15} /> Telegram (@Likqwerty)
+              <Send size={15} /> Telegram
             </a>
             <a
               href="https://wa.me/84900000000"
