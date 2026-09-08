@@ -82,6 +82,8 @@ interface AppContextType {
   updateUserBudget: (newBudget: BudgetBreakdown) => void;
   toggleTaskCompletion: (taskId: string) => void;
   submitQuestionnaire: (q: ClientQuestionnaire) => void;
+  reserveExpressBookingSlot: (booking: Omit<ExpressConsultationBooking, 'id' | 'status' | 'bookedAt'>) => ExpressConsultationBooking;
+  confirmExpressBookingPayment: (bookingId: string, paymentMethod: 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr') => Promise<ExpressConsultationBooking | null>;
   submitExpressBooking: (booking: Omit<ExpressConsultationBooking, 'id' | 'status' | 'bookedAt'>) => Promise<ExpressConsultationBooking>;
   cancelConsultationBooking: (bookingId: string) => void;
   completeConsultationBooking: (bookingId: string) => void;
@@ -572,9 +574,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const dayOfWeek = dateObj.getDay();
     const isWorkingDay = !isBlackout && scheduleConfig.workingDaysOfWeek.includes(dayOfWeek);
 
-    const activeBookingsForDate = consultationBookings.filter(
-      (b) => b.bookingDate === dateStr && b.status !== 'cancelled'
-    );
+    const now = Date.now();
+    const activeBookingsForDate = consultationBookings.filter((b) => {
+      if (b.bookingDate !== dateStr || b.status === 'cancelled') return false;
+      if (b.status === 'confirmed' || b.status === 'completed') return true;
+      if (b.status === 'pending_payment') {
+        // Keep held only if not expired yet (expiresAt > now)
+        return b.expiresAt ? b.expiresAt > now : true;
+      }
+      return false;
+    });
 
     const slots: SlotAvailability[] = scheduleConfig.defaultSlots.map((slotTime) => {
       const isBlocked = isBlackout || !isWorkingDay || scheduleConfig.blockedSlots.some(
@@ -586,6 +595,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const matchingBooking = activeBookingsForDate.find((b) => b.bookingTime === slotTime);
       if (matchingBooking) {
+        if (matchingBooking.status === 'pending_payment') {
+          return { time: slotTime, status: 'pending_payment', booking: matchingBooking };
+        }
         return { time: slotTime, status: 'booked', booking: matchingBooking };
       }
 
@@ -603,62 +615,114 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
   };
 
-  const submitExpressBooking = async (
+  const reserveExpressBookingSlot = (
     data: Omit<ExpressConsultationBooking, 'id' | 'status' | 'bookedAt'>
-  ): Promise<ExpressConsultationBooking> => {
+  ): ExpressConsultationBooking => {
+    const expiresAt = Date.now() + 15 * 60 * 1000; // 15-minute Smart Hold TTL
     const newBooking: ExpressConsultationBooking = {
       ...data,
       id: 'book-' + Date.now(),
-      status: 'confirmed',
+      status: 'pending_payment',
+      expiresAt,
       bookedAt: new Date().toISOString()
     };
 
     setConsultationBookings((prev) => {
-      const updated = [newBooking, ...prev];
+      // Remove any previously expired or duplicate pending booking for the same slot
+      const filtered = prev.filter(
+        (b) => !(b.bookingDate === data.bookingDate && b.bookingTime === data.bookingTime && b.status === 'pending_payment')
+      );
+      const updated = [newBooking, ...filtered];
       try {
         localStorage.setItem('vietreloc_consultations', JSON.stringify(updated));
       } catch (e) {}
       return updated;
     });
 
-    setProject((prev) => ({
-      ...prev,
-      consultationBooking: newBooking
-    }));
+    return newBooking;
+  };
 
-    // Trigger Telegram notification if token & chat_id exist
-    if (scheduleConfig.telegramBotToken && scheduleConfig.telegramChatId) {
+  const confirmExpressBookingPayment = async (
+    bookingId: string,
+    paymentMethod: 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr'
+  ): Promise<ExpressConsultationBooking | null> => {
+    let confirmedBooking: ExpressConsultationBooking | null = null;
+
+    setConsultationBookings((prev) => {
+      const updated = prev.map((b) => {
+        if (b.id === bookingId) {
+          confirmedBooking = {
+            ...b,
+            status: 'confirmed',
+            paymentMethod,
+            expiresAt: undefined
+          };
+          return confirmedBooking;
+        }
+        return b;
+      });
       try {
-        const text = `🔔 *Новая запись на экспресс-консультацию ($50)*\n\n` +
-          `👤 *Клиент:* ${newBooking.name}\n` +
-          `📅 *Дата:* ${newBooking.bookingDate}\n` +
-          `⏰ *Время:* ${newBooking.bookingTime}\n` +
-          `💻 *Платформа:* ${newBooking.meetingPlatform}\n` +
-          `💬 *Контакт:* ${newBooking.messenger} (${newBooking.email})\n` +
-          `🎯 *Тема:* ${newBooking.topic || 'Общая консультация'}\n` +
-          `💳 *Сумма:* $50 (VietReloc)`;
+        localStorage.setItem('vietreloc_consultations', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
 
-        const cleanMessenger = newBooking.messenger.replace('@', '').trim();
-        const inlineKeyboard = cleanMessenger ? [
-          [{ text: '💬 Открыть диалог в Telegram', url: `https://t.me/${cleanMessenger}` }]
-        ] : [];
+    if (confirmedBooking) {
+      setProject((prev) => ({
+        ...prev,
+        consultationBooking: confirmedBooking!
+      }));
 
-        await fetch(`https://api.telegram.org/bot${scheduleConfig.telegramBotToken.trim()}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: scheduleConfig.telegramChatId.trim(),
-            text,
-            parse_mode: 'Markdown',
-            reply_markup: inlineKeyboard.length > 0 ? { inline_keyboard: inlineKeyboard } : undefined
-          })
-        });
-      } catch (err) {
-        console.warn('Telegram API send error:', err);
+      // Trigger Telegram notification
+      if (scheduleConfig.telegramBotToken && scheduleConfig.telegramChatId) {
+        try {
+          const methodLabels: Record<string, string> = {
+            card_ru: '💳 Карта РФ / СБП (МИР, Сбер, Т-Банк)',
+            card_intl: '🌍 Зарубежная карта (Visa / Mastercard)',
+            crypto_usdt: '💎 Криптовалюта USDT (TRC-20)',
+            viet_qr: '🇻🇳 Вьетнамский VietQR (VND)'
+          };
+
+          const text = `💰 *Новая ОПЛАЧЕННАЯ запись на консультацию ($50)*\n\n` +
+            `👤 *Клиент:* ${(confirmedBooking as ExpressConsultationBooking).name}\n` +
+            `📅 *Дата:* ${(confirmedBooking as ExpressConsultationBooking).bookingDate}\n` +
+            `⏰ *Время:* ${(confirmedBooking as ExpressConsultationBooking).bookingTime}\n` +
+            `💻 *Платформа:* ${(confirmedBooking as ExpressConsultationBooking).meetingPlatform}\n` +
+            `💬 *Контакты:* ${(confirmedBooking as ExpressConsultationBooking).messenger} (${(confirmedBooking as ExpressConsultationBooking).email})\n` +
+            `💳 *Способ оплаты:* ${methodLabels[paymentMethod] || paymentMethod}\n` +
+            `🎯 *Тема:* ${(confirmedBooking as ExpressConsultationBooking).topic || 'Общая консультация'}\n` +
+            `✅ *Статус:* Оплачено ($50 зачтены в депозит сопровождения)`;
+
+          const cleanMessenger = (confirmedBooking as ExpressConsultationBooking).messenger.replace('@', '').trim();
+          const inlineKeyboard = cleanMessenger ? [
+            [{ text: '💬 Открыть диалог в Telegram', url: `https://t.me/${cleanMessenger}` }]
+          ] : [];
+
+          await fetch(`https://api.telegram.org/bot${scheduleConfig.telegramBotToken.trim()}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: scheduleConfig.telegramChatId.trim(),
+              text,
+              parse_mode: 'Markdown',
+              reply_markup: inlineKeyboard.length > 0 ? { inline_keyboard: inlineKeyboard } : undefined
+            })
+          });
+        } catch (err) {
+          console.warn('Telegram API send error:', err);
+        }
       }
     }
 
-    return newBooking;
+    return confirmedBooking;
+  };
+
+  const submitExpressBooking = async (
+    data: Omit<ExpressConsultationBooking, 'id' | 'status' | 'bookedAt'>
+  ): Promise<ExpressConsultationBooking> => {
+    const reserved = reserveExpressBookingSlot(data);
+    const confirmed = await confirmExpressBookingPayment(reserved.id, 'card_ru');
+    return confirmed || reserved;
   };
 
   const sendTestTelegramNotification = async (): Promise<{ success: boolean; message: string }> => {
@@ -983,6 +1047,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toggleTaskCompletion,
         submitQuestionnaire,
         submitExpressBooking,
+        reserveExpressBookingSlot,
+        confirmExpressBookingPayment,
         startBooking,
         updateAdminProject,
         t,

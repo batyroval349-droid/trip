@@ -16,7 +16,9 @@ export interface ExpressConsultationBooking {
   meetingPlatform: 'Zoom' | 'Google Meet';
   bookedAt: string;
   priceUSD: number;
-  status: 'confirmed' | 'completed' | 'cancelled';
+  status: 'pending_payment' | 'confirmed' | 'completed' | 'cancelled';
+  expiresAt?: number; // timestamp in ms when 15-minute slot reservation expires
+  paymentMethod?: 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr';
   founderNotes?: string;
 }
 
@@ -38,7 +40,7 @@ export interface FounderScheduleConfig {
 
 export interface SlotAvailability {
   time: string;
-  status: 'available' | 'booked' | 'blocked';
+  status: 'available' | 'booked' | 'blocked' | 'pending_payment';
   booking?: ExpressConsultationBooking;
 }
 

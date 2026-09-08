@@ -30,12 +30,13 @@ export const AdminScheduleView: React.FC = () => {
     unblockSlot,
     cancelConsultationBooking,
     completeConsultationBooking,
+    confirmExpressBookingPayment,
     sendTestTelegramNotification,
     language
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<'bookings' | 'schedule' | 'blackouts' | 'telegram'>('bookings');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'confirmed' | 'completed' | 'cancelled'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'confirmed' | 'pending_payment' | 'completed' | 'cancelled'>('all');
 
   // Form states
   const [newSlotInput, setNewSlotInput] = useState('');
@@ -68,6 +69,7 @@ export const AdminScheduleView: React.FC = () => {
   });
 
   const confirmedCount = consultationBookings.filter((b) => b.status === 'confirmed').length;
+  const pendingCount = consultationBookings.filter((b) => b.status === 'pending_payment').length;
   const completedCount = consultationBookings.filter((b) => b.status === 'completed').length;
   const totalRevenueUSD = (confirmedCount + completedCount) * 50;
 
@@ -281,7 +283,7 @@ export const AdminScheduleView: React.FC = () => {
           {/* Filters Bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div style={{ display: 'flex', gap: '0.4rem' }}>
-              {(['all', 'confirmed', 'completed', 'cancelled'] as const).map((st) => (
+              {(['all', 'confirmed', 'pending_payment', 'completed', 'cancelled'] as const).map((st) => (
                 <button
                   key={st}
                   onClick={() => setFilterStatus(st)}
@@ -298,6 +300,7 @@ export const AdminScheduleView: React.FC = () => {
                 >
                   {st === 'all' && (language === 'ru' ? 'Все' : 'All')}
                   {st === 'confirmed' && (language === 'ru' ? 'Предстоящие' : 'Upcoming')}
+                  {st === 'pending_payment' && (language === 'ru' ? `Ожидают оплаты (${pendingCount})` : `Holding (${pendingCount})`)}
                   {st === 'completed' && (language === 'ru' ? 'Проведенные' : 'Completed')}
                   {st === 'cancelled' && (language === 'ru' ? 'Отмененные' : 'Cancelled')}
                 </button>
@@ -324,6 +327,7 @@ export const AdminScheduleView: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {filteredBookings.map((b) => {
                 const isConfirmed = b.status === 'confirmed';
+                const isPending = b.status === 'pending_payment';
                 const isCompleted = b.status === 'completed';
                 const isCancelled = b.status === 'cancelled';
                 const cleanTg = b.messenger.startsWith('@') ? b.messenger.replace('@', '') : null;
@@ -333,7 +337,7 @@ export const AdminScheduleView: React.FC = () => {
                     key={b.id}
                     style={{
                       background: '#FFFFFF',
-                      border: '1px solid var(--border-subtle)',
+                      border: isPending ? '1px solid #FDE68A' : '1px solid var(--border-subtle)',
                       borderRadius: 'var(--radius-md)',
                       padding: '1.5rem',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
@@ -344,7 +348,7 @@ export const AdminScheduleView: React.FC = () => {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.3rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.3rem', flexWrap: 'wrap' }}>
                           <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
                             {b.name}
                           </h3>
@@ -353,13 +357,22 @@ export const AdminScheduleView: React.FC = () => {
                             fontWeight: 700,
                             padding: '2px 8px',
                             borderRadius: '12px',
-                            background: isConfirmed ? 'rgba(15, 118, 110, 0.12)' : isCompleted ? '#E0F2FE' : '#F1F5F9',
-                            color: isConfirmed ? 'var(--accent-emerald)' : isCompleted ? '#0369A1' : '#64748B'
+                            background: isConfirmed ? 'rgba(15, 118, 110, 0.12)' : isPending ? '#FEF3C7' : isCompleted ? '#E0F2FE' : '#F1F5F9',
+                            color: isConfirmed ? 'var(--accent-emerald)' : isPending ? '#B45309' : isCompleted ? '#0369A1' : '#64748B'
                           }}>
                             {isConfirmed && (language === 'ru' ? '● Предстоит' : '● Upcoming')}
+                            {isPending && (language === 'ru' ? '⏳ Ожидает оплаты (15 мин)' : '⏳ Holding (15 min)')}
                             {isCompleted && (language === 'ru' ? '✓ Проведено' : '✓ Completed')}
                             {isCancelled && (language === 'ru' ? '✕ Отменено' : '✕ Cancelled')}
                           </span>
+                          {b.paymentMethod && (
+                            <span style={{ fontSize: '0.72rem', padding: '2px 6px', borderRadius: '4px', background: '#F1F5F9', color: '#475569', fontWeight: 600 }}>
+                              {b.paymentMethod === 'card_ru' && '💳 РФ/СБП'}
+                              {b.paymentMethod === 'card_intl' && '🌍 Visa/MC'}
+                              {b.paymentMethod === 'crypto_usdt' && '💎 USDT'}
+                              {b.paymentMethod === 'viet_qr' && '🇻🇳 VietQR'}
+                            </span>
+                          )}
                           <span style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)', fontWeight: 700 }}>
                             $50
                           </span>
@@ -428,6 +441,28 @@ export const AdminScheduleView: React.FC = () => {
                       </div>
 
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {isPending && (
+                          <>
+                            <button
+                              onClick={() => confirmExpressBookingPayment(b.id, 'card_ru')}
+                              className="btn btn-secondary"
+                              style={{ fontSize: '0.82rem', padding: '0.45rem 0.85rem', color: 'var(--accent-emerald)', borderColor: 'var(--accent-emerald)' }}
+                              title={language === 'ru' ? 'Подтвердить получение оплаты $50' : 'Confirm $50 payment'}
+                            >
+                              <CheckCircle2 size={14} /> {language === 'ru' ? 'Подтвердить оплату' : 'Confirm Payment'}
+                            </button>
+
+                            <button
+                              onClick={() => cancelConsultationBooking(b.id)}
+                              className="btn btn-secondary"
+                              style={{ fontSize: '0.82rem', padding: '0.45rem 0.85rem', color: '#EF4444', borderColor: '#FCA5A5' }}
+                              title={language === 'ru' ? 'Снять бронь и освободить слот' : 'Release hold'}
+                            >
+                              <Trash2 size={14} /> {language === 'ru' ? 'Снять бронь' : 'Release'}
+                            </button>
+                          </>
+                        )}
+
                         {isConfirmed && (
                           <>
                             <button
