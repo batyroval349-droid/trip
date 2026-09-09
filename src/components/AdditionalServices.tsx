@@ -22,7 +22,7 @@ export const AdditionalServices: React.FC = () => {
       desc: t('service2Desc' as any),
       icon: GraduationCap,
       badge: language === 'ru' ? 'Для семей' : 'For Families',
-      badgeColor: 'badge-sand'
+      badgeColor: 'badge-emerald'
     },
     {
       id: 'coworking',
@@ -40,7 +40,7 @@ export const AdditionalServices: React.FC = () => {
       desc: t('service4Desc' as any),
       icon: CreditCard,
       badge: language === 'ru' ? 'Личный опыт' : 'Personal Guide',
-      badgeColor: 'badge-terracotta'
+      badgeColor: 'badge-emerald'
     },
     {
       id: 'vietnamese',
@@ -49,7 +49,7 @@ export const AdditionalServices: React.FC = () => {
       desc: t('service5Desc' as any),
       icon: BookOpen,
       badge: language === 'ru' ? 'PDF-гайд' : 'PDF Guide',
-      badgeColor: 'badge-sand'
+      badgeColor: 'badge-emerald'
     }
   ];
 

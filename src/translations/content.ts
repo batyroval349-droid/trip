@@ -902,14 +902,14 @@ export const UI_STRINGS = {
 
     // Disclaimers
     disclaimerBudget: 'Estimated figures are for planning purposes only and may vary depending on location, lifestyle, season, and individual choices.',
-    disclaimerHousing: 'All accommodation research and guidance is strictly advisory for online self-search. The founder does not physically inspect, verify, or act as an agent for any property.',
+    disclaimerHousing: 'Housing consulting includes neighborhood analytics, lease audits, and vetted contacts. In Da Nang, in-person apartment viewings with our local realtor partner are available; in other cities, inspections are conducted via our comprehensive checklists.',
 
     // FAQ
     faqTitle: 'Frequently Asked Questions',
     faq1Q: 'Is this an automated AI plan generator?',
     faq1A: 'No. Every plan is researched and structured personally by the founder following your questionnaire and communications. Automations are only used inside your dashboard to make your personalized roadmap interactive.',
-    faq2Q: 'Does the founder physically check apartments or accompany my move?',
-    faq2A: 'No. This is a 100% remote travel & relocation planning business. We provide online guidance, neighborhood research, contract checklists, and platform strategies. We do not conduct physical apartment viewings, property visits, or physical move accompaniment.',
+    faq2Q: 'Do you check apartments in person and meet on-site?',
+    faq2A: 'The founder coordinates your overall relocation strategy, neighborhood analytics, and online guidance across Vietnam. Additionally, in Da Nang, our trusted local realtor works directly on the ground and will accompany you on physical apartment viewings, inspecting properties and negotiating with landlords alongside you. For other cities, we provide detailed self-inspection checklists, lease audits, and vetted rental contacts.',
     faq3Q: 'How do we communicate after booking?',
     faq3A: 'Primary communication takes place directly via WhatsApp or Telegram with the founder, combined with your personal interactive Client Dashboard.',
     faq4Q: 'Which cities in Vietnam do you cover?',
@@ -1309,14 +1309,14 @@ export const UI_STRINGS = {
 
     // Disclaimers
     disclaimerBudget: 'Ориентировочные цифры приведены исключительно в целях планирования и могут варьироваться в зависимости от локации, сезона и личных предпочтений.',
-    disclaimerHousing: 'Вся информация по жилью является исключительно консультационной для самостоятельного онлайн-поиска. Основатель не проводит очных просмотров, проверок и не выступает риелтором.',
+    disclaimerHousing: 'Консультации по жилью включают аналитику районов, аудит договоров и онлайн-подбор. В Дананге доступен очный выезд нашего локального риелтора на просмотры квартир вместе с вами; в остальных городах подбор и просмотры ведутся по нашим подробным чек-листам.',
 
     // FAQ
     faqTitle: 'Часто задаваемые вопросы',
     faq1Q: 'Это автоматический генератор от ИИ?',
     faq1A: 'Нет. Каждый план исследуется и составляется лично основателем на основе вашей анкеты и общения. Интерактивные элементы в кабинете предназначены для вашего удобства.',
-    faq2Q: 'Проверяет ли основатель квартиры лично и встречается ли на месте?',
-    faq2A: 'Нет. Это на 100% удалённый консалтинговый сервис. Мы предоставляем онлайн-стратегии, рекомендации по районам, чек-листы договоров и проверенные каналы поиска. Мы не проводим физических просмотров, видеосъемок объектов и не сопровождаем переезд очно.',
+    faq2Q: 'Проверяете ли вы квартиры лично и встречаетесь ли на месте?',
+    faq2A: 'Основатель ведёт общую стратегию, аналитику районов и онлайн-сопровождение релокации по всему Вьетнаму. При этом в Дананге работает наш проверенный локальный риелтор, который лично выезжает на просмотры квартир вместе с вами, помогает провести физический осмотр на месте и общается с хозяевами. По другим городам мы предоставляем детальные чек-листы для самостоятельного осмотра, аудит договоров и проверенные каналы поиска жилья.',
     faq3Q: 'Как проходит общение после оплаты?',
     faq3A: 'Основное общение происходит напрямую через WhatsApp или Telegram с основателем, плюс вся информация структурируется в вашем личном кабинете.',
     faq4Q: 'Какие города Вьетнама вы охватываете?',

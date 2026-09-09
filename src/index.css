@@ -172,6 +172,12 @@ select:focus {
   border: 1px solid var(--border-subtle);
 }
 
+.badge-sand {
+  background: #F5F2EA;
+  color: #6B7280;
+  border: 1px solid #E5E0D4;
+}
+
 /* Button Styles */
 .btn {
   display: inline-flex;
