@@ -43,7 +43,7 @@ export const Footer: React.FC = () => {
 
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <a
-                href="https://wa.me/84900000000"
+                href="https://wa.me/84394583217"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-secondary"

@@ -59,7 +59,7 @@ export const AdditionalServices: React.FC = () => {
         ? `Здравствуйте! Хочу заказать услугу: "${serviceTitle}" (${price}). Подскажите, как оплатить и получить консультацию?`
         : `Hello! I would like to order the service: "${serviceTitle}" (${price}). How can I proceed?`
     );
-    window.open(`https://wa.me/84900000000?text=${text}`, '_blank');
+    window.open(`https://wa.me/84394583217?text=${text}`, '_blank');
   };
 
   return (
