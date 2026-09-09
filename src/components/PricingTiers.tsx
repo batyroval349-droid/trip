@@ -52,7 +52,6 @@ export const PricingTiers: React.FC = () => {
       badgeColor: 'badge-terracotta',
       badgeIcon: Star,
       description: t('tier3Desc'),
-      bonusPack: t('tier3BonusPack' as any),
       features: [
         { strong: language === 'ru' ? 'Интерактивный калькулятор' : 'Interactive calculator', text: language === 'ru' ? 'бюджета в личном кабинете' : 'in your client dashboard' },
         { strong: language === 'ru' ? 'Проверенный риелтор' : 'Verified partner-realtor', text: language === 'ru' ? 'реальные варианты жилья' : 'real vetted housing options' },
@@ -195,23 +194,6 @@ export const PricingTiers: React.FC = () => {
                     {tier.description}
                   </p>
                 </div>
-
-                {/* Optional Bonus Pack Pill */}
-                {tier.bonusPack && (
-                  <div style={{
-                    marginBottom: '1.1rem',
-                    padding: '0.55rem 0.75rem',
-                    background: 'rgba(194, 94, 32, 0.09)',
-                    border: '1px solid rgba(194, 94, 32, 0.28)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.78rem',
-                    fontWeight: 600,
-                    color: 'var(--accent-terracotta)',
-                    lineHeight: 1.35
-                  }}>
-                    {tier.bonusPack}
-                  </div>
-                )}
 
                 {/* 5. Features List with bold scannable anchors */}
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem', padding: 0 }}>
