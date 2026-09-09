@@ -76,7 +76,8 @@ export const PricingTiers: React.FC = () => {
         { strong: language === 'ru' ? 'Приоритетная связь' : 'Priority communication', text: language === 'ru' ? 'в WhatsApp и Telegram' : 'in WhatsApp & Telegram' },
         { strong: language === 'ru' ? 'Сопровождение показов' : 'Viewing accompaniment', text: language === 'ru' ? 'жилья через риелтора-партнёра' : 'via our partner-realtor' },
         { strong: language === 'ru' ? '1 месяц поддержки' : '1 month adaptation', text: language === 'ru' ? 'по бюджету и адаптации' : 'budget & local settlement' },
-        { strong: language === 'ru' ? 'Помощь по прилёту' : 'Arrival assistance', text: language === 'ru' ? 'решение срочных бытовых вопросов' : 'urgent practical setup help' }
+        { strong: language === 'ru' ? 'Помощь по прилёту' : 'Arrival assistance', text: language === 'ru' ? 'решение срочных бытовых вопросов' : 'urgent practical setup help' },
+        { strong: language === 'ru' ? 'Психологическая поддержка' : 'Psychological support', text: language === 'ru' ? '1 сессия с дипломированным психологом и сексологом (бесплатно) + скидка на 2-ю сессию' : '1 free session with certified psychologist & sexologist + discount on 2nd session' }
       ],
       ctaText: language === 'ru' ? 'Выбрать VIP' : 'Select VIP',
       isHero: false,
