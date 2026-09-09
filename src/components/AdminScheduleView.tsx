@@ -45,9 +45,10 @@ export const AdminScheduleView: React.FC = () => {
   const [blockSlotTime, setBlockSlotTime] = useState(scheduleConfig.defaultSlots[0] || '14:00 - 15:00');
   const [blockSlotReason, setBlockSlotReason] = useState('');
 
-  // Telegram settings local state
+  // Telegram and Email settings local state
   const [botToken, setBotToken] = useState(scheduleConfig.telegramBotToken || '');
   const [chatId, setChatId] = useState(scheduleConfig.telegramChatId || '');
+  const [founderEmail, setFounderEmail] = useState(scheduleConfig.founderEmail || 'batyroval42@gmail.com');
   const [tgFeedback, setTgFeedback] = useState<{ success?: boolean; message: string } | null>(null);
   const [isTestingTg, setIsTestingTg] = useState(false);
 
@@ -77,9 +78,10 @@ export const AdminScheduleView: React.FC = () => {
     e.preventDefault();
     updateScheduleConfig({
       telegramBotToken: botToken.trim(),
-      telegramChatId: chatId.trim()
+      telegramChatId: chatId.trim(),
+      founderEmail: founderEmail.trim()
     });
-    setTgFeedback({ success: true, message: language === 'ru' ? 'Настройки Telegram сохранены!' : 'Telegram settings saved!' });
+    setTgFeedback({ success: true, message: language === 'ru' ? 'Настройки уведомлений (Email и Telegram) сохранены!' : 'Notification settings saved!' });
     setTimeout(() => setTgFeedback(null), 3500);
   };
 
@@ -845,6 +847,26 @@ export const AdminScheduleView: React.FC = () => {
                 placeholder="Например: 582491204"
                 value={chatId}
                 onChange={(e) => setChatId(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-subtle)',
+                  fontFamily: 'monospace',
+                  fontSize: '0.9rem'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.4rem' }}>
+                Email основателя для дублирования заявок *
+              </label>
+              <input
+                type="email"
+                placeholder="batyroval42@gmail.com"
+                value={founderEmail}
+                onChange={(e) => setFounderEmail(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '0.75rem 1rem',

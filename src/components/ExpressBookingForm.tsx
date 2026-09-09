@@ -219,8 +219,8 @@ export const ExpressBookingForm: React.FC = () => {
 
             <p style={{ color: 'var(--text-muted)', fontSize: '1.02rem', lineHeight: 1.6, maxWidth: '560px', margin: '0 auto 1.75rem auto' }}>
               {language === 'ru'
-                ? 'Слот окончательно зафиксирован за вами. Чек об оплате и персональная ссылка на видеовстречу (Google Meet / Zoom) отправлены на ваш Email и в мессенджер.'
-                : 'Your slot is officially secured. Payment receipt and personal meeting link (Google Meet / Zoom) have been sent to your Email and messenger.'}
+                ? 'Слот зафиксирован. Уведомление о бронировании мгновенно отправлено основателю в Telegram и на почту batyroval42@gmail.com, а вам на почту направлены детали созвона и персональная ссылка на встречу.'
+                : 'Your slot is officially secured. Instant booking alerts have been dispatched to the founder via Telegram and email (batyroval42@gmail.com), and meeting details were sent to your inbox.'}
             </p>
 
             {/* 100% Credit Guarantee Callout */}
@@ -409,8 +409,8 @@ export const ExpressBookingForm: React.FC = () => {
                   </h1>
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: 1.5 }}>
                     {language === 'ru'
-                      ? 'После завершения оплаты вам мгновенно поступит персональная ссылка на Google Meet / Zoom и чек.'
-                      : 'Upon payment completion, your personal meeting link and receipt will be issued immediately.'}
+                      ? 'После завершения оплаты вам мгновенно поступит персональная ссылка на Google Meet / Zoom и чек, а основатель сразу получит уведомление в Telegram и на почту batyroval42@gmail.com.'
+                      : 'Upon payment completion, your personal meeting link and receipt will be issued immediately, and instant alerts are dispatched to the founder via Telegram and email.'}
                   </p>
                 </div>
 
@@ -765,8 +765,8 @@ export const ExpressBookingForm: React.FC = () => {
               </h1>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: 1.5 }}>
                 {language === 'ru'
-                  ? 'Выберите удобный день и время. После выбора вы сможете проверить детали и зафиксировать слот через 15-минутный резерв.'
-                  : 'Select your preferred date and time. Then review details and lock the slot with a 15-min reservation.'}
+                  ? 'Выберите удобный день и время. При бронировании уведомление мгновенно поступает основателю (в Telegram и на email), а вам приходит подтверждение с деталями встречи.'
+                  : 'Select your preferred date and time. Instant notifications are sent to the founder (Telegram & email) and confirmation is delivered to your inbox.'}
               </p>
             </div>
 

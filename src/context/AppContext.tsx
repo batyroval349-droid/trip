@@ -39,7 +39,8 @@ export const DEFAULT_SCHEDULE_CONFIG: FounderScheduleConfig = {
   blackoutDates: [],
   blockedSlots: [],
   telegramBotToken: '',
-  telegramChatId: ''
+  telegramChatId: '',
+  founderEmail: 'batyroval42@gmail.com'
 };
 
 export const INITIAL_DEMO_BOOKINGS: ExpressConsultationBooking[] = [
@@ -711,6 +712,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         } catch (err) {
           console.warn('Telegram API send error:', err);
         }
+      }
+
+      // Trigger Email notification to founder
+      const targetFounderEmail = scheduleConfig.founderEmail || 'batyroval42@gmail.com';
+      try {
+        if (scheduleConfig.emailWebhookUrl) {
+          await fetch(scheduleConfig.emailWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: targetFounderEmail,
+              subject: `VietReloc: Новая бронь консультации ($50) — ${(confirmedBooking as ExpressConsultationBooking).name}`,
+              clientName: (confirmedBooking as ExpressConsultationBooking).name,
+              clientEmail: (confirmedBooking as ExpressConsultationBooking).email,
+              clientMessenger: (confirmedBooking as ExpressConsultationBooking).messenger,
+              date: (confirmedBooking as ExpressConsultationBooking).bookingDate,
+              time: (confirmedBooking as ExpressConsultationBooking).bookingTime,
+              topic: (confirmedBooking as ExpressConsultationBooking).topic,
+              platform: (confirmedBooking as ExpressConsultationBooking).meetingPlatform,
+              priceUSD: 50
+            })
+          });
+        }
+      } catch (err) {
+        console.warn('Email dispatch error:', err);
       }
     }
 

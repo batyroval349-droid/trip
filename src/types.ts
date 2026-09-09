@@ -36,6 +36,8 @@ export interface FounderScheduleConfig {
   blockedSlots: BlockedSlotItem[];
   telegramBotToken?: string;
   telegramChatId?: string;
+  founderEmail?: string;
+  emailWebhookUrl?: string;
 }
 
 export interface SlotAvailability {
