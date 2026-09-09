@@ -182,6 +182,66 @@ export interface VerifiedHousingItem {
   createdAt: string;
 }
 
+export interface TravelActivityItem {
+  id: string;
+  timeSlot: 'morning' | 'afternoon' | 'evening';
+  title: string;
+  description: string;
+  googleMapsUrl?: string;
+  estimatedCostVND?: string;
+  proTip?: string;
+  category?: 'sight' | 'food' | 'nature' | 'relax' | 'culture';
+  photoUrl?: string;
+}
+
+export interface TravelDayItem {
+  dayNumber: number;
+  date?: string;
+  cityId: string;
+  cityName: { ru: string; en: string };
+  title: { ru: string; en: string };
+  logisticsTip?: string;
+  activities: TravelActivityItem[];
+}
+
+export interface TravelTransitLeg {
+  id: string;
+  fromCity: string;
+  toCity: string;
+  transportMode: 'flight' | 'train' | 'sleeper_bus' | 'private_car';
+  duration: string;
+  bookingTip: string;
+  bookingUrl?: string;
+}
+
+export interface TravelRevisionState {
+  requested: boolean;
+  requestText?: string;
+  requestedAt?: string;
+  usedCount: number;
+  maxCount: number;
+  status: 'none' | 'pending' | 'applied';
+}
+
+export interface TravelSimGuideItem {
+  provider: string;
+  type: 'eSIM' | 'physical';
+  dataPackage: string;
+  priceUSD: number;
+  officialStoreAddress: string;
+  googleMapsUrl?: string;
+  warningNote?: string;
+}
+
+export interface TravelEmergencyHospital {
+  city: string;
+  name: string;
+  address: string;
+  phone: string;
+  hasEnglish: boolean;
+  type: 'international' | 'general';
+}
+
 export interface ClientProject {
   id: string;
   clientName: string;
@@ -208,6 +268,12 @@ export interface ClientProject {
   hasUnpublishedChanges?: boolean;
   lastPublishedAt?: string;
   updatedAt: string;
+  // Travel Specific Plan Fields (tier2)
+  travelDays?: TravelDayItem[];
+  travelTransitLegs?: TravelTransitLeg[];
+  travelRevision?: TravelRevisionState;
+  travelSimGuide?: TravelSimGuideItem[];
+  travelEmergencyHospitals?: TravelEmergencyHospital[];
 }
 
 export interface AdminClientRecord {
@@ -234,4 +300,10 @@ export interface AdminClientRecord {
   lastPublishedAt?: string;
   createdAt: string;
   updatedAt: string;
+  // Travel Specific Plan Fields (tier2)
+  travelDays?: TravelDayItem[];
+  travelTransitLegs?: TravelTransitLeg[];
+  travelRevision?: TravelRevisionState;
+  travelSimGuide?: TravelSimGuideItem[];
+  travelEmergencyHospitals?: TravelEmergencyHospital[];
 }

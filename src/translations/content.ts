@@ -1,4 +1,11 @@
 import type { ClientProject, CityData, Neighborhood } from '../types';
+import {
+  DEFAULT_TRAVEL_DAYS,
+  DEFAULT_TRAVEL_TRANSIT_LEGS,
+  DEFAULT_TRAVEL_REVISION,
+  DEFAULT_TRAVEL_SIM_GUIDE,
+  DEFAULT_TRAVEL_HOSPITALS
+} from './defaultTravelData';
 
 export const CITIES_DATA: CityData[] = [
   {
@@ -599,7 +606,12 @@ export const DEMO_CLIENT_PROJECT: ClientProject = {
   slaDeadline: '2026-09-09T18:00:00.000Z',
   paidAt: '2026-09-07T18:00:00.000Z',
   paymentMethod: 'prodamus_card',
-  updatedAt: '2026-09-07'
+  updatedAt: '2026-09-07',
+  travelDays: DEFAULT_TRAVEL_DAYS,
+  travelTransitLegs: DEFAULT_TRAVEL_TRANSIT_LEGS,
+  travelRevision: DEFAULT_TRAVEL_REVISION,
+  travelSimGuide: DEFAULT_TRAVEL_SIM_GUIDE,
+  travelEmergencyHospitals: DEFAULT_TRAVEL_HOSPITALS
 };
 
 export const UI_STRINGS = {
@@ -661,7 +673,7 @@ export const UI_STRINGS = {
     tier2Feat1: 'Itinerary tailored to your dates and budget',
     tier2Feat2: 'City selection matched to your interests',
     tier2Feat3: 'SIM/eSIM recommendations & store locations',
-    tier2Feat4: 'Direct WhatsApp support with us throughout your trip',
+    tier2Feat4: '14 days of WhatsApp concierge support during your trip',
     tier2Feat5: '1 complimentary revision + emergency contacts list',
     tier2Feat6: 'Emergency contacts list (embassy, ambulance, 911 equivalent)',
 
@@ -1068,7 +1080,7 @@ export const UI_STRINGS = {
     tier2Feat1: 'Маршрут под ваши даты и бюджет',
     tier2Feat2: 'Подбор городов под ваши интересы',
     tier2Feat3: 'Рекомендации по SIM/eSIM и адреса точек продажи',
-    tier2Feat4: 'Связь с нами в WhatsApp на время поездки',
+    tier2Feat4: 'Поддержка в WhatsApp на 14 дней во время поездки',
     tier2Feat5: '1 бесплатная корректировка маршрута и список экстренных служб',
     tier2Feat6: 'Список экстренных контактов (посольство, скорая, аналог 911)',
 

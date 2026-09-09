@@ -11,11 +11,16 @@ import { CurrencyConverter } from './dashboard/CurrencyConverter';
 import { LockedFeatureCard } from './dashboard/LockedFeatureCard';
 import { WaitingForPlanView } from './dashboard/WaitingForPlanView';
 import { PendingRecommendationNotice } from './dashboard/PendingRecommendationNotice';
+import { DashboardItineraryView } from './dashboard/DashboardItineraryView';
+import { DashboardTravelTransitView } from './dashboard/DashboardTravelTransitView';
+import { DashboardSimConnectivityView } from './dashboard/DashboardSimConnectivityView';
+import { DashboardEmergencySosView } from './dashboard/DashboardEmergencySosView';
 import { LayoutDashboard, MapPin, Compass, DollarSign, Calendar, Home, BookOpen, MessageSquare, ArrowRight, CheckCircle2, Lock, Clock, Sparkles } from 'lucide-react';
 
 export const ClientDashboard: React.FC = () => {
   const { project, t, language, upgradeToRelocation, setViewMode } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'city' | 'neighborhoods' | 'budget' | 'roadmap' | 'housing' | 'resources'>('overview');
+  const [travelTab, setTravelTab] = useState<'itinerary' | 'transit' | 'sim' | 'emergency'>('itinerary');
   const isTravelPlan = project.tierId === 'tier2';
   
   // Bespoke plan recommendations are only available once founder publishes the plan
@@ -52,15 +57,70 @@ export const ClientDashboard: React.FC = () => {
         {/* Workspace Top Header & Status Tracker */}
         <DashboardHeader />
 
-        {/* Dashboard Navigation Bar */}
-        <div style={{
-          display: 'flex',
-          gap: '0.5rem',
-          overflowX: 'auto',
-          paddingBottom: '0.6rem',
-          marginBottom: '2rem',
-          borderBottom: '1px solid var(--border-subtle)'
-        }}>
+        {isTravelPlan ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Travel Navigation Bar */}
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem',
+              overflowX: 'auto',
+              paddingBottom: '0.6rem',
+              marginBottom: '1.5rem',
+              borderBottom: '1px solid var(--border-subtle)'
+            }}>
+              {[
+                { id: 'itinerary', label: language === 'ru' ? 'Маршрут (1–30 дней)' : 'Itinerary (1–30 Days)', icon: Compass },
+                { id: 'transit', label: language === 'ru' ? 'Города и Логистика' : 'Cities & Transit', icon: MapPin },
+                { id: 'sim', label: language === 'ru' ? 'Связь и SIM / eSIM' : 'SIM & Connectivity', icon: Sparkles },
+                { id: 'emergency', label: language === 'ru' ? 'SOS & Госпитали' : 'SOS & Hospitals', icon: MessageSquare }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                const isActive = travelTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setTravelTab(tab.id as any)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      padding: '0.75rem 1.25rem',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      border: isActive ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      background: isActive ? 'var(--accent-emerald)' : '#FFFFFF',
+                      color: isActive ? '#FFFFFF' : 'var(--text-muted)',
+                      boxShadow: isActive ? '0 4px 12px rgba(15,118,110,0.2)' : '0 2px 4px rgba(0,0,0,0.02)',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <Icon size={16} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Travel Tab Content Panels */}
+            {travelTab === 'itinerary' && <DashboardItineraryView />}
+            {travelTab === 'transit' && <DashboardTravelTransitView />}
+            {travelTab === 'sim' && <DashboardSimConnectivityView />}
+            {travelTab === 'emergency' && <DashboardEmergencySosView />}
+          </div>
+        ) : (
+          <>
+            {/* Dashboard Navigation Bar */}
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem',
+              overflowX: 'auto',
+              paddingBottom: '0.6rem',
+              marginBottom: '2rem',
+              borderBottom: '1px solid var(--border-subtle)'
+            }}>
           {[
             {
               id: 'overview',
@@ -461,18 +521,9 @@ export const ClientDashboard: React.FC = () => {
           )
         )}
         {activeTab === 'resources' && (
-          isTravelPlan ? (
-            <LockedFeatureCard
-              title={language === 'ru' ? 'База проверенных ресурсов и гайд по жилью' : 'Verified Resources & Housing Guide'}
-              desc={language === 'ru'
-                ? 'Закрытая база проверенных контактов, риелторов, локальных сервисов, доставок и комьюнити начинается с тарифа «Планирование релокации во Вьетнам» ($490) и «Консьерж» ($890).'
-                : 'Curated expat resources and verified vendor contacts start from the Relocation package ($490).'}
-              upgradeAction={upgradeToRelocation}
-              language={language}
-            />
-          ) : (
-            <DashboardResourcesView />
-          )
+          <DashboardResourcesView />
+        )}
+          </>
         )}
 
       </div>

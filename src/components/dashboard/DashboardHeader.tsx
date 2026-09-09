@@ -39,7 +39,9 @@ export const DashboardHeader: React.FC = () => {
         {/* Left Welcome Info */}
         <div>
           <div className="badge badge-emerald" style={{ marginBottom: '0.6rem' }}>
-            <UserCheck size={14} /> {t('dashWorkspaceBadge')}
+            <UserCheck size={14} /> {project.tierId === 'tier2'
+              ? (language === 'ru' ? 'Кабинет путешественника • 14 дней поддержки' : 'Traveler Workspace • 14-Day Concierge')
+              : t('dashWorkspaceBadge')}
           </div>
           
           <h1 style={{ fontSize: '2.2rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
@@ -47,20 +49,24 @@ export const DashboardHeader: React.FC = () => {
           </h1>
 
           <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem' }}>
-            {project.serviceName[language]} &bull; {t('dashTargetArrival')}: <strong style={{ color: 'var(--text-main)' }}>{project.questionnaire.travelDates}</strong>
+            {project.serviceName[language]} &bull; {project.tierId === 'tier2'
+              ? (language === 'ru' ? 'Даты поездки' : 'Trip Dates')
+              : t('dashTargetArrival')}: <strong style={{ color: 'var(--text-main)' }}>{project.questionnaire.travelDates}</strong>
           </p>
         </div>
 
         {/* WhatsApp & Telegram Direct Founder CTA */}
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <a
-            href="https://wa.me/84900000000"
+            href="https://wa.me/840394583217?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%AF%20%D0%BA%D0%BB%D0%B8%D0%B5%D0%BD%D1%82%20VietReloc"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-primary"
-            style={{ fontSize: '0.88rem', padding: '0.65rem 1.1rem' }}
+            style={{ fontSize: '0.88rem', padding: '0.65rem 1.1rem', background: '#25D366', borderColor: '#25D366' }}
           >
-            <MessageCircle size={16} /> {t('dashWhatsAppFounder')}
+            <MessageCircle size={16} /> {project.tierId === 'tier2'
+              ? (language === 'ru' ? 'WhatsApp поддержка (14 дней)' : 'WhatsApp Support (14 Days)')
+              : t('dashWhatsAppFounder')}
           </a>
           <a
             href="https://t.me/Likqwerty"

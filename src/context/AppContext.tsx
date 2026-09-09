@@ -14,10 +14,19 @@ import type {
   ClientFolderCategory,
   AdminClientRecord,
   ProjectStatus,
-  VerifiedHousingItem
+  VerifiedHousingItem,
+  TravelDayItem,
+  TravelTransitLeg
 } from '../types';
 import { DEMO_CLIENT_PROJECT, UI_STRINGS } from '../translations/content';
 import { INITIAL_ADMIN_CLIENTS } from '../translations/adminClientsData';
+import {
+  DEFAULT_TRAVEL_DAYS,
+  DEFAULT_TRAVEL_TRANSIT_LEGS,
+  DEFAULT_TRAVEL_REVISION,
+  DEFAULT_TRAVEL_SIM_GUIDE,
+  DEFAULT_TRAVEL_HOSPITALS
+} from '../translations/defaultTravelData';
 
 export const TIERS_CONFIG: Record<TierId, { id: TierId; price: number; name: { en: string; ru: string } }> = {
   tier1: { id: 'tier1', price: 50, name: { en: 'Should I Move to Vietnam? (60 Min)', ru: 'Стоит ли переезжать во Вьетнам? (60 мин)' } },
@@ -136,6 +145,10 @@ interface AppContextType {
   addVerifiedHousing: (clientId: string, housing: Omit<VerifiedHousingItem, 'id' | 'createdAt'>) => void;
   deleteVerifiedHousing: (clientId: string, housingId: string) => void;
   publishClientUpdates: (clientId: string) => void;
+  requestTravelRevision: (text: string) => void;
+  applyTravelRevision: (clientId: string) => void;
+  updateTravelDays: (clientId: string, days: TravelDayItem[]) => void;
+  updateTravelTransitLegs: (clientId: string, legs: TravelTransitLeg[]) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -388,6 +401,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         userCurrentBudget: adminRecord.userCurrentBudget,
         verifiedHousing: (adminRecord.verifiedHousing || []).filter((h) => h.publishedToClient),
         roadmapTasks: adminRecord.roadmapTasks || prev.roadmapTasks,
+        travelDays: adminRecord.travelDays || prev.travelDays,
+        travelTransitLegs: adminRecord.travelTransitLegs || prev.travelTransitLegs,
+        travelRevision: adminRecord.travelRevision || prev.travelRevision,
+        travelSimGuide: adminRecord.travelSimGuide || prev.travelSimGuide,
+        travelEmergencyHospitals: adminRecord.travelEmergencyHospitals || prev.travelEmergencyHospitals,
         slaDeadline: adminRecord.slaDeadline,
         paidAt: adminRecord.paidAt,
         paymentMethod: adminRecord.paymentMethod,
@@ -887,6 +905,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       slaDeadline,
       verifiedHousing: [],
       roadmapTasks: initialTasks,
+      travelDays: tierKey === 'tier2' ? DEFAULT_TRAVEL_DAYS : undefined,
+      travelTransitLegs: tierKey === 'tier2' ? DEFAULT_TRAVEL_TRANSIT_LEGS : undefined,
+      travelRevision: tierKey === 'tier2' ? DEFAULT_TRAVEL_REVISION : undefined,
+      travelSimGuide: tierKey === 'tier2' ? DEFAULT_TRAVEL_SIM_GUIDE : undefined,
+      travelEmergencyHospitals: tierKey === 'tier2' ? DEFAULT_TRAVEL_HOSPITALS : undefined,
       hasUnpublishedChanges: false,
       updatedAt: now.toISOString().split('T')[0]
     }));
@@ -904,12 +927,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       questionnaire: q,
       recommendedCityId: (q.preferredCities && q.preferredCities[0]) || 'danang',
       recommendedCityWhy: {
-        en: 'Personalized recommendation based on your questionnaire priorities.',
-        ru: 'Персональная рекомендация на основе ваших приоритетов из анкеты.'
+        en: tierKey === 'tier2' ? 'Tailored 1–30 days travel route curated for your trip.' : 'Personalized recommendation based on your questionnaire priorities.',
+        ru: tierKey === 'tier2' ? 'Индивидуальный маршрут путешествия 1–30 дней по Вьетнаму.' : 'Персональная рекомендация на основе ваших приоритетов из анкеты.'
       },
       overallFounderNote: {
-        en: `Welcome ${q.name}! The founder has received your payment ($${tierData.price}) via ${method} and is preparing your vetted housing options. SLA: 48 hours.`,
-        ru: `Добро пожаловать, ${q.name}! Оплата ($${tierData.price}) получена. Основатель изучает анкету и готовит персональные проверенные объекты. SLA: до 48 часов.`
+        en: tierKey === 'tier2'
+          ? `Welcome ${q.name}! Your travel itinerary is being crafted. 1 route revision and 14 days of WhatsApp concierge support are included.`
+          : `Welcome ${q.name}! The founder has received your payment ($${tierData.price}) via ${method} and is preparing your vetted housing options. SLA: 48 hours.`,
+        ru: tierKey === 'tier2'
+          ? `Добро пожаловать, ${q.name}! Ваш персональный маршрут путешествия формируется. Включена 1 бесплатная корректировка и поддержка в WhatsApp на 14 дней.`
+          : `Добро пожаловать, ${q.name}! Оплата ($${tierData.price}) получена. Основатель изучает анкету и готовит персональные проверенные объекты. SLA: до 48 часов.`
       },
       userCurrentBudget: {
         accommodation: Math.round((q.monthlyBudgetUSD || 1500) * 0.4),
@@ -923,6 +950,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       slaDeadline,
       verifiedHousing: [],
       roadmapTasks: initialTasks,
+      travelDays: tierKey === 'tier2' ? DEFAULT_TRAVEL_DAYS : undefined,
+      travelTransitLegs: tierKey === 'tier2' ? DEFAULT_TRAVEL_TRANSIT_LEGS : undefined,
+      travelRevision: tierKey === 'tier2' ? DEFAULT_TRAVEL_REVISION : undefined,
+      travelSimGuide: tierKey === 'tier2' ? DEFAULT_TRAVEL_SIM_GUIDE : undefined,
+      travelEmergencyHospitals: tierKey === 'tier2' ? DEFAULT_TRAVEL_HOSPITALS : undefined,
       hasUnpublishedChanges: false,
       createdAt: now.toISOString().split('T')[0],
       updatedAt: now.toISOString().split('T')[0]
@@ -1004,6 +1036,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             userCurrentBudget: rec.userCurrentBudget,
             verifiedHousing: (rec.verifiedHousing || []).filter((h) => h.publishedToClient),
             roadmapTasks: rec.roadmapTasks || prev.roadmapTasks,
+            travelDays: rec.travelDays || prev.travelDays,
+            travelTransitLegs: rec.travelTransitLegs || prev.travelTransitLegs,
+            travelRevision: rec.travelRevision || prev.travelRevision,
+            travelSimGuide: rec.travelSimGuide || prev.travelSimGuide,
+            travelEmergencyHospitals: rec.travelEmergencyHospitals || prev.travelEmergencyHospitals,
             hasUnpublishedChanges: false,
             lastPublishedAt: rec.lastPublishedAt,
             updatedAt: rec.updatedAt
@@ -1047,6 +1084,120 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           return {
             ...c,
             verifiedHousing: (c.verifiedHousing || []).filter((h) => h.id !== housingId),
+            hasUnpublishedChanges: true,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const requestTravelRevision = (text: string) => {
+    const nowStr = new Date().toISOString();
+    const targetEmail = (project.email || currentClient?.email || '').toLowerCase();
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.email.toLowerCase() === targetEmail) {
+          const currentRev = c.travelRevision || DEFAULT_TRAVEL_REVISION;
+          return {
+            ...c,
+            travelRevision: {
+              ...currentRev,
+              requested: true,
+              requestText: text,
+              requestedAt: nowStr,
+              usedCount: (currentRev.usedCount || 0) + 1,
+              maxCount: 1,
+              status: 'pending' as const
+            },
+            hasUnpublishedChanges: true,
+            updatedAt: nowStr.split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    setProject((prev) => {
+      const currentRev = prev.travelRevision || DEFAULT_TRAVEL_REVISION;
+      return {
+        ...prev,
+        travelRevision: {
+          ...currentRev,
+          requested: true,
+          requestText: text,
+          requestedAt: nowStr,
+          usedCount: (currentRev.usedCount || 0) + 1,
+          maxCount: 1,
+          status: 'pending' as const
+        },
+        updatedAt: nowStr.split('T')[0]
+      };
+    });
+  };
+
+  const applyTravelRevision = (clientId: string) => {
+    const nowStr = new Date().toISOString();
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          const currentRev = c.travelRevision || DEFAULT_TRAVEL_REVISION;
+          return {
+            ...c,
+            travelRevision: {
+              ...currentRev,
+              requested: false,
+              status: 'applied' as const
+            },
+            hasUnpublishedChanges: true,
+            updatedAt: nowStr.split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const updateTravelDays = (clientId: string, days: TravelDayItem[]) => {
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            travelDays: days,
+            hasUnpublishedChanges: true,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const updateTravelTransitLegs = (clientId: string, legs: TravelTransitLeg[]) => {
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            travelTransitLegs: legs,
             hasUnpublishedChanges: true,
             updatedAt: new Date().toISOString().split('T')[0]
           };
@@ -1106,6 +1257,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addVerifiedHousing,
         deleteVerifiedHousing,
         publishClientUpdates,
+        requestTravelRevision,
+        applyTravelRevision,
+        updateTravelDays,
+        updateTravelTransitLegs,
         consultationBookings,
         scheduleConfig,
         updateScheduleConfig,

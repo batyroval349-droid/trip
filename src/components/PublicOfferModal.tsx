@@ -209,12 +209,12 @@ export const PublicOfferModal: React.FC = () => {
                       3.2. Тариф «Персональное планирование поездки» ($290 USD)
                     </div>
                     <p style={{ margin: '0.35rem 0 0.5rem 0', fontSize: '0.85rem' }}>
-                      Включает: составление авторского маршрута путешествия на 1–30 дней под даты и бюджет Заказчика; подбор городов и локаций; рекомендации по покупке SIM/eSIM и адреса официальных точек; список экстренных служб; 1 бесплатную корректировку маршрута; дистанционную чат-поддержку в WhatsApp на весь период путешествия.
+                      Включает: составление авторского маршрута путешествия на 1–30 дней под даты и бюджет Заказчика; подбор городов и локаций; рекомендации по покупке SIM/eSIM и адреса официальных точек; список экстренных служб; 1 бесплатную корректировку маршрута; дистанционную чат-поддержку в WhatsApp на 14 календарных дней во время путешествия.
                     </p>
                     <div style={{ fontSize: '0.83rem', color: 'var(--text-main)', marginTop: '0.35rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                       <div><strong>Этап 1 ($80 USD — невозвратный сбор):</strong> Персональный аудит анкеты Заказчика, расчет логистики и составление базового каркаса маршрута. Сумма $80 признается фактически понесенными расходами Исполнителя с момента взятия анкеты в работу и возврату не подлежит.</div>
                       <div><strong>Этап 2:</strong> Передача Заказчику готового электронного маршрута и памяток. Этап считается выполненным с момента отправки материалов.</div>
-                      <div><strong>Этап 3:</strong> Дистанционная чат-поддержка в WhatsApp на согласованный срок путешествия.</div>
+                      <div><strong>Этап 3:</strong> Дистанционная чат-поддержка в WhatsApp на 14 календарных дней во время поездки.</div>
                     </div>
                   </div>
 
@@ -390,12 +390,12 @@ export const PublicOfferModal: React.FC = () => {
                       3.2. Personal Trip Planning — $290 USD
                     </div>
                     <p style={{ margin: '0.35rem 0 0.5rem 0', fontSize: '0.85rem' }}>
-                      Includes: bespoke 1-30 day travel itinerary tailored to your dates and budget; city selection; SIM/eSIM recommendations; emergency contacts list; 1 complimentary route revision; and direct WhatsApp support during your trip.
+                      Includes: bespoke 1-30 day travel itinerary tailored to your dates and budget; city selection; SIM/eSIM recommendations; emergency contacts list; 1 complimentary route revision; and direct WhatsApp support for 14 days during your trip.
                     </p>
                     <div style={{ fontSize: '0.83rem', color: 'var(--text-main)', marginTop: '0.35rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                       <div><strong>Stage 1 ($80 USD non-refundable allocation):</strong> Intake research, route architecture, and destination mapping. Deemed fully consumed once research begins.</div>
                       <div><strong>Stage 2:</strong> Delivery of digital itinerary and guide materials.</div>
-                      <div><strong>Stage 3:</strong> Remote WhatsApp chat guidance throughout your trip.</div>
+                      <div><strong>Stage 3:</strong> Remote WhatsApp chat guidance for 14 calendar days during your trip.</div>
                     </div>
                   </div>
 

@@ -37,7 +37,7 @@ export const PricingTiers: React.FC = () => {
         { strong: language === 'ru' ? 'Маршрут 1–30 дней' : '1–30 day itinerary', text: language === 'ru' ? 'под ваши даты и бюджет' : 'tailored to dates and budget' },
         { strong: language === 'ru' ? 'Подбор городов' : 'City selection', text: language === 'ru' ? 'и локаций под ваши интересы' : 'matched to your interests' },
         { strong: language === 'ru' ? 'Связь и SIM/eSIM' : 'SIM / eSIM guidance', text: language === 'ru' ? 'рекомендации и адреса точек' : 'recommendations and store spots' },
-        { strong: language === 'ru' ? 'Поддержка в WhatsApp' : 'WhatsApp support', text: language === 'ru' ? 'на всё время вашего путешествия' : 'throughout your trip duration' },
+        { strong: language === 'ru' ? 'Поддержка в WhatsApp' : 'WhatsApp support', text: language === 'ru' ? 'на 14 дней во время поездки' : 'for 14 days during your trip' },
         { strong: language === 'ru' ? '1 корректировка' : '1 route revision', text: language === 'ru' ? 'маршрута + экстренные контакты' : '+ emergency contacts list' }
       ],
       ctaText: language === 'ru' ? 'Выбрать тариф' : 'Select Plan',

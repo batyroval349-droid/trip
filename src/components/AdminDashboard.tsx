@@ -30,6 +30,7 @@ import {
   Calendar
 } from 'lucide-react';
 import { AdminScheduleView } from './AdminScheduleView';
+import { AdminTravelItineraryBuilder } from './AdminTravelItineraryBuilder';
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -552,18 +553,28 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Quality Gate & Publish Banner */}
-                <div style={{
-                  background: selectedClient.hasUnpublishedChanges ? '#FFFBEB' : '#F0FDF4',
-                  border: selectedClient.hasUnpublishedChanges ? '1px solid #FCD34D' : '1px solid #BBF7D0',
-                  padding: '1.15rem 1.4rem',
-                  borderRadius: 'var(--radius-md)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '1rem'
-                }}>
+                {selectedClient.tierId === 'tier2' ? (
+                  <AdminTravelItineraryBuilder
+                    selectedClient={selectedClient}
+                    onPublishSuccess={() => {
+                      setSavedNotice(language === 'ru' ? 'Маршрут успешно опубликован в кабинете клиента!' : 'Itinerary published live to client!');
+                      setTimeout(() => setSavedNotice(null), 3500);
+                    }}
+                  />
+                ) : (
+                  <>
+                    {/* Quality Gate & Publish Banner */}
+                    <div style={{
+                      background: selectedClient.hasUnpublishedChanges ? '#FFFBEB' : '#F0FDF4',
+                      border: selectedClient.hasUnpublishedChanges ? '1px solid #FCD34D' : '1px solid #BBF7D0',
+                      padding: '1.15rem 1.4rem',
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '1rem'
+                    }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                       {selectedClient.hasUnpublishedChanges ? (
@@ -904,6 +915,8 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                   </form>
+                )}
+                  </>
                 )}
 
               </div>

@@ -1,4 +1,11 @@
 import type { AdminClientRecord } from '../types';
+import {
+  DEFAULT_TRAVEL_DAYS,
+  DEFAULT_TRAVEL_TRANSIT_LEGS,
+  DEFAULT_TRAVEL_REVISION,
+  DEFAULT_TRAVEL_SIM_GUIDE,
+  DEFAULT_TRAVEL_HOSPITALS
+} from './defaultTravelData';
 
 export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
   {
@@ -62,9 +69,82 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
         completed: false
       }
     ],
+    travelDays: DEFAULT_TRAVEL_DAYS,
+    travelTransitLegs: DEFAULT_TRAVEL_TRANSIT_LEGS,
+    travelRevision: DEFAULT_TRAVEL_REVISION,
+    travelSimGuide: DEFAULT_TRAVEL_SIM_GUIDE,
+    travelEmergencyHospitals: DEFAULT_TRAVEL_HOSPITALS,
     hasUnpublishedChanges: true,
     createdAt: '2026-09-03',
     updatedAt: '2026-09-03'
+  },
+  {
+    id: 'client-travel-2',
+    clientName: 'Дмитрий и Ольга Кузнецовы',
+    email: 'kuznetsov.travel@gmail.com',
+    password: 'pass123',
+    category: 'active',
+    tierId: 'tier2',
+    serviceName: {
+      en: 'Personal Travel Planning ($290)',
+      ru: 'Персональное планирование поездки ($290)'
+    },
+    priceUSD: 290,
+    status: 'plan_ready',
+    questionnaire: {
+      name: 'Дмитрий и Ольга Кузнецовы',
+      email: 'kuznetsov.travel@gmail.com',
+      password: 'pass123',
+      country: 'Казахстан, Алматы',
+      travelDates: '12–26 октября 2026',
+      duration: '14 дней',
+      travelersCount: 2,
+      monthlyBudgetUSD: 2500,
+      workSituation: 'Туристический отпуск (14 дней)',
+      preferredCities: ['hanoi', 'danang', 'hoian'],
+      environmentPreference: 'balanced',
+      accommodationType: 'Бутик-отели 4* с бассейном и хорошим завтраком',
+      remoteWorkNeeds: 'Не требуется, едем отдыхать',
+      coworkingNeeds: 'Не требуется',
+      transportationPreference: 'Grab, внутренний перелет и лимузин-трансфер',
+      climatePreference: 'Тепло, комфортно для прогулок и купания',
+      longTermGoals: 'Увидеть аутентичный Вьетнам, природу Ниньбиня и отдохнуть на море в Хойане/Дананге',
+      priorities: 'Вкусная еда, безопасность, красивые фотолокации, понятная логистика',
+      concerns: 'Языковой барьер и боязнь заблудиться',
+      additionalInfo: 'Обожаем кофе, морепродукты и древнюю архитектуру'
+    },
+    recommendedCityId: 'danang',
+    recommendedCityWhy: {
+      en: 'Perfect combination of Northern cultural heritage (Hanoi/Ninh Binh) and Central Vietnam beaches (Da Nang/Hoi An).',
+      ru: 'Идеальное сочетание культурного наследия Севера (Ханой/Ниньбинь) и пляжного отдыха в Центре (Дананг/Хойан).'
+    },
+    overallFounderNote: {
+      en: 'Dmitry & Olga, your 14-day travel roadmap is published! Follow the Morning/Afternoon/Evening tips for the best experience.',
+      ru: 'Дмитрий и Ольга, ваш авторский маршрут на 14 дней готов и опубликован! Следуйте подсказкам по блокам Утро/День/Вечер — это сэкономит вам время и избавит от очередей. Я на связи в WhatsApp на все 14 дней вашей поездки!'
+    },
+    userCurrentBudget: {
+      accommodation: 800,
+      food: 600,
+      coworking: 0,
+      transportation: 350,
+      entertainment: 500
+    },
+    verifiedHousing: [],
+    roadmapTasks: [],
+    travelDays: DEFAULT_TRAVEL_DAYS,
+    travelTransitLegs: DEFAULT_TRAVEL_TRANSIT_LEGS,
+    travelRevision: {
+      requested: false,
+      usedCount: 0,
+      maxCount: 1,
+      status: 'none'
+    },
+    travelSimGuide: DEFAULT_TRAVEL_SIM_GUIDE,
+    travelEmergencyHospitals: DEFAULT_TRAVEL_HOSPITALS,
+    hasUnpublishedChanges: false,
+    lastPublishedAt: '2026-09-08T12:00:00Z',
+    createdAt: '2026-09-05',
+    updatedAt: '2026-09-08'
   },
   {
     id: 'client-active-1',
