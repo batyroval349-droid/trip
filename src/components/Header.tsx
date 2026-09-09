@@ -61,23 +61,18 @@ export const Header: React.FC = () => {
             setViewMode('marketing');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', cursor: 'pointer' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', flexShrink: 0 }}
         >
           <img
             src="/logo-icon-transparent.png"
             alt="VietReloc"
-            style={{
-              width: '58px',
-              height: '58px',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 4px 10px rgba(15, 118, 110, 0.22))'
-            }}
+            className="brand-logo-img"
           />
           <div>
-            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.45rem', fontWeight: 800, letterSpacing: '0.05em', color: 'var(--text-main)', lineHeight: 1.1 }}>
+            <div className="brand-logo-title">
               VIET<span style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>RELOC</span>
             </div>
-            <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', letterSpacing: '0.03em', marginTop: '2px' }}>
+            <div className="brand-logo-subtitle">
               {language === 'ru' ? 'Консьерж по переезду и путешествиям' : 'Travel & Relocation Concierge'}
             </div>
           </div>
