@@ -150,7 +150,7 @@ export interface VerifiedHousingItem {
   addressSnippet: string;
   monthlyPriceUSD: number;
   monthlyPriceVND: number;
-  evnTariffVNDPerKwh: number; // e.g. 2800 (State tariff) or 4000 (markup)
+  evnTariffVNDPerKwh: number; // e.g. 4200 (standard condo rate up to 4500)
   isDirectEvnMeter: boolean; // Direct meter from EVN
   depositTerms: {
     amountUSD: number;
@@ -300,6 +300,15 @@ export type VipPsychologistStatus =
   | 'session_scheduled'
   | 'completed';
 
+export interface FounderTelegramAccompaniment {
+  status: 'active' | 'scheduled' | 'completed';
+  daysTotal: number;
+  daysRemaining: number;
+  telegramUsername: string;
+  startDate?: string;
+  notes?: { ru: string; en: string };
+}
+
 export interface VipConciergePerks {
   psychologistSession: {
     status: VipPsychologistStatus;
@@ -312,12 +321,11 @@ export interface VipConciergePerks {
     secondSessionPromoCode: string;
     notes: { ru: string; en: string };
   };
-  onArrivalAssistance: {
-    status: 'pending_flight_details' | 'scheduled' | 'in_progress' | 'completed';
-    flightNumber?: string;
-    arrivalDate?: string;
-    airportPickupStatus?: 'none' | 'driver_assigned' | 'assisted_grab';
-    urgentTasks: { id: string; title: string; completed: boolean }[];
+  founderTelegramAccompaniment: FounderTelegramAccompaniment;
+  priorityDirectLine: {
+    status: 'active' | 'inactive';
+    channel: 'telegram' | 'whatsapp';
+    contact: string;
   };
   realtorAccompaniment: {
     status: 'not_started' | 'coordinated' | 'viewings_in_progress' | 'signed';
@@ -361,6 +369,7 @@ export interface ClientProject {
   partnerRealtor?: PartnerRealtorAssignment;
   leaseContractAudit?: LeaseContractAudit;
   vipConciergePerks?: VipConciergePerks;
+  founderTelegramAccompaniment?: FounderTelegramAccompaniment;
 }
 
 export interface AdminClientRecord {
@@ -397,4 +406,5 @@ export interface AdminClientRecord {
   partnerRealtor?: PartnerRealtorAssignment;
   leaseContractAudit?: LeaseContractAudit;
   vipConciergePerks?: VipConciergePerks;
+  founderTelegramAccompaniment?: FounderTelegramAccompaniment;
 }

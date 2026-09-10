@@ -52,8 +52,8 @@ export const DashboardLeaseAuditView: React.FC = () => {
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', margin: 0, maxWidth: '680px' }}>
             {language === 'ru'
-              ? 'Основатель VietReloc лично проводит юридическую экспертизу условий найма: устраняет накрутки за свет, закрепляет возврат залога и обязывает собственника зарегистрировать вас в полиции (tạm trú).'
-              : 'The founder audits your rental agreement to eliminate electric markups, protect security deposit return, and secure temporary police registration.'}
+              ? 'Основатель VietReloc лично проводит юридическую экспертизу условий найма: фиксирует прозрачный тариф за свет (до 4500 ₫/кВт), закрепляет возврат залога и обязывает собственника зарегистрировать вас в полиции (tạm trú).'
+              : 'The founder audits your rental agreement to verify standard electric rates (up to 4500 ₫/kWh), protect security deposit return, and secure temporary police registration.'}
           </p>
         </div>
 
@@ -138,9 +138,9 @@ export const DashboardLeaseAuditView: React.FC = () => {
             {/* 2. EVN Electricity */}
             <div style={{ border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '1.1rem', background: '#FAF9F6' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                <strong style={{ fontSize: '0.9rem' }}>2. Тариф электроэнергии EVN</strong>
+                <strong style={{ fontSize: '0.9rem' }}>2. Тариф электроэнергии (до 4500 ₫)</strong>
                 <span className="badge badge-emerald" style={{ fontSize: '0.7rem' }}>
-                  {audit.checks.evnElectricityTariff.tariffVND || 2850} ₫/кВт
+                  {audit.checks.evnElectricityTariff.tariffVND || 4200} ₫/кВт
                 </span>
               </div>
               <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>

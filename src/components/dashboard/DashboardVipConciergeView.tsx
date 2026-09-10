@@ -3,8 +3,6 @@ import { useApp } from '../../context/AppContext';
 import {
   Crown,
   HeartHandshake,
-  Car,
-  CheckCircle2,
   Clock,
   Sparkles,
   MessageCircle,
@@ -24,7 +22,12 @@ export const DashboardVipConciergeView: React.FC = () => {
 
   const vipPerks: VipConciergePerks = project.vipConciergePerks || DEFAULT_VIP_PERKS;
   const psy = vipPerks.psychologistSession;
-  const arrival = vipPerks.onArrivalAssistance;
+  const tgAcc = vipPerks.founderTelegramAccompaniment || {
+    status: 'active',
+    daysTotal: 30,
+    daysRemaining: 28,
+    telegramUsername: 'Likqwerty'
+  };
 
   const handleCopyPromo = () => {
     navigator.clipboard.writeText(psy.secondSessionPromoCode || 'VIETRELOC-VIP20');
@@ -53,8 +56,8 @@ export const DashboardVipConciergeView: React.FC = () => {
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', margin: 0, maxWidth: '680px' }}>
             {language === 'ru'
-              ? 'Ваш премиальный пакет включает персональную психологическую помощь во время переезда, встречу в аэропорту, решение срочных бытовых вопросов и приоритетную линию связи с основателем.'
-              : 'Your premium package includes certified psychological adaptation support, airport welcome, urgent arrival tasks, and founder priority line.'}
+              ? 'Ваш премиальный пакет включает персональную психологическую сессию во время переезда, 30 дней прямого сопровождения с основателем в Telegram и приоритетное решение любых вопросов.'
+              : 'Your premium package includes a dedicated psychological adaptation session, 30 days of direct founder Telegram accompaniment, and priority support.'}
           </p>
         </div>
 
@@ -74,7 +77,7 @@ export const DashboardVipConciergeView: React.FC = () => {
         </div>
       </div>
 
-      {/* Module 1: Psychologist / Sexologist Support */}
+      {/* Module 1: Psychologist & Sexologist Support (Егорова Мария) */}
       <div className="glass-card" style={{
         padding: '2.25rem',
         background: '#FFFFFF',
@@ -86,7 +89,7 @@ export const DashboardVipConciergeView: React.FC = () => {
           
           <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
             <img
-              src={psy.specialistPhotoUrl}
+              src={psy.specialistPhotoUrl || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80'}
               alt={psy.specialistName}
               style={{
                 width: '88px',
@@ -102,10 +105,10 @@ export const DashboardVipConciergeView: React.FC = () => {
                 <HeartHandshake size={13} /> {language === 'ru' ? '1 сессия бесплатно • Онлайн' : '1 Free Session • Online'}
               </div>
               <h3 style={{ margin: 0, fontSize: '1.45rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
-                {psy.specialistName}
+                {psy.specialistName || 'Егорова Мария'}
               </h3>
               <div style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                {psy.specialistTitle}
+                {psy.specialistTitle || 'Дипломированный психолог, клинический специалист, сексолог (4 года практики)'}
               </div>
             </div>
           </div>
@@ -122,7 +125,7 @@ export const DashboardVipConciergeView: React.FC = () => {
               {language === 'ru' ? 'Скидка на 2-ю сессию напрямую:' : '2nd Session Discount Code:'}
             </div>
             <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#B45309', fontFamily: 'monospace', letterSpacing: '0.05em' }}>
-              {psy.secondSessionPromoCode}
+              {psy.secondSessionPromoCode || 'VIETRELOC-VIP20'}
             </div>
             <button
               type="button"
@@ -137,133 +140,109 @@ export const DashboardVipConciergeView: React.FC = () => {
 
         </div>
 
-        {/* Description & Topics */}
+        {/* Description & Support Note */}
         <div style={{ background: '#FFFBEB', borderRadius: 'var(--radius-md)', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', border: '1px solid #FDE68A' }}>
           <div style={{ fontWeight: 700, fontSize: '0.92rem', color: '#92400E', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <Sparkles size={16} />
-            <span>{language === 'ru' ? 'С чем помогает дипломированный специалист при переезде:' : 'How this session supports your transition:'}</span>
+            <span>{language === 'ru' ? 'Психологическая поддержка при релокации:' : 'Psychological support during relocation:'}</span>
           </div>
           <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.6 }}>
-            {psy.notes[language] || psy.notes.ru}
+            {psy.notes?.[language] || (language === 'ru'
+              ? 'Индивидуальная онлайн-сессия (50 минут): бережная психологическая поддержка во время переезда, преодоление кризиса адаптации, работа со стрессом и сохранение гармонии в паре. 1-я сессия бесплатно по вашему VIP-тарифу, на 2-ю сессию действует скидка 20% по промокоду.'
+              : 'Individual online session (50 min): emotional support during relocation, cultural adaptation, stress management, and couple harmony. First session is included free with VIP package; 20% off on 2nd session.')}
           </p>
         </div>
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <a
-            href={`https://t.me/${psy.telegramContact.replace('@', '')}`}
+            href="https://t.me/mur_mur_mari"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-primary"
             style={{ padding: '0.8rem 1.5rem', fontSize: '0.95rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}
           >
-            <MessageCircle size={18} />
-            <span>{language === 'ru' ? `Записаться к психологу в Telegram (${psy.telegramContact})` : `Book session via Telegram (${psy.telegramContact})`}</span>
+            <span className="icon-3d-hover">
+              <MessageCircle size={18} />
+            </span>
+            <span>{language === 'ru' ? 'Записаться к Марии в Telegram (@mur_mur_mari)' : 'Book with Maria via Telegram (@mur_mur_mari)'}</span>
             <ExternalLink size={14} style={{ opacity: 0.8 }} />
           </a>
 
-          {psy.whatsappContact && (
-            <a
-              href={`https://wa.me/${psy.whatsappContact.replace(/[^0-9]/g, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-secondary"
-              style={{ padding: '0.8rem 1.3rem', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}
-            >
-              <Phone size={16} />
-              <span>WhatsApp</span>
-            </a>
-          )}
+          <a
+            href="https://wa.me/840394583217"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-secondary"
+            style={{ padding: '0.8rem 1.3rem', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}
+          >
+            <Phone size={16} />
+            <span>WhatsApp (+84 039 458 3217)</span>
+          </a>
         </div>
       </div>
 
-      {/* Module 2: On-Arrival Assistance & Airport Welcome */}
-      <div className="glass-card" style={{ padding: '2rem', background: '#FFFFFF' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
-          <Car size={20} color="var(--accent-emerald)" />
-          <h3 style={{ margin: 0, fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
-            {language === 'ru' ? 'Консьерж по прилёту и обустройство первой недели' : 'On-Arrival Concierge & First Week Setup'}
-          </h3>
-        </div>
+      {/* Module 2: 30-Day Personal Accompaniment with Founder in Telegram */}
+      <div className="cloud-support-bubble" style={{ padding: '2rem 2.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+              <ShieldCheck size={16} />
+              <span>{language === 'ru' ? 'Персональное сопровождение (1 месяц)' : 'Personal Accompaniment (1 Month)'}</span>
+            </div>
+            <h3 style={{ margin: 0, fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
+              {language === 'ru' ? '30 дней прямого сопровождения с основателем в Telegram' : '30-Day Direct Accompaniment with Founder in Telegram'}
+            </h3>
+            <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.92rem', color: 'var(--text-muted)', maxWidth: '640px' }}>
+              {language === 'ru'
+                ? 'Прямой закрытый чат 1-на-1 с основателем VietReloc. Оперативная поддержка и решение любых вопросов на протяжении первого месяца жизни во Вьетнаме.'
+                : 'Direct 1-on-1 private chat with the VietReloc founder. Prompt assistance throughout your first month in Vietnam.'}
+            </p>
+          </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
-          <div style={{ background: '#FAF9F6', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '1rem' }}>
-            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>Номер рейса:</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.2rem' }}>
-              {arrival.flightNumber || 'VN 128 (SGN → DAD)'}
+          <div style={{
+            background: '#FFFFFF',
+            border: '1px solid var(--border-emerald)',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.75rem 1.25rem',
+            textAlign: 'center',
+            boxShadow: '0 4px 12px rgba(15, 118, 110, 0.08)'
+          }}>
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>
+              {language === 'ru' ? 'Статус поддержки:' : 'Support status:'}
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-emerald)', marginTop: '0.15rem' }}>
+              {language === 'ru' ? `${tgAcc.daysRemaining || 28} из ${tgAcc.daysTotal || 30} дней` : `${tgAcc.daysRemaining || 28} of ${tgAcc.daysTotal || 30} days`}
             </div>
           </div>
-
-          <div style={{ background: '#FAF9F6', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '1rem' }}>
-            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>Дата и время прилёта:</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.2rem' }}>
-              {arrival.arrivalDate || '15 октября 2026, 14:20'}
-            </div>
-          </div>
-
-          <div style={{ background: '#FAF9F6', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '1rem' }}>
-            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>Трансфер из аэропорта:</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-emerald)', marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <CheckCircle2 size={16} />
-              <span>{arrival.airportPickupStatus === 'driver_assigned' ? 'Водитель с табличкой' : 'Grab-сопровождение'}</span>
-            </div>
-          </div>
         </div>
 
-        {/* Urgent Tasks Checklist */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>
-            {language === 'ru' ? 'Задачи консьержа в первые 48 часов:' : 'Concierge arrival tasks:'}
-          </div>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '1rem' }}>
+          <a
+            href="https://t.me/Likqwerty"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+            style={{ padding: '0.85rem 1.8rem', fontSize: '0.98rem', display: 'inline-flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', borderRadius: '9999px' }}
+          >
+            <span className="icon-3d-hover">
+              <Send size={18} />
+            </span>
+            <span>{language === 'ru' ? 'Написать основателю в Telegram (@Likqwerty)' : 'Message Founder on Telegram (@Likqwerty)'}</span>
+            <ExternalLink size={14} style={{ opacity: 0.8 }} />
+          </a>
 
-          {arrival.urgentTasks && arrival.urgentTasks.map((task) => (
-            <div
-              key={task.id}
-              style={{
-                background: task.completed ? '#F0FDF4' : '#FFFFFF',
-                border: task.completed ? '1px solid #BBF7D0' : '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '0.75rem 1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem'
-              }}
-            >
-              <CheckCircle2 size={18} color={task.completed ? '#0F766E' : '#9CA3AF'} />
-              <span style={{ fontSize: '0.88rem', color: task.completed ? '#0F766E' : 'var(--text-main)', fontWeight: task.completed ? 600 : 400 }}>
-                {task.title}
-              </span>
-            </div>
-          ))}
+          <a
+            href="https://wa.me/840394583217"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-secondary"
+            style={{ padding: '0.85rem 1.5rem', fontSize: '0.92rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', borderRadius: '9999px' }}
+          >
+            <Phone size={16} />
+            <span>WhatsApp (+84 039 458 3217)</span>
+          </a>
         </div>
-      </div>
-
-      {/* Module 3: Priority Direct Founder Line */}
-      <div className="glass-card glass-card-terracotta" style={{ padding: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <ShieldCheck size={18} color="var(--accent-terracotta)" />
-            <h4 style={{ margin: 0, fontSize: '1.15rem', fontFamily: 'var(--font-serif)' }}>
-              {language === 'ru' ? 'Приоритетная выделенная линия с основателем' : 'Priority Direct Line with Founder'}
-            </h4>
-          </div>
-          <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-muted)' }}>
-            {language === 'ru'
-              ? 'Ваши вопросы обрабатываются в приоритетном порядке в течение 30 календарных дней. Прямая связь в WhatsApp и Telegram.'
-              : '30 days of priority advisory via WhatsApp & Telegram directly with the founder.'}
-          </p>
-        </div>
-
-        <a
-          href="https://t.me/Likqwerty"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-primary"
-          style={{ padding: '0.65rem 1.4rem', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          <Send size={15} />
-          <span>{language === 'ru' ? 'VIP-чат в Telegram' : 'VIP Telegram Chat'}</span>
-        </a>
       </div>
 
     </div>

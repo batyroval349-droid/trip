@@ -32,7 +32,8 @@ import {
   Sparkles,
   Users,
   ShieldCheck,
-  Crown
+  Crown,
+  Send
 } from 'lucide-react';
 
 export const ClientDashboard: React.FC = () => {
@@ -526,7 +527,7 @@ export const ClientDashboard: React.FC = () => {
                       <ShieldCheck size={14} /> {language === 'ru' ? 'Аудит договора аренды' : 'Lease Due Diligence'}
                     </div>
                     <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
-                      EVN {project.leaseContractAudit?.checks.evnElectricityTariff.tariffVND || 2800} ₫/кВт
+                      EVN {project.leaseContractAudit?.checks.evnElectricityTariff.tariffVND || 4200} ₫/кВт
                     </span>
                   </div>
                   <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
@@ -564,8 +565,8 @@ export const ClientDashboard: React.FC = () => {
                     </h4>
                     <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
                       {language === 'ru'
-                        ? '1 бесплатная сессия с сертифицированным психологом и сексологом + скидка 20% на 2-ю сессию + встреча в аэропорту.'
-                        : '1 free session with certified psychologist/sexologist + 20% discount on 2nd session + airport arrival assistance.'}
+                        ? '1 бесплатная сессия с сертифицированным психологом и сексологом (Егорова Мария, 4 года практики) + скидка 20% на 2-ю сессию.'
+                        : '1 free session with certified psychologist/sexologist (Maria Egorova, 4 yrs practice) + 20% discount on 2nd session.'}
                     </p>
                   </div>
                   <button
@@ -575,6 +576,40 @@ export const ClientDashboard: React.FC = () => {
                   >
                     {language === 'ru' ? 'Записаться к психологу / VIP' : 'Book Session / VIP Concierge'} <ArrowRight size={14} />
                   </button>
+                </div>
+              )}
+
+              {/* 30-Day Founder Telegram Accompaniment Card (VIP) */}
+              {(project.tierId === 'tier4' || project.vipConciergePerks) && (
+                <div className="cloud-support-bubble" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-emerald)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                        <Send size={14} /> {language === 'ru' ? 'Личное сопровождение (1 месяц)' : '1-Month Accompaniment'}
+                      </div>
+                      <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
+                        @Likqwerty
+                      </span>
+                    </div>
+                    <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
+                      {language === 'ru' ? '30 дней с основателем в Telegram' : '30-Day Founder Telegram Chat'}
+                    </h4>
+                    <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
+                      {language === 'ru'
+                        ? 'Прямой закрытый чат 1-на-1 с основателем. Быстрое решение любых бытовых, визовых и локационных вопросов в первый месяц.'
+                        : 'Direct 1-on-1 private chat with the founder throughout your first month in Vietnam.'}
+                    </p>
+                  </div>
+                  <a
+                    href="https://t.me/Likqwerty"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', textDecoration: 'none', borderRadius: '9999px' }}
+                  >
+                    <span className="icon-3d-hover"><Send size={14} /></span>
+                    <span>{language === 'ru' ? 'Написать в Telegram (@Likqwerty)' : 'Message Founder on Telegram'}</span>
+                  </a>
                 </div>
               )}
             </div>

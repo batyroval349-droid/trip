@@ -124,8 +124,8 @@ export const DEFAULT_RELOCATION_ROADMAP_TASKS: RoadmapTask[] = [
     },
     completed: false,
     founderComment: {
-      ru: 'Я лично проверю договор за 2–4 часа: уберем завышенный тариф за свет, зафиксируем возврат депозита и временную регистрацию.',
-      en: 'I will audit the draft within 2-4 hours to eliminate electric markups and secure deposit return.'
+      ru: 'Я лично проверю договор за 2–4 часа: зафиксируем прозрачный тариф за электричество (до 4500 ₫/кВт), возврат депозита и временную регистрацию.',
+      en: 'I will audit the draft within 2-4 hours to confirm standard electric rates, deposit safety, and police registration.'
     }
   },
   {
@@ -198,6 +198,23 @@ export const DEFAULT_RELOCATION_ROADMAP_TASKS: RoadmapTask[] = [
       en: 'Plan your 90-day reset via land border to Laos or quick AirAsia flight to Kuala Lumpur/Bangkok.'
     },
     completed: false
+  },
+  {
+    id: 'reloc-task-13',
+    phase: 'first_month',
+    title: {
+      ru: 'Персональное сопровождение на 30 дней с основателем в Telegram',
+      en: '30-Day Personal Accompaniment with Founder in Telegram'
+    },
+    description: {
+      ru: 'Прямой контакт 1-на-1 с основателем (@Likqwerty) в Telegram для оперативного решения бытовых, визовых и локальных вопросов в первый месяц.',
+      en: 'Direct 1-on-1 contact with the founder (@Likqwerty) in Telegram for lifestyle, visa, and local guidance in month 1.'
+    },
+    completed: true,
+    founderComment: {
+      ru: 'Я на связи с вами в личном чате Telegram @Likqwerty на протяжении всех первых 30 дней после переезда.',
+      en: 'I stay in direct touch with you on Telegram @Likqwerty throughout your first 30 days.'
+    }
   }
 ];
 
@@ -214,8 +231,8 @@ export const DEFAULT_PARTNER_REALTOR_DANANG: PartnerRealtorAssignment = {
   specialization: 'Современные кондоминиумы и апартаменты у моря (Сон Тра, Ми Ан, Ан Тхыонг). Бюджет $350 – $1400/мес.',
   status: 'chat_created',
   founderNoteToClient: {
-    ru: 'Линь — наш ключевой партнер в Дананге. Отлично говорит по-русски, лично отсеивает варианты с шумными стройками и всегда договаривается о прямом государственном тарифе EVN. Напишите ей в Telegram с кодовым словом «VietReloc».',
-    en: 'Linh is our trusted partner in Da Nang. Fluent in English and Russian, screens out noisy construction sites and secures direct EVN electricity rates.'
+    ru: 'Линь — наш ключевой партнер в Дананге. Отлично говорит по-русски, лично отсеивает варианты с шумными стройками и всегда фиксирует прозрачные условия аренды и адекватный тариф за свет (до 4000–4500 ₫/кВт). Напишите ей в Telegram с кодовым словом «VietReloc».',
+    en: 'Linh is our trusted partner in Da Nang. Fluent in English and Russian, screens out noisy construction sites and secures transparent lease terms with normal electric rates (up to 4000-4500 ₫/kWh).'
   },
   directChatUrl: 'https://t.me/linh_danang_realty'
 };
@@ -252,8 +269,8 @@ export const DEFAULT_LEASE_AUDIT: LeaseContractAudit = {
     },
     evnElectricityTariff: {
       status: 'pass',
-      tariffVND: 2850,
-      comment: 'Тариф зафиксирован по государственному счетчику EVN (2800–3100 ₫/кВт). Накрутки собственника (4000+ ₫) в договоре нет.'
+      tariffVND: 4200,
+      comment: 'Тариф зафиксирован на нормальном рыночном уровне (4200 ₫/кВт, норма для кондоминиумов — до 4500 ₫/кВт). Скрытых сезонных наценок и плавающих коэффициентов в договоре нет.'
     },
     waterAndInternetSpeed: {
       status: 'pass',
@@ -269,8 +286,8 @@ export const DEFAULT_LEASE_AUDIT: LeaseContractAudit = {
     }
   },
   overallVerdict: {
-    ru: 'Договор проверен основателем. Условия прозрачны и соответствуют стандартам безопасной аренды. Можно подписывать с учетом 1 точечной правки по форс-мажору.',
-    en: 'The lease agreement has been audited by the founder. Terms are transparent and safe. Approved for signing with 1 minor force-majeure clause addition.'
+    ru: 'Договор проверен основателем. Условия прозрачны и соответствуют стандартам безопасной аренды. Тариф за электричество зафиксирован на адекватном рыночном уровне 4200 ₫/кВт. Можно подписывать с учетом 1 точечной правки по форс-мажору.',
+    en: 'The lease agreement has been audited by the founder. Terms are transparent and safe. Electric rate is locked at standard 4200 ₫/kWh. Approved for signing with 1 minor force-majeure clause addition.'
   },
   recommendedAmendments: [
     'Bổ sung điều khoản: Trong trường hợp bất khả kháng hoặc thay đổi chính sách thị thực Việt Nam, bên thuê được quyền chấm dứt hợp đồng và nhận lại 100% tiền đặt cọc sau khi báo trước 30 ngày.',
@@ -281,28 +298,32 @@ export const DEFAULT_LEASE_AUDIT: LeaseContractAudit = {
 export const DEFAULT_VIP_PERKS: VipConciergePerks = {
   psychologistSession: {
     status: 'included_not_booked',
-    specialistName: 'Елена Волкова',
-    specialistTitle: 'Дипломированный психолог, клинический специалист, сексолог (12+ лет практики)',
-    specialistPhotoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
-    telegramContact: '@elena_reloc_psy',
-    whatsappContact: '+84 935 888 214',
+    specialistName: 'Егорова Мария',
+    specialistTitle: 'Дипломированный психолог, клинический специалист, сексолог (4 года практики)',
+    specialistPhotoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+    telegramContact: '@mur_mur_mari',
+    whatsappContact: '+84 039 458 3217',
     secondSessionPromoCode: 'VIETRELOC-VIP20',
     notes: {
-      ru: 'Индивидуальная онлайн-сессия (50 минут): бережная психологическая поддержка во время переезда, преодоление кризиса адаптации, работа со стрессом нового климата и сохранение гармонии в паре. 1-я сессия бесплатно по вашему VIP-тарифу, на 2-ю сессию действует скидка 20% по промокоду.',
+      ru: 'Индивидуальная онлайн-сессия (50 минут): бережная психологическая поддержка во время переезда, преодоление кризиса адаптации, работа со стрессом и сохранение гармонии в паре. 1-я сессия бесплатно по вашему VIP-тарифу, на 2-ю сессию действует скидка 20% по промокоду.',
       en: 'Individual online session (50 min): emotional support during relocation, cultural adaptation, stress management, and couple harmony. First session is included free with VIP package; 20% off on 2nd session.'
     }
   },
-  onArrivalAssistance: {
-    status: 'scheduled',
-    flightNumber: 'VN 128 (SGN → DAD)',
-    arrivalDate: '2026-10-15 14:20',
-    airportPickupStatus: 'driver_assigned',
-    urgentTasks: [
-      { id: 'vip-task-1', title: 'Встреча в зале прилёта аэропорта с именной табличкой', completed: true },
-      { id: 'vip-task-2', title: 'Помощь с покупкой и мгновенной регистрацией eSIM Viettel', completed: true },
-      { id: 'vip-task-3', title: 'Обмен первых $500 в проверенной ювелирной лавке по VIP-курсу', completed: false },
-      { id: 'vip-task-4', title: 'Доставка скутера Honda Air Blade к апартаментам без залога паспорта', completed: false }
-    ]
+  founderTelegramAccompaniment: {
+    status: 'active',
+    daysTotal: 30,
+    daysRemaining: 28,
+    telegramUsername: 'Likqwerty',
+    startDate: '2026-10-15',
+    notes: {
+      ru: 'Персональный закрытый диалог с основателем VietReloc 1-на-1 в Telegram (@Likqwerty). Быстрые ответы и содействие на протяжении первого месяца.',
+      en: 'Personal 1-on-1 Telegram concierge line with the founder (@Likqwerty). Direct assistance throughout the first 30 days.'
+    }
+  },
+  priorityDirectLine: {
+    status: 'active',
+    channel: 'telegram',
+    contact: '@Likqwerty'
   },
   realtorAccompaniment: {
     status: 'coordinated',

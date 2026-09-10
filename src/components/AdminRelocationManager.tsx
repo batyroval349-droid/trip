@@ -33,8 +33,7 @@ import {
   Sparkles,
   Phone,
   MessageCircle,
-  HeartHandshake,
-  Car
+  HeartHandshake
 } from 'lucide-react';
 
 interface AdminRelocationManagerProps {
@@ -98,7 +97,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
   // Form states for editing lease audit
   const [editAuditStatus, setEditAuditStatus] = useState<LeaseAuditStatus>(leaseAudit.status);
   const [editContractTitle, setEditContractTitle] = useState(leaseAudit.contractDraftTitle || '');
-  const [editEvnTariff, setEditEvnTariff] = useState(leaseAudit.checks.evnElectricityTariff.tariffVND || 2800);
+  const [editEvnTariff, setEditEvnTariff] = useState(leaseAudit.checks.evnElectricityTariff.tariffVND || 4200);
   const [editDepositComment, setEditDepositComment] = useState(leaseAudit.checks.depositRefundSafety.comment);
   const [editEvnComment, setEditEvnComment] = useState(leaseAudit.checks.evnElectricityTariff.comment);
   const [editTamTruComment, setEditTamTruComment] = useState(leaseAudit.checks.policeRegistrationTamTru.comment);
@@ -106,12 +105,13 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
   const [editOverallVerdictRu, setEditOverallVerdictRu] = useState(leaseAudit.overallVerdict.ru);
 
   // Form states for editing VIP perks
-  const [editPsyStatus, setEditPsyStatus] = useState<VipPsychologistStatus>(vipPerks.psychologistSession.status);
+  const [editPsyStatus, setEditPsyStatus] = useState(vipPerks.psychologistSession.status);
   const [editPsyDate, setEditPsyDate] = useState(vipPerks.psychologistSession.sessionDate || '');
   const [editPsyPromo, setEditPsyPromo] = useState(vipPerks.psychologistSession.secondSessionPromoCode || 'VIETRELOC-VIP20');
-  const [editFlightNum, setEditFlightNum] = useState(vipPerks.onArrivalAssistance.flightNumber || '');
-  const [editArrivalDate, setEditArrivalDate] = useState(vipPerks.onArrivalAssistance.arrivalDate || '');
-  const [editAirportPickup, setEditAirportPickup] = useState(vipPerks.onArrivalAssistance.airportPickupStatus || 'driver_assigned');
+  const [editTgAccStatus, setEditTgAccStatus] = useState(vipPerks.founderTelegramAccompaniment?.status || 'active');
+  const [editTgAccTotal, setEditTgAccTotal] = useState(vipPerks.founderTelegramAccompaniment?.daysTotal || 30);
+  const [editTgAccRemaining, setEditTgAccRemaining] = useState(vipPerks.founderTelegramAccompaniment?.daysRemaining || 28);
+  const [editTgAccUsername, setEditTgAccUsername] = useState(vipPerks.founderTelegramAccompaniment?.telegramUsername || 'Likqwerty');
 
   // Sync edit states when selectedClient changes
   React.useEffect(() => {
@@ -126,7 +126,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
 
     setEditAuditStatus(leaseAudit.status);
     setEditContractTitle(leaseAudit.contractDraftTitle || '');
-    setEditEvnTariff(leaseAudit.checks.evnElectricityTariff.tariffVND || 2800);
+    setEditEvnTariff(leaseAudit.checks.evnElectricityTariff.tariffVND || 4200);
     setEditDepositComment(leaseAudit.checks.depositRefundSafety.comment);
     setEditEvnComment(leaseAudit.checks.evnElectricityTariff.comment);
     setEditTamTruComment(leaseAudit.checks.policeRegistrationTamTru.comment);
@@ -136,9 +136,16 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
     setEditPsyStatus(vipPerks.psychologistSession.status);
     setEditPsyDate(vipPerks.psychologistSession.sessionDate || '');
     setEditPsyPromo(vipPerks.psychologistSession.secondSessionPromoCode || 'VIETRELOC-VIP20');
-    setEditFlightNum(vipPerks.onArrivalAssistance.flightNumber || '');
-    setEditArrivalDate(vipPerks.onArrivalAssistance.arrivalDate || '');
-    setEditAirportPickup(vipPerks.onArrivalAssistance.airportPickupStatus || 'driver_assigned');
+    const tgAcc = vipPerks.founderTelegramAccompaniment || {
+      status: 'active',
+      daysTotal: 30,
+      daysRemaining: 28,
+      telegramUsername: 'Likqwerty'
+    };
+    setEditTgAccStatus(tgAcc.status);
+    setEditTgAccTotal(tgAcc.daysTotal);
+    setEditTgAccRemaining(tgAcc.daysRemaining);
+    setEditTgAccUsername(tgAcc.telegramUsername || 'Likqwerty');
   }, [selectedClient.id]);
 
   // Quality Gate Validation Checks for Relocation Concierge
@@ -240,15 +247,20 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
         sessionDate: editPsyDate.trim(),
         secondSessionPromoCode: editPsyPromo.trim()
       },
-      onArrivalAssistance: {
-        ...vipPerks.onArrivalAssistance,
-        flightNumber: editFlightNum.trim(),
-        arrivalDate: editArrivalDate.trim(),
-        airportPickupStatus: editAirportPickup as any
+      founderTelegramAccompaniment: {
+        status: editTgAccStatus,
+        daysTotal: Number(editTgAccTotal) || 30,
+        daysRemaining: Number(editTgAccRemaining) || 28,
+        telegramUsername: editTgAccUsername.trim() || 'Likqwerty'
+      },
+      priorityDirectLine: {
+        status: 'active',
+        channel: 'telegram',
+        contact: `@${(editTgAccUsername.trim() || 'Likqwerty').replace(/^@/, '')}`
       }
     };
     updateVipConciergePerks(selectedClient.id, updatedPerks);
-    setSavedNotice(language === 'ru' ? 'Параметры VIP-консьержа сохранены!' : 'VIP perks saved!');
+    setSavedNotice(language === 'ru' ? 'Параметры VIP-сопровождения сохранены!' : 'VIP perks saved!');
     setTimeout(() => setSavedNotice(null), 3500);
   };
 
@@ -911,7 +923,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
                 {language === 'ru' ? 'Управление VIP-услугами ($890)' : 'VIP Concierge & Wellness Management'}
               </h3>
               <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                {language === 'ru' ? 'Сессия с психологом-сексологом, встреча по прилету и сопровождение показов' : 'Psychologist session, arrival pickup and on-site viewings'}
+                {language === 'ru' ? 'Сессия с психологом-сексологом (Мария Егорова) и 30 дней сопровождения с основателем в Telegram (@Likqwerty)' : 'Psychologist session (Maria Egorova) and 30-day founder Telegram accompaniment (@Likqwerty)'}
               </div>
             </div>
           </div>
@@ -981,50 +993,63 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
             </div>
           </div>
 
-          {/* Section 2: On-Arrival Assistance */}
+          {/* Section 2: Founder 30-Day Accompaniment in Telegram */}
           <div style={{ background: '#FFFFFF', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <Car size={18} color="var(--accent-emerald)" />
+              <Send size={18} color="var(--accent-emerald)" />
               <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>
-                {language === 'ru' ? 'Консьерж по прилёту (первые 48 часов)' : 'On-Arrival Assistance'}
+                {language === 'ru' ? 'Персональное сопровождение с основателем (30 дней)' : 'Founder 30-Day Telegram Accompaniment'}
               </h4>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Номер рейса:</label>
-                <input
-                  type="text"
-                  value={editFlightNum}
-                  onChange={(e) => setEditFlightNum(e.target.value)}
-                  placeholder="VN 128 (SGN → DAD)"
-                  style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Дата и время прилёта:</label>
-                <input
-                  type="text"
-                  value={editArrivalDate}
-                  onChange={(e) => setEditArrivalDate(e.target.value)}
-                  placeholder="15 октября 2026, 14:20"
-                  style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Трансфер из аэропорта:</label>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Статус сопровождения:</label>
                 <select
-                  value={editAirportPickup}
-                  onChange={(e) => setEditAirportPickup(e.target.value as 'none' | 'driver_assigned' | 'assisted_grab')}
+                  value={editTgAccStatus}
+                  onChange={(e) => setEditTgAccStatus(e.target.value as any)}
                   style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', background: '#FFFFFF' }}
                 >
-                  <option value="driver_assigned">Водитель назначен (с табличкой)</option>
-                  <option value="assisted_grab">Консьерж встречает / вызывает Grab</option>
-                  <option value="none">Трансфер не требуется</option>
+                  <option value="active">Активно (сопровождение идет)</option>
+                  <option value="scheduled">Запланировано (со дня прилёта)</option>
+                  <option value="completed">Завершено (30 дней истекли)</option>
                 </select>
               </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Telegram основателя:</label>
+                <input
+                  type="text"
+                  value={editTgAccUsername}
+                  onChange={(e) => setEditTgAccUsername(e.target.value)}
+                  placeholder="Likqwerty"
+                  style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontWeight: 700 }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Осталось дней / Всего дней:</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="number"
+                    value={editTgAccRemaining}
+                    onChange={(e) => setEditTgAccRemaining(Number(e.target.value))}
+                    style={{ width: '80px', padding: '0.55rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontWeight: 700 }}
+                  />
+                  <span>из</span>
+                  <input
+                    type="number"
+                    value={editTgAccTotal}
+                    onChange={(e) => setEditTgAccTotal(Number(e.target.value))}
+                    style={{ width: '80px', padding: '0.55rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontWeight: 700 }}
+                  />
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>дней</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '0.85rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              Ссылка для клиента: <a href={`https://t.me/${editTgAccUsername.replace(/^@/, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>https://t.me/{editTgAccUsername.replace(/^@/, '')}</a>
             </div>
           </div>
 
@@ -1079,7 +1104,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
                   required
                   value={newTaskTitleRu}
                   onChange={(e) => setNewTaskTitleRu(e.target.value)}
-                  placeholder="Например: Заказ комфортного такси в аэропорт"
+                  placeholder="Например: Проверка договора и получение ключей"
                   style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
                 />
               </div>

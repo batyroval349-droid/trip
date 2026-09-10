@@ -417,6 +417,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         partnerRealtor: adminRecord.partnerRealtor || prev.partnerRealtor,
         leaseContractAudit: adminRecord.leaseContractAudit || prev.leaseContractAudit,
         vipConciergePerks: adminRecord.vipConciergePerks || prev.vipConciergePerks,
+        founderTelegramAccompaniment: adminRecord.founderTelegramAccompaniment || prev.founderTelegramAccompaniment,
         slaDeadline: adminRecord.slaDeadline,
         paidAt: adminRecord.paidAt,
         paymentMethod: adminRecord.paymentMethod,
@@ -1055,6 +1056,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             partnerRealtor: rec.partnerRealtor || prev.partnerRealtor,
             leaseContractAudit: rec.leaseContractAudit || prev.leaseContractAudit,
             vipConciergePerks: rec.vipConciergePerks || prev.vipConciergePerks,
+            founderTelegramAccompaniment: rec.founderTelegramAccompaniment || prev.founderTelegramAccompaniment,
             hasUnpublishedChanges: false,
             lastPublishedAt: rec.lastPublishedAt,
             updatedAt: rec.updatedAt

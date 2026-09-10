@@ -541,7 +541,7 @@ export const DEMO_CLIENT_PROJECT: ClientProject = {
       videoTourUrl: 'https://youtube.com',
       founderReview: {
         en: 'Japanese quality standard condominium. Very rare to find official EVN rates and true soundproofing in Da Nang. Excellent choice for focused remote design work.',
-        ru: 'ЖК японского стандарта качества. Редкий случай прямого государственного тарифа EVN и настоящей шумоизоляции в Дананге. Идеально для комфортной удаленной работы.'
+        ru: 'ЖК японского стандарта качества. Редкий случай прямого тарифа EVN и настоящей шумоизоляции в Дананге. Идеально для комфортной удаленной работы.'
       },
       contractAudited: true,
       isTopPick: true,
