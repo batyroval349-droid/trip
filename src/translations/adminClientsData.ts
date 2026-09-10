@@ -6,6 +6,13 @@ import {
   DEFAULT_TRAVEL_SIM_GUIDE,
   DEFAULT_TRAVEL_HOSPITALS
 } from './defaultTravelData';
+import {
+  DEFAULT_RELOCATION_ROADMAP_TASKS,
+  DEFAULT_PARTNER_REALTOR_DANANG,
+  DEFAULT_PARTNER_REALTOR_NHATRANG,
+  DEFAULT_LEASE_AUDIT,
+  DEFAULT_VIP_PERKS
+} from './defaultRelocationData';
 
 export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
   {
@@ -305,22 +312,9 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
         createdAt: '2026-08-31'
       }
     ],
-    roadmapTasks: [
-      {
-        id: 't-anna-1',
-        phase: 'before_arrival',
-        title: { en: 'Vietnam e-Visa approved for 90 days', ru: 'Одобрена e-Visa во Вьетнам на 90 дней' },
-        description: { en: 'Visa issued and downloaded to PDF.', ru: 'Виза выпущена и сохранена в PDF.' },
-        completed: true
-      },
-      {
-        id: 't-anna-2',
-        phase: 'week_of_arrival',
-        title: { en: 'Inspect Hiyori Tower unit #1402', ru: 'Очный осмотр квартиры в Hiyori Tower №1402' },
-        description: { en: 'Check water pressure and Wi-Fi speed.', ru: 'Проверка напора воды и скорости Wi-Fi.' },
-        completed: false
-      }
-    ],
+    roadmapTasks: DEFAULT_RELOCATION_ROADMAP_TASKS,
+    partnerRealtor: DEFAULT_PARTNER_REALTOR_DANANG,
+    leaseContractAudit: DEFAULT_LEASE_AUDIT,
     createdAt: '2026-08-28',
     updatedAt: '2026-09-02'
   },
@@ -336,7 +330,7 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
       ru: 'Консьерж-сопровождение релокации ($890)'
     },
     priceUSD: 890,
-    status: 'research_in_progress',
+    status: 'plan_ready',
     questionnaire: {
       name: 'Дмитрий и Елена',
       email: 'dmitry.reloc@gmail.com',
@@ -431,15 +425,10 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
         createdAt: '2026-08-28'
       }
     ],
-    roadmapTasks: [
-      {
-        id: 't-dmitry-1',
-        phase: 'before_arrival',
-        title: { en: 'Draft bilingual 12-month lease contract', ru: 'Составить двуязычный договор аренды на 12 месяцев' },
-        description: { en: 'Lock fixed EVN rates and deposit return protocol.', ru: 'Зафиксировать тариф EVN и возврат залога.' },
-        completed: true
-      }
-    ],
+    roadmapTasks: DEFAULT_RELOCATION_ROADMAP_TASKS,
+    partnerRealtor: DEFAULT_PARTNER_REALTOR_NHATRANG,
+    leaseContractAudit: DEFAULT_LEASE_AUDIT,
+    vipConciergePerks: DEFAULT_VIP_PERKS,
     createdAt: '2026-08-25',
     updatedAt: '2026-09-01'
   },

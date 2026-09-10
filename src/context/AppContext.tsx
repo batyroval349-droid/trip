@@ -16,7 +16,11 @@ import type {
   ProjectStatus,
   VerifiedHousingItem,
   TravelDayItem,
-  TravelTransitLeg
+  TravelTransitLeg,
+  RoadmapTask,
+  PartnerRealtorAssignment,
+  LeaseContractAudit,
+  VipConciergePerks
 } from '../types';
 import { DEMO_CLIENT_PROJECT, UI_STRINGS } from '../translations/content';
 import { INITIAL_ADMIN_CLIENTS } from '../translations/adminClientsData';
@@ -149,6 +153,10 @@ interface AppContextType {
   applyTravelRevision: (clientId: string) => void;
   updateTravelDays: (clientId: string, days: TravelDayItem[]) => void;
   updateTravelTransitLegs: (clientId: string, legs: TravelTransitLeg[]) => void;
+  updatePartnerRealtor: (clientId: string, realtor: PartnerRealtorAssignment) => void;
+  updateLeaseContractAudit: (clientId: string, audit: LeaseContractAudit) => void;
+  updateVipConciergePerks: (clientId: string, perks: VipConciergePerks) => void;
+  updateRelocationRoadmap: (clientId: string, tasks: RoadmapTask[]) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -406,6 +414,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         travelRevision: adminRecord.travelRevision || prev.travelRevision,
         travelSimGuide: adminRecord.travelSimGuide || prev.travelSimGuide,
         travelEmergencyHospitals: adminRecord.travelEmergencyHospitals || prev.travelEmergencyHospitals,
+        partnerRealtor: adminRecord.partnerRealtor || prev.partnerRealtor,
+        leaseContractAudit: adminRecord.leaseContractAudit || prev.leaseContractAudit,
+        vipConciergePerks: adminRecord.vipConciergePerks || prev.vipConciergePerks,
         slaDeadline: adminRecord.slaDeadline,
         paidAt: adminRecord.paidAt,
         paymentMethod: adminRecord.paymentMethod,
@@ -1041,6 +1052,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             travelRevision: rec.travelRevision || prev.travelRevision,
             travelSimGuide: rec.travelSimGuide || prev.travelSimGuide,
             travelEmergencyHospitals: rec.travelEmergencyHospitals || prev.travelEmergencyHospitals,
+            partnerRealtor: rec.partnerRealtor || prev.partnerRealtor,
+            leaseContractAudit: rec.leaseContractAudit || prev.leaseContractAudit,
+            vipConciergePerks: rec.vipConciergePerks || prev.vipConciergePerks,
             hasUnpublishedChanges: false,
             lastPublishedAt: rec.lastPublishedAt,
             updatedAt: rec.updatedAt
@@ -1211,6 +1225,86 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const updatePartnerRealtor = (clientId: string, realtor: PartnerRealtorAssignment) => {
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            partnerRealtor: realtor,
+            hasUnpublishedChanges: true,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const updateLeaseContractAudit = (clientId: string, audit: LeaseContractAudit) => {
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            leaseContractAudit: audit,
+            hasUnpublishedChanges: true,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const updateVipConciergePerks = (clientId: string, perks: VipConciergePerks) => {
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            vipConciergePerks: perks,
+            hasUnpublishedChanges: true,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const updateRelocationRoadmap = (clientId: string, tasks: RoadmapTask[]) => {
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            roadmapTasks: tasks,
+            hasUnpublishedChanges: true,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -1261,6 +1355,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         applyTravelRevision,
         updateTravelDays,
         updateTravelTransitLegs,
+        updatePartnerRealtor,
+        updateLeaseContractAudit,
+        updateVipConciergePerks,
+        updateRelocationRoadmap,
         consultationBookings,
         scheduleConfig,
         updateScheduleConfig,

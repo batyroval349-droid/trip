@@ -242,6 +242,89 @@ export interface TravelEmergencyHospital {
   type: 'international' | 'general';
 }
 
+export type RealtorWorkStatus =
+  | 'assigned'
+  | 'chat_created'
+  | 'viewings_scheduled'
+  | 'contract_negotiation'
+  | 'leased';
+
+export interface PartnerRealtorAssignment {
+  id: string;
+  realtorName: string;
+  agencyOrTitle: string;
+  photoUrl: string;
+  phoneOrZalo: string;
+  telegramUsername: string;
+  whatsappNumber: string;
+  citiesCovered: string[];
+  languages: string[];
+  specialization: string;
+  status: RealtorWorkStatus;
+  founderNoteToClient: { ru: string; en: string };
+  directChatUrl: string;
+}
+
+export type LeaseAuditStatus =
+  | 'waiting_for_client_draft'
+  | 'under_review'
+  | 'approved_with_notes'
+  | 'revisions_required'
+  | 'high_risk';
+
+export interface LeaseAuditCheckItem {
+  status: 'pass' | 'warning' | 'fail';
+  comment: string;
+}
+
+export interface LeaseContractAudit {
+  status: LeaseAuditStatus;
+  contractDraftTitle?: string;
+  contractFileOrUrl?: string;
+  draftReceivedAt?: string;
+  auditedAt?: string;
+  checks: {
+    depositRefundSafety: LeaseAuditCheckItem;
+    evnElectricityTariff: LeaseAuditCheckItem & { tariffVND?: number };
+    waterAndInternetSpeed: LeaseAuditCheckItem;
+    policeRegistrationTamTru: LeaseAuditCheckItem;
+    earlyTerminationClause: LeaseAuditCheckItem;
+  };
+  overallVerdict: { ru: string; en: string };
+  recommendedAmendments: string[];
+}
+
+export type VipPsychologistStatus =
+  | 'included_not_booked'
+  | 'contact_shared'
+  | 'session_scheduled'
+  | 'completed';
+
+export interface VipConciergePerks {
+  psychologistSession: {
+    status: VipPsychologistStatus;
+    specialistName: string;
+    specialistTitle: string;
+    specialistPhotoUrl: string;
+    telegramContact: string;
+    whatsappContact: string;
+    sessionDate?: string;
+    secondSessionPromoCode: string;
+    notes: { ru: string; en: string };
+  };
+  onArrivalAssistance: {
+    status: 'pending_flight_details' | 'scheduled' | 'in_progress' | 'completed';
+    flightNumber?: string;
+    arrivalDate?: string;
+    airportPickupStatus?: 'none' | 'driver_assigned' | 'assisted_grab';
+    urgentTasks: { id: string; title: string; completed: boolean }[];
+  };
+  realtorAccompaniment: {
+    status: 'not_started' | 'coordinated' | 'viewings_in_progress' | 'signed';
+    assignedEscort: string;
+  };
+}
+
 export interface ClientProject {
   id: string;
   clientName: string;
@@ -274,6 +357,10 @@ export interface ClientProject {
   travelRevision?: TravelRevisionState;
   travelSimGuide?: TravelSimGuideItem[];
   travelEmergencyHospitals?: TravelEmergencyHospital[];
+  // Relocation Specific Plan Fields (tier3 & tier4)
+  partnerRealtor?: PartnerRealtorAssignment;
+  leaseContractAudit?: LeaseContractAudit;
+  vipConciergePerks?: VipConciergePerks;
 }
 
 export interface AdminClientRecord {
@@ -306,4 +393,8 @@ export interface AdminClientRecord {
   travelRevision?: TravelRevisionState;
   travelSimGuide?: TravelSimGuideItem[];
   travelEmergencyHospitals?: TravelEmergencyHospital[];
+  // Relocation Specific Plan Fields (tier3 & tier4)
+  partnerRealtor?: PartnerRealtorAssignment;
+  leaseContractAudit?: LeaseContractAudit;
+  vipConciergePerks?: VipConciergePerks;
 }

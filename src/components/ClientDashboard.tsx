@@ -5,7 +5,6 @@ import { DashboardCityView } from './dashboard/DashboardCityView';
 import { DashboardNeighborhoodsView } from './dashboard/DashboardNeighborhoodsView';
 import { DashboardBudgetView } from './dashboard/DashboardBudgetView';
 import { DashboardRoadmapView } from './dashboard/DashboardRoadmapView';
-import { DashboardHousingView } from './dashboard/DashboardHousingView';
 import { DashboardResourcesView } from './dashboard/DashboardResourcesView';
 import { CurrencyConverter } from './dashboard/CurrencyConverter';
 import { LockedFeatureCard } from './dashboard/LockedFeatureCard';
@@ -15,11 +14,30 @@ import { DashboardItineraryView } from './dashboard/DashboardItineraryView';
 import { DashboardTravelTransitView } from './dashboard/DashboardTravelTransitView';
 import { DashboardSimConnectivityView } from './dashboard/DashboardSimConnectivityView';
 import { DashboardEmergencySosView } from './dashboard/DashboardEmergencySosView';
-import { LayoutDashboard, MapPin, Compass, DollarSign, Calendar, Home, BookOpen, MessageSquare, ArrowRight, CheckCircle2, Lock, Clock, Sparkles } from 'lucide-react';
+import { DashboardRealtorView } from './dashboard/DashboardRealtorView';
+import { DashboardLeaseAuditView } from './dashboard/DashboardLeaseAuditView';
+import { DashboardVipConciergeView } from './dashboard/DashboardVipConciergeView';
+import {
+  LayoutDashboard,
+  MapPin,
+  Compass,
+  DollarSign,
+  Calendar,
+  BookOpen,
+  MessageSquare,
+  ArrowRight,
+  CheckCircle2,
+  Lock,
+  Clock,
+  Sparkles,
+  Users,
+  ShieldCheck,
+  Crown
+} from 'lucide-react';
 
 export const ClientDashboard: React.FC = () => {
   const { project, t, language, upgradeToRelocation, setViewMode } = useApp();
-  const [activeTab, setActiveTab] = useState<'overview' | 'city' | 'neighborhoods' | 'budget' | 'roadmap' | 'housing' | 'resources'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'city' | 'neighborhoods' | 'budget' | 'roadmap' | 'housing' | 'resources' | 'realtor' | 'lease_audit' | 'vip_concierge'>('overview');
   const [travelTab, setTravelTab] = useState<'itinerary' | 'transit' | 'sim' | 'emergency'>('itinerary');
   const isTravelPlan = project.tierId === 'tier2';
   
@@ -129,12 +147,21 @@ export const ClientDashboard: React.FC = () => {
                 : (!isPlanPublished && language === 'ru' ? 'Статус исследования и Вьетнам' : t('dashTabOverview')),
               icon: LayoutDashboard
             },
-            { id: 'city', label: t('dashTabCity'), icon: MapPin, isRestricted: isTravelPlan, isPending: !isTravelPlan && !isPlanPublished },
-            { id: 'neighborhoods', label: t('dashTabNeighborhoods'), icon: Compass, isRestricted: isTravelPlan, isPending: !isTravelPlan && !isPlanPublished },
-            { id: 'budget', label: t('dashTabBudget'), icon: DollarSign, isRestricted: isTravelPlan, isPending: !isTravelPlan && !isPlanPublished },
-            { id: 'roadmap', label: t('dashTabRoadmap'), icon: Calendar, isRestricted: isTravelPlan, isPending: !isTravelPlan && !isPlanPublished },
-            { id: 'housing', label: t('dashTabHousing'), icon: Home, isRestricted: isTravelPlan },
-            { id: 'resources', label: t('dashTabResources'), icon: BookOpen, isRestricted: isTravelPlan }
+            { id: 'roadmap', label: language === 'ru' ? 'Маршрут переезда' : 'Relocation Roadmap', icon: Calendar, isPending: !isPlanPublished },
+            { id: 'realtor', label: language === 'ru' ? 'Партнер-риелтор' : 'Partner Realtor', icon: Users, isPending: !isPlanPublished },
+            { id: 'lease_audit', label: language === 'ru' ? 'Аудит договора' : 'Lease Audit', icon: ShieldCheck, isPending: !isPlanPublished },
+            { id: 'budget', label: t('dashTabBudget'), icon: DollarSign, isPending: !isPlanPublished },
+            { id: 'city', label: language === 'ru' ? 'Город и районы' : 'City & Districts', icon: MapPin, isPending: !isPlanPublished },
+            { id: 'resources', label: t('dashTabResources'), icon: BookOpen },
+            ...(project.tierId === 'tier4' || project.vipConciergePerks ? [
+              {
+                id: 'vip_concierge',
+                label: language === 'ru' ? 'VIP Консьерж & Психолог' : 'VIP Concierge & Psychologist',
+                icon: Crown,
+                isPending: !isPlanPublished,
+                isVipBadge: true
+              }
+            ] : [])
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -161,7 +188,25 @@ export const ClientDashboard: React.FC = () => {
               >
                 <Icon size={16} />
                 <span>{tab.label}</span>
-                {tab.isRestricted && (
+                {(tab as any).isVipBadge && (
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '2px',
+                      marginLeft: '4px',
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      background: isActive ? '#FFFFFF' : '#FEF3C7',
+                      color: isActive ? 'var(--accent-terracotta)' : '#B45309',
+                      padding: '2px 6px',
+                      borderRadius: '9999px'
+                    }}
+                  >
+                    VIP
+                  </span>
+                )}
+                {(tab as any).isRestricted && (
                   <span
                     style={{
                       display: 'inline-flex',
@@ -438,6 +483,102 @@ export const ClientDashboard: React.FC = () => {
 
             </div>
 
+            {/* Relocation Core Features Row: Realtor, Lease Audit, VIP Concierge */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '1.25rem'
+            }}>
+              {/* Partner Realtor Summary Card */}
+              <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-emerald)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                      <Users size={14} /> {language === 'ru' ? 'Партнер-риелтор' : 'Partner Realtor'}
+                    </div>
+                    <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
+                      {project.partnerRealtor?.telegramUsername || '@danang_reloc_partner'}
+                    </span>
+                  </div>
+                  <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
+                    {project.partnerRealtor?.realtorName || 'Nguyen Thanh Dat'} &bull; {project.partnerRealtor?.agencyOrTitle || 'Da Nang Realtor Network'}
+                  </h4>
+                  <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
+                    {language === 'ru'
+                      ? 'Прямой контакт проверенного риелтора. Жилье подбирается индивидуально и отправляется вам прямо в Telegram/WhatsApp с видеотурами.'
+                      : 'Direct contact with vetted local realtor. Apartments are matched to your criteria and sent directly to Telegram/WhatsApp.'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab('realtor')}
+                  className="btn btn-secondary"
+                  style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
+                >
+                  {language === 'ru' ? 'Открыть контакт и бриф риелтора' : 'View Realtor & Brief'} <ArrowRight size={14} />
+                </button>
+              </div>
+
+              {/* Lease Audit Summary Card */}
+              <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-terracotta)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                      <ShieldCheck size={14} /> {language === 'ru' ? 'Аудит договора аренды' : 'Lease Due Diligence'}
+                    </div>
+                    <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
+                      EVN {project.leaseContractAudit?.checks.evnElectricityTariff.tariffVND || 2800} ₫/кВт
+                    </span>
+                  </div>
+                  <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
+                    {project.leaseContractAudit?.contractDraftTitle || (language === 'ru' ? 'Экспертиза безопасности залога' : 'Lease Safety Verification')}
+                  </h4>
+                  <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
+                    {language === 'ru'
+                      ? 'Основатель проверяет договор на скрытые наценки EVN, возврат залога, оптоволокно и регистрацию tạm trú в полиции.'
+                      : 'Founder audits your draft lease for EVN surcharges, deposit refund guarantee, fiber speed, and police registration.'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab('lease_audit')}
+                  className="btn btn-secondary"
+                  style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
+                >
+                  {language === 'ru' ? 'Смотреть вердикт и пункты договора' : 'View Audit Verdict & Clauses'} <ArrowRight size={14} />
+                </button>
+              </div>
+
+              {/* VIP Concierge Summary Card (for tier4) */}
+              {(project.tierId === 'tier4' || project.vipConciergePerks) && (
+                <div className="glass-card glass-card-terracotta" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: '1px solid #FCD34D' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#B45309', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                        <Crown size={14} /> VIP Concierge & Care
+                      </div>
+                      <span className="badge" style={{ background: '#FEF3C7', color: '#B45309', fontSize: '0.72rem', fontWeight: 700 }}>
+                        1 Free Session
+                      </span>
+                    </div>
+                    <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
+                      {language === 'ru' ? 'Психологическая поддержка и адаптация' : 'Psychologist Relocation Support'}
+                    </h4>
+                    <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
+                      {language === 'ru'
+                        ? '1 бесплатная сессия с сертифицированным психологом и сексологом + скидка 20% на 2-ю сессию + встреча в аэропорту.'
+                        : '1 free session with certified psychologist/sexologist + 20% discount on 2nd session + airport arrival assistance.'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('vip_concierge')}
+                    className="btn btn-primary"
+                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
+                  >
+                    {language === 'ru' ? 'Записаться к психологу / VIP' : 'Book Session / VIP Concierge'} <ArrowRight size={14} />
+                  </button>
+                </div>
+              )}
+            </div>
+
           </div>
           )
         )}
@@ -506,6 +647,27 @@ export const ClientDashboard: React.FC = () => {
             <DashboardRoadmapView />
           )
         )}
+        {activeTab === 'realtor' && (
+          !isPlanPublished ? (
+            <PendingRecommendationNotice sectionName={language === 'ru' ? 'Партнер-риелтор' : 'Partner Realtor'} onGoBack={() => setActiveTab('overview')} />
+          ) : (
+            <DashboardRealtorView />
+          )
+        )}
+        {activeTab === 'lease_audit' && (
+          !isPlanPublished ? (
+            <PendingRecommendationNotice sectionName={language === 'ru' ? 'Аудит договора аренды' : 'Lease Contract Audit'} onGoBack={() => setActiveTab('overview')} />
+          ) : (
+            <DashboardLeaseAuditView />
+          )
+        )}
+        {activeTab === 'vip_concierge' && (
+          !isPlanPublished ? (
+            <PendingRecommendationNotice sectionName={language === 'ru' ? 'VIP Консьерж & Психолог' : 'VIP Concierge & Psychologist'} onGoBack={() => setActiveTab('overview')} />
+          ) : (
+            <DashboardVipConciergeView />
+          )
+        )}
         {activeTab === 'housing' && (
           isTravelPlan ? (
             <LockedFeatureCard
@@ -517,7 +679,7 @@ export const ClientDashboard: React.FC = () => {
               language={language}
             />
           ) : (
-            <DashboardHousingView />
+            <DashboardRealtorView />
           )
         )}
         {activeTab === 'resources' && (
