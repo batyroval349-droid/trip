@@ -54,31 +54,31 @@ export const ClientReviewsSection: React.FC = () => {
   ];
 
   return (
-    <section id="reviews" style={{ padding: '5rem 0', background: '#F8F6F0' }}>
-      <div className="container">
+    <section id="reviews-section" style={{ padding: '3.25rem 0 3.75rem 0', background: '#F8F6F0' }}>
+      <div className="container" style={{ maxWidth: '1240px' }}>
         
         {/* Section Header */}
-        <div style={{ textAlign: 'center', maxWidth: '760px', margin: '0 auto 3.5rem auto' }}>
-          <div className="badge badge-emerald" style={{ marginBottom: '1rem' }}>
-            <MessageSquareQuote size={14} /> {language === 'ru' ? 'Опыт наших клиентов' : 'Client Stories & Feedback'}
+        <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 2rem auto' }}>
+          <div className="badge badge-emerald" style={{ marginBottom: '0.75rem', fontSize: '0.78rem' }}>
+            <MessageSquareQuote size={13} /> {language === 'ru' ? 'Опыт наших клиентов' : 'Client Stories & Feedback'}
           </div>
-          <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.6rem)', marginBottom: '0.8rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
+          <h2 style={{ fontSize: 'clamp(1.75rem, 2.8vw, 2.2rem)', marginBottom: '0.5rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
             {language === 'ru'
               ? 'Честные истории переезда и путешествий'
               : 'Real Relocation & Travel Experiences'}
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.5, margin: 0 }}>
             {language === 'ru'
-              ? 'Реальные задачи, с которыми к нам приходят, и то, как мы помогаем их решить — без прикрас и нереалистичных обещаний.'
-              : 'Real situations our clients come to us with, and exactly how we solve them — honestly and without exaggerated claims.'}
+              ? 'Реальные задачи клиентов и то, как мы помогли их решить — без прикрас и завышенных обещаний.'
+              : 'Real tasks from clients and how we solved them — without unrealistic promises.'}
           </p>
         </div>
 
-        {/* Reviews Cards Grid */}
+        {/* Compact Reviews Cards Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.75rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '1.25rem',
           alignItems: 'stretch'
         }}>
           {reviews.map((rev) => {
@@ -88,49 +88,49 @@ export const ClientReviewsSection: React.FC = () => {
                 key={rev.id}
                 className="glass-card"
                 style={{
-                  padding: '2rem',
+                  padding: '1.25rem 1.35rem',
                   background: '#FFFFFF',
-                  borderRadius: 'var(--radius-lg)',
+                  borderRadius: 'var(--radius-md)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   border: '1px solid rgba(0, 0, 0, 0.06)',
-                  boxShadow: '0 8px 24px -6px rgba(0, 0, 0, 0.04)',
-                  transition: 'transform 0.25s ease, box-shadow 0.25s ease'
+                  boxShadow: '0 4px 16px -4px rgba(0, 0, 0, 0.04)',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
                 }}
               >
                 <div>
                   
                   {/* Top Bar: Tier Badge & 5 Stars */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.4rem' }}>
                     <div style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.35rem',
+                      gap: '0.3rem',
                       background: rev.tierBg,
                       color: rev.tierColor,
-                      padding: '0.35rem 0.75rem',
+                      padding: '0.22rem 0.65rem',
                       borderRadius: '9999px',
-                      fontSize: '0.76rem',
+                      fontSize: '0.72rem',
                       fontWeight: 700
                     }}>
-                      <TierIcon size={13} />
+                      <TierIcon size={12} />
                       <span>{rev.tier}</span>
                     </div>
 
                     <div style={{ display: 'flex', gap: '2px' }}>
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} style={{ fill: '#F59E0B', color: '#F59E0B' }} />
+                        <Star key={i} size={13} style={{ fill: '#F59E0B', color: '#F59E0B' }} />
                       ))}
                     </div>
                   </div>
 
-                  {/* Review Text */}
+                  {/* Compact Review Text */}
                   <p style={{
-                    fontSize: '0.92rem',
+                    fontSize: '0.86rem',
                     color: 'var(--text-main)',
-                    lineHeight: 1.65,
-                    margin: '0 0 1.25rem 0',
+                    lineHeight: 1.5,
+                    margin: '0 0 0.85rem 0',
                     fontStyle: 'italic'
                   }}>
                     {rev.text}
@@ -140,40 +140,40 @@ export const ClientReviewsSection: React.FC = () => {
                   <div style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.4rem',
+                    gap: '0.35rem',
                     background: '#F0FDF4',
                     border: '1px solid #BBF7D0',
-                    padding: '0.35rem 0.75rem',
-                    borderRadius: '6px',
-                    fontSize: '0.78rem',
+                    padding: '0.22rem 0.6rem',
+                    borderRadius: '5px',
+                    fontSize: '0.74rem',
                     color: '#15803D',
                     fontWeight: 600,
-                    marginBottom: '1.5rem'
+                    marginBottom: '1rem'
                   }}>
-                    <CheckCircle2 size={13} />
+                    <CheckCircle2 size={12} />
                     <span>{rev.highlight}</span>
                   </div>
 
                 </div>
 
                 {/* Author Info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-subtle)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-subtle)' }}>
                   <img
                     src={rev.avatar}
                     alt={rev.name}
                     style={{
-                      width: '46px',
-                      height: '46px',
+                      width: '38px',
+                      height: '38px',
                       borderRadius: '50%',
                       objectFit: 'cover',
                       border: '2px solid var(--accent-emerald)'
                     }}
                   />
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--text-main)' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-main)' }}>
                       {rev.name}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
                       {rev.role} &bull; <span style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>{rev.city}</span>
                     </div>
                   </div>

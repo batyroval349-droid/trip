@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { FileText, GraduationCap, Laptop, CreditCard, BookOpen, Send, Sparkles } from 'lucide-react';
+import { FileText, GraduationCap, Laptop, CreditCard, BookOpen, Send } from 'lucide-react';
 
 export const AdditionalServices: React.FC = () => {
   const { t, language } = useApp();
@@ -68,9 +68,6 @@ export const AdditionalServices: React.FC = () => {
         
         {/* Header */}
         <div style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto 3rem auto' }}>
-          <div className="badge badge-emerald" style={{ marginBottom: '1rem' }}>
-            <Sparkles size={14} /> {language === 'ru' ? 'Отдельные модули' : 'Standalone Add-ons'}
-          </div>
           <h2 style={{ fontSize: '2.4rem', marginBottom: '0.85rem' }}>
             {t('servicesTitle' as any)}
           </h2>

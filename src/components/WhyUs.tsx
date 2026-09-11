@@ -41,7 +41,7 @@ export const WhyUs: React.FC = () => {
   ];
 
   return (
-    <section style={{ padding: '4rem 0', background: '#F2EFE9' }}>
+    <section id="why-us-section" style={{ padding: '4rem 0', background: 'linear-gradient(180deg, var(--bg-main) 0%, #F4F0E8 100%)' }}>
       <div className="container">
         
         {/* Header */}

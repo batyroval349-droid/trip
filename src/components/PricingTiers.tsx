@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Check, Sparkles, Star, Zap, ShieldCheck, Compass } from 'lucide-react';
+import { Check, Sparkles, Star, ShieldCheck, Compass } from 'lucide-react';
 
 export const PricingTiers: React.FC = () => {
   const { t, startBooking, language } = useApp();
@@ -123,10 +123,6 @@ export const PricingTiers: React.FC = () => {
         
         {/* Header */}
         <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 2.5rem auto' }}>
-          <div className="badge badge-emerald" style={{ marginBottom: '1rem' }}>
-            <Zap size={14} /> {language === 'ru' ? 'Прозрачные тарифы' : 'Transparent Pricing'}
-          </div>
-          
           <h2 style={{ fontSize: '2.4rem', marginBottom: '1rem' }}>
             {t('pricingTitle')}
           </h2>

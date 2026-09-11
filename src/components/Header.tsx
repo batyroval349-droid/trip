@@ -17,23 +17,55 @@ export const Header: React.FC = () => {
     setIsClientLoginModalOpen
   } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [activeSection, setActiveSection] = React.useState<'home' | 'pricing' | 'faq'>('home');
+  const [activeSection, setActiveSection] = React.useState<'home' | 'why' | 'cabinet' | 'pricing' | 'reviews' | 'faq'>('home');
+
+  const scrollTo = (id: string, sec: 'home' | 'why' | 'cabinet' | 'pricing' | 'reviews' | 'faq') => {
+    setActiveSection(sec);
+    if (viewMode !== 'marketing') {
+      setViewMode('marketing');
+      setTimeout(() => {
+        if (id === 'top') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 50);
+    } else {
+      if (id === 'top') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   React.useEffect(() => {
     if (viewMode !== 'marketing') return;
 
     const handleScroll = () => {
       const scrollY = window.scrollY;
+      const whyEl = document.getElementById('why-us-section');
+      const cabinetEl = document.getElementById('cabinet-preview');
       const pricingEl = document.getElementById('pricing-section');
+      const reviewsEl = document.getElementById('reviews-section');
       const faqEl = document.getElementById('faq-section');
 
-      const pricingTop = pricingEl ? pricingEl.offsetTop - 200 : 99999;
-      const faqTop = faqEl ? faqEl.offsetTop - 200 : 99999;
+      const whyTop = whyEl ? whyEl.offsetTop - 150 : 99999;
+      const cabinetTop = cabinetEl ? cabinetEl.offsetTop - 150 : 99999;
+      const pricingTop = pricingEl ? pricingEl.offsetTop - 150 : 99999;
+      const reviewsTop = reviewsEl ? reviewsEl.offsetTop - 150 : 99999;
+      const faqTop = faqEl ? faqEl.offsetTop - 150 : 99999;
 
       if (scrollY >= faqTop - 50) {
         setActiveSection('faq');
+      } else if (scrollY >= reviewsTop - 50) {
+        setActiveSection('reviews');
       } else if (scrollY >= pricingTop - 50) {
         setActiveSection('pricing');
+      } else if (scrollY >= cabinetTop - 50) {
+        setActiveSection('cabinet');
+      } else if (scrollY >= whyTop - 50) {
+        setActiveSection('why');
       } else {
         setActiveSection('home');
       }
@@ -57,9 +89,7 @@ export const Header: React.FC = () => {
         {/* Brand Logo with Compass */}
         <div
           onClick={() => {
-            setActiveSection('home');
-            setViewMode('marketing');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollTo('top', 'home');
           }}
           style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', flexShrink: 0 }}
         >
@@ -83,11 +113,7 @@ export const Header: React.FC = () => {
           <div className="pill-switcher">
             <button
               className={`pill-item ${viewMode === 'marketing' && activeSection === 'home' ? 'active' : ''}`}
-              onClick={() => {
-                setActiveSection('home');
-                setViewMode('marketing');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              onClick={() => scrollTo('top', 'home')}
             >
               {t('navHome')}
             </button>
@@ -96,26 +122,32 @@ export const Header: React.FC = () => {
             {!isClientUnlocked && !isFounderLoggedIn && (
               <>
                 <button
+                  className={`pill-item ${viewMode === 'marketing' && activeSection === 'why' ? 'active' : ''}`}
+                  onClick={() => scrollTo('why-us-section', 'why')}
+                >
+                  {t('navWhyUs')}
+                </button>
+                <button
+                  className={`pill-item ${viewMode === 'marketing' && activeSection === 'cabinet' ? 'active' : ''}`}
+                  onClick={() => scrollTo('cabinet-preview', 'cabinet')}
+                >
+                  {t('navPreview' as any) || (language === 'ru' ? 'Демо кабинета' : 'Demo')}
+                </button>
+                <button
                   className={`pill-item ${viewMode === 'marketing' && activeSection === 'pricing' ? 'active' : ''}`}
-                  onClick={() => {
-                    setActiveSection('pricing');
-                    setViewMode('marketing');
-                    setTimeout(() => {
-                      document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' });
-                    }, 50);
-                  }}
+                  onClick={() => scrollTo('pricing-section', 'pricing')}
                 >
                   {t('navPricing')}
                 </button>
                 <button
+                  className={`pill-item ${viewMode === 'marketing' && activeSection === 'reviews' ? 'active' : ''}`}
+                  onClick={() => scrollTo('reviews-section', 'reviews')}
+                >
+                  {t('navReviews' as any) || (language === 'ru' ? 'Отзывы' : 'Reviews')}
+                </button>
+                <button
                   className={`pill-item ${viewMode === 'marketing' && activeSection === 'faq' ? 'active' : ''}`}
-                  onClick={() => {
-                    setActiveSection('faq');
-                    setViewMode('marketing');
-                    setTimeout(() => {
-                      document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
-                    }, 50);
-                  }}
+                  onClick={() => scrollTo('faq-section', 'faq')}
                 >
                   {t('navFAQ')}
                 </button>
@@ -276,12 +308,51 @@ export const Header: React.FC = () => {
           gap: '0.8rem'
         }}>
           <button
-            className={`btn ${viewMode === 'marketing' ? 'btn-primary' : 'btn-secondary'}`}
+            className={`btn ${viewMode === 'marketing' && activeSection === 'home' ? 'btn-primary' : 'btn-secondary'}`}
             style={{ width: '100%', justifyContent: 'flex-start' }}
-            onClick={() => { setViewMode('marketing'); setMobileMenuOpen(false); }}
+            onClick={() => { scrollTo('top', 'home'); setMobileMenuOpen(false); }}
           >
             {t('navHome')}
           </button>
+          {!isClientUnlocked && !isFounderLoggedIn && (
+            <>
+              <button
+                className={`btn ${viewMode === 'marketing' && activeSection === 'why' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ width: '100%', justifyContent: 'flex-start' }}
+                onClick={() => { scrollTo('why-us-section', 'why'); setMobileMenuOpen(false); }}
+              >
+                {t('navWhyUs')}
+              </button>
+              <button
+                className={`btn ${viewMode === 'marketing' && activeSection === 'cabinet' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ width: '100%', justifyContent: 'flex-start' }}
+                onClick={() => { scrollTo('cabinet-preview', 'cabinet'); setMobileMenuOpen(false); }}
+              >
+                {t('navPreview' as any) || (language === 'ru' ? 'Демо кабинета' : 'Demo')}
+              </button>
+              <button
+                className={`btn ${viewMode === 'marketing' && activeSection === 'pricing' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ width: '100%', justifyContent: 'flex-start' }}
+                onClick={() => { scrollTo('pricing-section', 'pricing'); setMobileMenuOpen(false); }}
+              >
+                {t('navPricing')}
+              </button>
+              <button
+                className={`btn ${viewMode === 'marketing' && activeSection === 'reviews' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ width: '100%', justifyContent: 'flex-start' }}
+                onClick={() => { scrollTo('reviews-section', 'reviews'); setMobileMenuOpen(false); }}
+              >
+                {t('navReviews' as any) || (language === 'ru' ? 'Отзывы' : 'Reviews')}
+              </button>
+              <button
+                className={`btn ${viewMode === 'marketing' && activeSection === 'faq' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ width: '100%', justifyContent: 'flex-start' }}
+                onClick={() => { scrollTo('faq-section', 'faq'); setMobileMenuOpen(false); }}
+              >
+                {t('navFAQ')}
+              </button>
+            </>
+          )}
           {isClientUnlocked && (
             <button
               className={`btn ${viewMode === 'dashboard' ? 'btn-primary' : 'btn-secondary'}`}
