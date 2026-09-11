@@ -6,7 +6,6 @@ import { WhyUs } from './components/WhyUs';
 import { DashboardPreview } from './components/DashboardPreview';
 import { PricingTiers } from './components/PricingTiers';
 import { AdditionalServices } from './components/AdditionalServices';
-import { HousingGuidanceHub } from './components/HousingGuidanceHub';
 import { ClientReviewsSection } from './components/ClientReviewsSection';
 import { FAQSection } from './components/FAQSection';
 import { QuestionnaireForm } from './components/QuestionnaireForm';
@@ -36,10 +35,9 @@ const MainContent: React.FC = () => {
             <Hero />
             <WhyUs />
             <DashboardPreview />
-            <HousingGuidanceHub />
-            <ClientReviewsSection />
             <PricingTiers />
             <AdditionalServices />
+            <ClientReviewsSection />
             <FAQSection />
           </div>
         )}

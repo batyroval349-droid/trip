@@ -8,7 +8,6 @@ import {
   Crown,
   Compass,
   CheckCircle2,
-  ArrowRight,
   Send,
   MessageCircle,
   Copy,
@@ -16,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export const DashboardPreview: React.FC = () => {
-  const { language, setViewMode } = useApp();
+  const { language } = useApp();
   const [activePreviewTab, setActivePreviewTab] = useState<'roadmap' | 'realtor' | 'lease_audit' | 'vip' | 'travel'>('roadmap');
   const [copiedPromo, setCopiedPromo] = useState(false);
 
@@ -57,12 +56,12 @@ export const DashboardPreview: React.FC = () => {
               <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F59E0B' }} />
               <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10B981' }} />
               <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginLeft: '0.5rem' }}>
-                {language === 'ru' ? 'Личный кабинет клиента: Дмитрий и Елена (Консьерж $890)' : 'Client Workspace Preview: Dmitry & Elena (VIP Concierge $890)'}
+                {language === 'ru' ? 'Личный кабинет клиента: Дмитрий и Елена (Демонстрация интерфейса)' : 'Client Workspace Preview: Dmitry & Elena (UI Showcase)'}
               </span>
             </div>
 
             <div className="badge badge-emerald" style={{ fontSize: '0.78rem' }}>
-              <CheckCircle2 size={13} /> {language === 'ru' ? 'Персональный план опубликован' : 'Live Client Workspace'}
+              <CheckCircle2 size={13} /> {language === 'ru' ? 'Интерактивная демонстрация' : 'Interactive UI Preview'}
             </div>
           </div>
 
@@ -212,7 +211,7 @@ export const DashboardPreview: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div>
                     <h3 style={{ fontSize: '1.25rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
-                      {language === 'ru' ? 'Дистанционный юридический аудит договора аренды' : 'Remote Lease Agreement Audit'}
+                      {language === 'ru' ? 'Дистанционный аудит договора аренды' : 'Remote Lease Agreement Audit'}
                     </h3>
                     <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0 }}>
                       Hiyori Garden Tower &bull; Договор на 12 месяцев
@@ -294,16 +293,27 @@ export const DashboardPreview: React.FC = () => {
                       </button>
                     </div>
 
-                    <a
-                      href="https://t.me/mur_mur_mari"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-primary"
-                      style={{ width: '100%', fontSize: '0.86rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', textDecoration: 'none' }}
+                    <div
+                      style={{
+                        width: '100%',
+                        fontSize: '0.86rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(15, 118, 110, 0.08)',
+                        color: 'var(--accent-emerald)',
+                        border: '1px dashed var(--accent-emerald)',
+                        borderRadius: 'var(--radius-sm)',
+                        fontWeight: 600,
+                        cursor: 'default',
+                        userSelect: 'none'
+                      }}
                     >
                       <MessageCircle size={15} />
-                      <span>{language === 'ru' ? 'Записаться в Telegram (@mur_mur_mari)' : 'Book via Telegram'}</span>
-                    </a>
+                      <span>{language === 'ru' ? 'Связь в Telegram с Марией (в личном кабинете)' : 'Telegram with Maria (in client portal)'}</span>
+                    </div>
                   </div>
 
                   {/* 30-Day Accompaniment */}
@@ -326,16 +336,27 @@ export const DashboardPreview: React.FC = () => {
                     </div>
 
                     <div style={{ marginTop: '1.25rem' }}>
-                      <a
-                        href="https://t.me/Likqwerty"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-primary"
-                        style={{ width: '100%', fontSize: '0.86rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', textDecoration: 'none', borderRadius: '9999px' }}
+                      <div
+                        style={{
+                          width: '100%',
+                          fontSize: '0.86rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.4rem',
+                          padding: '0.75rem 1rem',
+                          background: 'rgba(15, 118, 110, 0.08)',
+                          color: 'var(--accent-emerald)',
+                          border: '1px dashed var(--accent-emerald)',
+                          borderRadius: '9999px',
+                          fontWeight: 600,
+                          cursor: 'default',
+                          userSelect: 'none'
+                        }}
                       >
                         <Send size={14} />
-                        <span>{language === 'ru' ? 'Прямой чат в Telegram' : 'Open Telegram Chat'}</span>
-                      </a>
+                        <span>{language === 'ru' ? 'Чат с основателем в Telegram (в личном кабинете)' : 'Founder Telegram Chat (in client portal)'}</span>
+                      </div>
                     </div>
                   </div>
 
@@ -386,18 +407,6 @@ export const DashboardPreview: React.FC = () => {
               </div>
             )}
 
-          </div>
-
-          {/* CTA to open full client dashboard preview */}
-          <div style={{ marginTop: '1.75rem', textAlign: 'center' }}>
-            <button
-              onClick={() => setViewMode('dashboard')}
-              className="btn btn-primary"
-              style={{ fontSize: '0.95rem', padding: '0.85rem 1.8rem', borderRadius: '9999px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <span>{language === 'ru' ? 'Открыть демо-кабинет клиента' : 'Open Live Workspace Demo'}</span>
-              <ArrowRight size={16} />
-            </button>
           </div>
 
         </div>

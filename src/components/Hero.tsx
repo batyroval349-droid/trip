@@ -4,11 +4,8 @@ import {
   ArrowRight,
   Sparkles,
   Compass,
-  MapPin,
   ShieldCheck,
-  CheckCircle2,
-  Star,
-  Clock
+  Star
 } from 'lucide-react';
 
 export const Hero: React.FC = () => {
@@ -29,12 +26,7 @@ export const Hero: React.FC = () => {
   return (
     <section style={{ padding: '3.5rem 0 3rem 0', position: 'relative', overflow: 'hidden' }}>
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '2.5rem',
-          alignItems: 'center'
-        }}>
+        <div className="hero-grid-layout">
           
           {/* Left: Brand Headline & Value Proposition */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', zIndex: 2 }}>
@@ -74,8 +66,8 @@ export const Hero: React.FC = () => {
               maxWidth: '560px'
             }}>
               {language === 'ru'
-                ? 'Авторские пошаговые маршруты, проверенные локальные риелторы, независимый юридический аудит договоров аренды и персональное сопровождение — от первой e-Visa до комфортной жизни у моря.'
-                : 'Bespoke daily itineraries, vetted local realtors, independent lease due diligence, and personal guidance — from your initial e-Visa to effortless living by the sea.'}
+                ? 'Авторские пошаговые маршруты, проверенные локальные риелторы, независимый аудит договоров аренды и персональное сопровождение — от первой e-Visa до комфортной жизни у моря.'
+                : 'Bespoke daily itineraries, vetted local realtors, independent lease audit, and personal guidance — from your initial e-Visa to effortless living by the sea.'}
             </p>
 
             {/* CTAs with 3D Icons */}
@@ -104,7 +96,7 @@ export const Hero: React.FC = () => {
               </button>
             </div>
 
-            {/* Social Proof Trust Strip */}
+            {/* Social Proof Trust Strip (No fake promises, just honest rating & contract audit) */}
             <div style={{
               display: 'flex',
               flexWrap: 'wrap',
@@ -126,38 +118,13 @@ export const Hero: React.FC = () => {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.86rem', color: 'var(--text-main)', fontWeight: 600 }}>
                 <ShieldCheck size={16} style={{ color: 'var(--accent-emerald)' }} />
-                <span>{language === 'ru' ? 'Юридический аудит договора' : 'Lease Legal Audit'}</span>
+                <span>{language === 'ru' ? 'Аудит договора' : 'Lease Audit'}</span>
               </div>
-
-              <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#CBD5E1' }} />
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.86rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                <Clock size={16} style={{ color: 'var(--accent-terracotta)' }} />
-                <span>{language === 'ru' ? 'План за 48 часов' : 'Bespoke plan in 48h'}</span>
-              </div>
-            </div>
-
-            {/* Contact Micro-bar (without personal handle, just Telegram and WhatsApp) */}
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              fontSize: '0.84rem',
-              color: 'var(--text-muted)'
-            }}>
-              <span className="badge badge-emerald" style={{ padding: '3px 8px', fontSize: '0.72rem' }}>
-                Telegram & WhatsApp
-              </span>
-              <span>
-                {language === 'ru'
-                  ? 'Прямая связь в Telegram и WhatsApp без ботов'
-                  : 'Direct human guidance in Telegram & WhatsApp'}
-              </span>
             </div>
 
           </div>
 
-          {/* Right: Large Organic Borderless Vietnam Landscape (без границ, не как фото) */}
+          {/* Right: Large Organic Borderless Vietnam Landscape (без рамок, широкая, чистая, без лишних плашек) */}
           <div className="hero-organic-landscape-wrapper">
             <div className="hero-organic-landscape">
               <img
@@ -170,33 +137,9 @@ export const Hero: React.FC = () => {
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(to right, rgba(250, 248, 245, 0.45) 0%, transparent 25%, transparent 75%, rgba(250, 248, 245, 0.5) 100%), linear-gradient(to bottom, transparent 60%, rgba(250, 248, 245, 0.8) 100%)',
+                background: 'linear-gradient(to right, rgba(250, 248, 245, 0.35) 0%, transparent 20%, transparent 80%, rgba(250, 248, 245, 0.4) 100%), linear-gradient(to bottom, transparent 65%, rgba(250, 248, 245, 0.85) 100%)',
                 pointerEvents: 'none'
               }} />
-            </div>
-
-            {/* Floating Glass Pill 1: Cities (bottom left) */}
-            <div className="hero-floating-glass-pill" style={{ bottom: '1.5rem', left: '1rem' }}>
-              <span className="icon-3d-hover" style={{ color: 'var(--accent-emerald)', display: 'inline-flex' }}>
-                <MapPin size={16} />
-              </span>
-              <span>{language === 'ru' ? 'Дананг · Нячанг · Ханой · Хойан' : 'Da Nang · Nha Trang · Hanoi · Hoi An'}</span>
-            </div>
-
-            {/* Floating Glass Pill 2: Safe Leases & EVN (top right) */}
-            <div className="hero-floating-glass-pill" style={{ top: '2rem', right: '1rem' }}>
-              <span className="icon-3d-hover" style={{ color: 'var(--accent-terracotta)', display: 'inline-flex' }}>
-                <ShieldCheck size={16} />
-              </span>
-              <span>{language === 'ru' ? 'Проверенные договоры и тарифы EVN' : 'Vetted Leases & Fair EVN Rates'}</span>
-            </div>
-
-            {/* Floating Glass Pill 3: Bespoke Itinerary & Telegram Support (middle-bottom right) */}
-            <div className="hero-floating-glass-pill" style={{ bottom: '5.5rem', right: '1.5rem' }}>
-              <span className="icon-3d-hover" style={{ color: 'var(--accent-emerald)', display: 'inline-flex' }}>
-                <CheckCircle2 size={16} />
-              </span>
-              <span>{language === 'ru' ? 'Маршрут и поддержка в Telegram' : 'Bespoke Route & Telegram Support'}</span>
             </div>
           </div>
 

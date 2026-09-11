@@ -122,7 +122,7 @@ export const PricingTiers: React.FC = () => {
       <div className="container" style={{ maxWidth: '1280px' }}>
         
         {/* Header */}
-        <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 3.5rem auto' }}>
+        <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 2.5rem auto' }}>
           <div className="badge badge-emerald" style={{ marginBottom: '1rem' }}>
             <Zap size={14} /> {language === 'ru' ? 'Прозрачные тарифы' : 'Transparent Pricing'}
           </div>
@@ -136,6 +136,44 @@ export const PricingTiers: React.FC = () => {
           </p>
         </div>
 
+        {/* ROI / Savings Callout Banner */}
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(194, 94, 32, 0.06) 100%)',
+          border: '1.5px solid rgba(15, 118, 110, 0.2)',
+          borderRadius: 'var(--radius-md)',
+          padding: '1.15rem 1.5rem',
+          maxWidth: '840px',
+          margin: '0 auto 1.25rem auto',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          boxShadow: '0 4px 16px -4px rgba(15, 118, 110, 0.08)'
+        }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '10px',
+            background: 'var(--accent-emerald)',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <ShieldCheck size={20} />
+          </div>
+          <div style={{
+            fontSize: '0.92rem',
+            color: 'var(--text-main)',
+            lineHeight: 1.55,
+            fontWeight: 500
+          }}>
+            {language === 'ru'
+              ? 'Самостоятельный поиск жилья в Азии часто обходится на $700–$1,500 дороже из-за невозвратных депозитов, накруток на свет и аренды в сезон дождей. Мы сделали процесс прозрачным, а каждую вложенную сумму — окупаемой.'
+              : 'Independent housing search in Asia frequently costs $700–$1,500 extra due to lost deposits, utility markups, and rainy season leases. We make the entire process transparent and every dollar invested genuinely cost-effective.'}
+          </div>
+        </div>
+
         {/* Risk Reversal Banner */}
         <div style={{
           background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
@@ -143,7 +181,7 @@ export const PricingTiers: React.FC = () => {
           borderRadius: 'var(--radius-md)',
           padding: '1rem 1.5rem',
           maxWidth: '840px',
-          margin: '-1.5rem auto 2.5rem auto',
+          margin: '0 auto 2.5rem auto',
           display: 'flex',
           alignItems: 'center',
           gap: '0.85rem',

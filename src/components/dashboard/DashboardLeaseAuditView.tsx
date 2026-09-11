@@ -45,14 +45,14 @@ export const DashboardLeaseAuditView: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div className="badge badge-emerald" style={{ marginBottom: '0.4rem' }}>
-            <ShieldCheck size={14} /> {language === 'ru' ? 'Юридический Due Diligence' : 'Legal Due Diligence'}
+            <ShieldCheck size={14} /> {language === 'ru' ? 'Аудит и безопасность аренды' : 'Lease Safety & Audit'}
           </div>
           <h2 style={{ fontSize: '1.9rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', margin: '0.2rem 0' }}>
             {language === 'ru' ? 'Дистанционный аудит договора аренды' : 'Remote Lease Agreement Audit'}
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', margin: 0, maxWidth: '680px' }}>
             {language === 'ru'
-              ? 'Основатель VietReloc лично проводит юридическую экспертизу условий найма: фиксирует прозрачный тариф за свет (до 4500 ₫/кВт), закрепляет возврат залога и обязывает собственника зарегистрировать вас в полиции (tạm trú).'
+              ? 'Основатель VietReloc лично проводит детальный аудит условий найма: фиксирует прозрачный тариф за свет (до 4500 ₫/кВт), закрепляет возврат залога и обязывает собственника зарегистрировать вас в полиции (tạm trú).'
               : 'The founder audits your rental agreement to verify standard electric rates (up to 4500 ₫/kWh), protect security deposit return, and secure temporary police registration.'}
           </p>
         </div>
