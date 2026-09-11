@@ -2,7 +2,6 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import {
   ArrowRight,
-  Sparkles,
   Compass,
   ShieldCheck,
   Star
@@ -32,8 +31,8 @@ export const Hero: React.FC = () => {
           <div className="hero-left-content">
             
             <h1 style={{
-              fontSize: 'clamp(2.2rem, 4vw, 3.35rem)',
-              lineHeight: 1.14,
+              fontSize: 'clamp(2rem, 3.1vw, 2.85rem)',
+              lineHeight: 1.18,
               margin: 0,
               fontFamily: 'var(--font-serif)',
               color: 'var(--text-main)',
@@ -59,9 +58,9 @@ export const Hero: React.FC = () => {
             </h1>
 
             <p style={{
-              fontSize: '1.08rem',
+              fontSize: '1.02rem',
               color: 'var(--text-muted)',
-              lineHeight: 1.6,
+              lineHeight: 1.55,
               margin: 0
             }}>
               {language === 'ru'
@@ -69,11 +68,11 @@ export const Hero: React.FC = () => {
                 : 'Bespoke daily itineraries, vetted local realtors, independent lease audit, and personal guidance — from your initial e-Visa to effortless living by the sea.'}
             </p>
 
-            {/* CTAs with 3D Icons */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '0.4rem' }}>
+            {/* Single High-Converting Primary CTA */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '0.2rem' }}>
               <button
                 className="btn btn-primary"
-                style={{ fontSize: '1rem', padding: '0.85rem 1.85rem', borderRadius: '9999px', display: 'inline-flex', alignItems: 'center', gap: '0.55rem' }}
+                style={{ fontSize: '1rem', padding: '0.85rem 2rem', borderRadius: '9999px', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}
                 onClick={scrollToPricing}
               >
                 <span className="icon-3d-hover">
@@ -81,17 +80,6 @@ export const Hero: React.FC = () => {
                 </span>
                 <span>{language === 'ru' ? 'Выбрать тариф и начать' : 'Choose Plan & Begin'}</span>
                 <ArrowRight size={17} />
-              </button>
-
-              <button
-                className="btn btn-secondary"
-                style={{ fontSize: '0.96rem', padding: '0.85rem 1.6rem', borderRadius: '9999px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                onClick={() => setViewMode('express_booking')}
-              >
-                <span className="icon-3d-hover">
-                  <Sparkles size={16} style={{ color: 'var(--accent-terracotta)' }} />
-                </span>
-                <span>{language === 'ru' ? 'Консультация ($50)' : 'Book 1-on-1 Call ($50)'}</span>
               </button>
             </div>
 

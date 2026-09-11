@@ -36,8 +36,8 @@ export const DashboardPreview: React.FC = () => {
           </div>
           <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.6rem)', marginBottom: '0.8rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
             {language === 'ru'
-              ? 'Интерактивный кабинет вместо хаотичных заметок'
-              : 'Interactive Personal Workspace Instead of Chaotic Chats'}
+              ? 'Система сопровождения вместо хаотичных заметок'
+              : 'Structured Workspace Instead of Chaotic Chats'}
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
             {language === 'ru'
@@ -46,7 +46,7 @@ export const DashboardPreview: React.FC = () => {
           </p>
         </div>
 
-        {/* Interactive Workspace Showcase Box */}
+        {/* Workspace Showcase Box */}
         <div className="glass-card glass-card-emerald" style={{ padding: '2rem', border: '1px solid rgba(15, 118, 110, 0.2)' }}>
           
           {/* Top Demo Bar */}
@@ -56,12 +56,8 @@ export const DashboardPreview: React.FC = () => {
               <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F59E0B' }} />
               <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10B981' }} />
               <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginLeft: '0.5rem' }}>
-                {language === 'ru' ? 'Личный кабинет клиента: Дмитрий и Елена (Демонстрация интерфейса)' : 'Client Workspace Preview: Dmitry & Elena (UI Showcase)'}
+                {language === 'ru' ? 'Личный кабинет клиента: Дмитрий и Елена (Показ интерфейса)' : 'Client Workspace Preview: Dmitry & Elena (Showcase)'}
               </span>
-            </div>
-
-            <div className="badge badge-emerald" style={{ fontSize: '0.78rem' }}>
-              <CheckCircle2 size={13} /> {language === 'ru' ? 'Интерактивная демонстрация' : 'Interactive UI Preview'}
             </div>
           </div>
 

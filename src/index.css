@@ -800,11 +800,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transform-origin: center center;
 }
 
-/* Full-Bleed Hero Section (90vh–100vh, flush to right viewport edge, clean photographic presentation) */
+/* Full-Bleed Hero Section (Compact ~570px height matching user boundary lines, flush to right viewport edge) */
 .hero-fullbleed-section {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 76px);
+  min-height: 570px;
   display: flex;
   background: var(--bg-main);
   overflow: hidden;
@@ -816,7 +816,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   width: 100%;
-  min-height: calc(100vh - 76px);
+  min-height: 570px;
   align-items: stretch;
 }
 
@@ -825,7 +825,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   flex-direction: column;
   justifyContent: center;
   /* Aligns strictly with the site's 1200px centered container padding */
-  padding: 3.5rem 3rem 3.5rem max(1.5rem, calc((100vw - 1200px) / 2 + 1.5rem));
+  padding: 2.25rem 3rem 2.25rem max(1.5rem, calc((100vw - 1200px) / 2 + 1.5rem));
   z-index: 2;
   position: relative;
 }
@@ -834,14 +834,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
   max-width: 580px;
   display: flex;
   flex-direction: column;
-  gap: 1.35rem;
+  gap: 1.15rem;
 }
 
 .hero-fullbleed-right {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - 76px);
+  min-height: 570px;
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -880,21 +880,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 @media (max-width: 960px) {
   .hero-fullbleed-section {
+    height: auto;
     min-height: auto;
+    max-height: none;
   }
   .hero-fullbleed-grid {
     grid-template-columns: 1fr;
+    height: auto;
     min-height: auto;
   }
   .hero-fullbleed-left {
-    padding: 2.5rem 1.5rem 2rem 1.5rem;
+    padding: 2.25rem 1.5rem 1.75rem 1.5rem;
   }
   .hero-left-content {
     max-width: 100%;
   }
   .hero-fullbleed-right {
-    height: 60vh;
-    min-height: 380px;
+    height: 320px;
+    min-height: 260px;
   }
   .hero-fullbleed-right::before {
     top: 0;
@@ -902,15 +905,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
     right: 0;
     bottom: auto;
     width: 100%;
-    height: 50px;
+    height: 40px;
     background: linear-gradient(to bottom, var(--bg-main) 0%, transparent 100%);
   }
 }
 
 @media (max-width: 480px) {
   .hero-fullbleed-right {
-    height: 50vh;
-    min-height: 300px;
+    height: 260px;
+    min-height: 220px;
   }
 }
 

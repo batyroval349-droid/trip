@@ -10,7 +10,7 @@ export const PricingTiers: React.FC = () => {
       id: 'tier1',
       title: t('tier1Title'),
       price: t('tier1Price'),
-      badge: t('tier1Badge'),
+      badge: language === 'ru' ? '100% зачёт $50 в тариф' : '100% $50 Credit to Any Plan',
       badgeColor: 'badge-emerald',
       badgeIcon: Sparkles,
       description: t('tier1Desc'),
@@ -143,7 +143,7 @@ export const PricingTiers: React.FC = () => {
           borderRadius: 'var(--radius-md)',
           padding: '1.15rem 1.5rem',
           maxWidth: '840px',
-          margin: '0 auto 1.25rem auto',
+          margin: '0 auto 2.5rem auto',
           display: 'flex',
           alignItems: 'center',
           gap: '1rem',
@@ -171,40 +171,6 @@ export const PricingTiers: React.FC = () => {
             {language === 'ru'
               ? 'Самостоятельный поиск жилья в Азии часто обходится на $700–$1,500 дороже из-за невозвратных депозитов, накруток на свет и аренды в сезон дождей. Мы сделали процесс прозрачным, а каждую вложенную сумму — окупаемой.'
               : 'Independent housing search in Asia frequently costs $700–$1,500 extra due to lost deposits, utility markups, and rainy season leases. We make the entire process transparent and every dollar invested genuinely cost-effective.'}
-          </div>
-        </div>
-
-        {/* Risk Reversal Banner */}
-        <div style={{
-          background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
-          border: '1px solid #FCD34D',
-          borderRadius: 'var(--radius-md)',
-          padding: '1rem 1.5rem',
-          maxWidth: '840px',
-          margin: '0 auto 2.5rem auto',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.85rem',
-          boxShadow: '0 4px 12px rgba(217, 119, 6, 0.08)'
-        }}>
-          <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: '#F59E0B',
-            color: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0
-          }}>
-            <Sparkles size={20} />
-          </div>
-          <div style={{ fontSize: '0.9rem', color: '#92400E', lineHeight: 1.5 }}>
-            <strong>{language === 'ru' ? '100% зачёт консультации:' : '100% Consultation Credit:'}</strong>{' '}
-            {language === 'ru'
-              ? 'Сомневаетесь в выборе тарифа? Начните с экспресс-консультации за $50. Если вы решите заказать пакет поездки или релокации, все $50 будут вычтены из итоговой стоимости тарифа.'
-              : 'Unsure which package suits you? Start with a $50 consultation call. If you decide to book any travel or relocation package, the full $50 will be credited towards your plan.'}
           </div>
         </div>
 
