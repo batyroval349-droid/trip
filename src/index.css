@@ -830,13 +830,105 @@ input[type="range"]::-webkit-slider-thumb:hover {
   padding: 2.25rem 3rem 2.25rem max(1.5rem, calc((100vw - 1200px) / 2 + 1.5rem));
   z-index: 2;
   position: relative;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .hero-left-content {
-  max-width: 580px;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
   gap: 1.15rem;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Editorial Free-Flowing Hero Typography */
+.editorial-hero-title {
+  font-size: clamp(2.15rem, 3.3vw, 2.95rem);
+  line-height: 1.16;
+  margin: 0;
+  font-family: var(--font-serif);
+  color: var(--text-main);
+  letter-spacing: -0.025em;
+  font-weight: 500;
+}
+
+.editorial-italic-highlight {
+  color: var(--accent-emerald);
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  display: inline;
+  transition: color 0.2s ease;
+}
+
+@keyframes editorialFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.editorial-line {
+  display: block;
+  opacity: 0;
+  animation: editorialFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.editorial-line-1 {
+  animation-delay: 0.1s;
+}
+
+.editorial-line-2 {
+  animation-delay: 0.24s;
+}
+
+.editorial-line-3 {
+  animation-delay: 0.38s;
+}
+
+.editorial-desc {
+  font-size: 1.02rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0;
+  opacity: 0;
+  animation: editorialFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.52s;
+  will-change: transform, opacity;
+}
+
+.editorial-cta {
+  opacity: 0;
+  animation: editorialFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.66s;
+  will-change: transform, opacity;
+}
+
+.editorial-proof {
+  opacity: 0;
+  animation: editorialFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.80s;
+  will-change: transform, opacity;
+}
+
+/* Mobile Sticky Bar: hidden on desktop, active on mobile */
+.mobile-sticky-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-sticky-bar {
+    display: flex !important;
+  }
 }
 
 .hero-fullbleed-right {

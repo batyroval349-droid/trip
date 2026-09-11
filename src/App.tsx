@@ -17,6 +17,7 @@ import { ClientLoginModal } from './components/ClientLoginModal';
 import { PaymentModal } from './components/PaymentModal';
 import { PublicOfferModal } from './components/PublicOfferModal';
 import { ExpressBookingForm } from './components/ExpressBookingForm';
+import { MobileStickyBar } from './components/MobileStickyBar';
 
 const MainContent: React.FC = () => {
   const { viewMode } = useApp();
@@ -39,6 +40,7 @@ const MainContent: React.FC = () => {
             <AdditionalServices />
             <ClientReviewsSection />
             <FAQSection />
+            <MobileStickyBar />
           </div>
         )}
 
