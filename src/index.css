@@ -816,9 +816,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .hero-fullbleed-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-columns: minmax(0, 1.14fr) minmax(0, 1fr);
   width: 100%;
-  min-height: 570px;
+  min-height: 560px;
   align-items: stretch;
 }
 
@@ -826,37 +826,32 @@ input[type="range"]::-webkit-slider-thumb:hover {
   display: flex;
   flex-direction: column;
   justifyContent: center;
+  gap: 1.25rem;
   /* Aligns strictly with the site's 1200px centered container padding */
-  padding: 2.25rem 3rem 2.25rem max(1.5rem, calc((100vw - 1200px) / 2 + 1.5rem));
+  padding: 2.25rem 2rem 2.25rem max(1.5rem, calc((100vw - 1200px) / 2 + 1.5rem));
   z-index: 2;
   position: relative;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+  outline: none !important;
 }
 
-.hero-left-content {
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.15rem;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Editorial Free-Flowing Hero Typography */
-.editorial-hero-title {
-  font-size: clamp(2.15rem, 3.3vw, 2.95rem);
-  line-height: 1.16;
+/* Editorial Free-Flowing Hero Typography — zero card, zero box, pure text on page background */
+.hero-editorial-title {
+  font-size: clamp(2.05rem, 2.9vw, 2.75rem);
+  line-height: 1.18;
   margin: 0;
   font-family: var(--font-serif);
   color: var(--text-main);
   letter-spacing: -0.025em;
   font-weight: 500;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-.editorial-italic-highlight {
+.hero-italic-highlight {
   color: var(--accent-emerald);
   font-style: italic;
   font-family: var(--font-serif);
@@ -865,7 +860,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transition: color 0.2s ease;
 }
 
-@keyframes editorialFadeUp {
+@keyframes heroLineFadeUp {
   0% {
     opacity: 0;
     transform: translateY(18px);
@@ -876,48 +871,55 @@ input[type="range"]::-webkit-slider-thumb:hover {
   }
 }
 
-.editorial-line {
+.hero-line {
   display: block;
   opacity: 0;
-  animation: editorialFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: heroLineFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
 }
 
-.editorial-line-1 {
-  animation-delay: 0.1s;
+.hero-line-1 {
+  animation-delay: 0.12s;
 }
 
-.editorial-line-2 {
-  animation-delay: 0.24s;
+.hero-line-2 {
+  animation-delay: 0.26s;
 }
 
-.editorial-line-3 {
-  animation-delay: 0.38s;
+.hero-line-3 {
+  animation-delay: 0.40s;
 }
 
-.editorial-desc {
+.hero-editorial-desc {
   font-size: 1.02rem;
   color: var(--text-muted);
   line-height: 1.55;
   margin: 0;
+  max-width: 540px;
   opacity: 0;
-  animation: editorialFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.52s;
+  animation: heroLineFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.54s;
   will-change: transform, opacity;
+  background: transparent !important;
+  border: none !important;
 }
 
-.editorial-cta {
+.hero-editorial-cta {
   opacity: 0;
-  animation: editorialFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.66s;
+  animation: heroLineFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.68s;
   will-change: transform, opacity;
+  background: transparent !important;
+  border: none !important;
 }
 
-.editorial-proof {
+.hero-editorial-proof {
   opacity: 0;
-  animation: editorialFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.80s;
+  animation: heroLineFadeUp 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.82s;
   will-change: transform, opacity;
+  background: transparent !important;
+  border: none !important;
 }
 
 /* Mobile Sticky Bar: hidden on desktop, active on mobile */
@@ -998,8 +1000,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
   }
   .hero-fullbleed-left {
     padding: 2.25rem 1.5rem 1.75rem 1.5rem;
-  }
-  .hero-left-content {
     max-width: 100%;
   }
   .hero-fullbleed-right {
