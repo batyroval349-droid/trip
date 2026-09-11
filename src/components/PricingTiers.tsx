@@ -19,7 +19,7 @@ export const PricingTiers: React.FC = () => {
         { strong: language === 'ru' ? 'Оценка целесообразности' : 'Feasibility assessment', text: language === 'ru' ? 'переезда под ваши цели' : 'tailored to your personal goals' },
         { strong: language === 'ru' ? 'Обзор городов' : 'City & season overview', text: language === 'ru' ? 'и сезонов под ваши задачи' : 'matched to your profile' },
         { strong: language === 'ru' ? 'Резюме рекомендаций' : 'Written summary', text: language === 'ru' ? 'с выводами после созвона' : 'of key takeaways after the call' },
-        { strong: language === 'ru' ? 'Скидка на пакет' : 'Package discount', text: language === 'ru' ? 'поездки/релокации при заказе за 7 дней' : 'on travel or relocation within 7 days' }
+        { strong: language === 'ru' ? '100% зачёт $50' : '100% $50 credit', text: language === 'ru' ? 'в стоимость тарифа поездки или релокации' : 'credited towards any full package' }
       ],
       ctaText: language === 'ru' ? 'Записаться на звонок' : 'Book a Call',
       isHero: false,
@@ -131,9 +131,43 @@ export const PricingTiers: React.FC = () => {
             {t('pricingTitle')}
           </h2>
 
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', margin: 0 }}>
             {t('pricingSubhead')}
           </p>
+        </div>
+
+        {/* Risk Reversal Banner */}
+        <div style={{
+          background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
+          border: '1px solid #FCD34D',
+          borderRadius: 'var(--radius-md)',
+          padding: '1rem 1.5rem',
+          maxWidth: '840px',
+          margin: '-1.5rem auto 2.5rem auto',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.85rem',
+          boxShadow: '0 4px 12px rgba(217, 119, 6, 0.08)'
+        }}>
+          <div style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: '#F59E0B',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <Sparkles size={20} />
+          </div>
+          <div style={{ fontSize: '0.9rem', color: '#92400E', lineHeight: 1.5 }}>
+            <strong>{language === 'ru' ? '100% зачёт консультации:' : '100% Consultation Credit:'}</strong>{' '}
+            {language === 'ru'
+              ? 'Сомневаетесь в выборе тарифа? Начните с экспресс-консультации за $50. Если вы решите заказать пакет поездки или релокации, все $50 будут вычтены из итоговой стоимости тарифа.'
+              : 'Unsure which package suits you? Start with a $50 consultation call. If you decide to book any travel or relocation package, the full $50 will be credited towards your plan.'}
+          </div>
         </div>
 
         {/* Pricing Cards Grid with perfect horizontal baseline alignment */}

@@ -7,6 +7,7 @@ import { DashboardPreview } from './components/DashboardPreview';
 import { PricingTiers } from './components/PricingTiers';
 import { AdditionalServices } from './components/AdditionalServices';
 import { HousingGuidanceHub } from './components/HousingGuidanceHub';
+import { ClientReviewsSection } from './components/ClientReviewsSection';
 import { FAQSection } from './components/FAQSection';
 import { QuestionnaireForm } from './components/QuestionnaireForm';
 import { ClientDashboard } from './components/ClientDashboard';
@@ -36,6 +37,7 @@ const MainContent: React.FC = () => {
             <WhyUs />
             <DashboardPreview />
             <HousingGuidanceHub />
+            <ClientReviewsSection />
             <PricingTiers />
             <AdditionalServices />
             <FAQSection />
