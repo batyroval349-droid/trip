@@ -24,15 +24,15 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section style={{ padding: '3.5rem 0 3rem 0', position: 'relative', overflow: 'hidden' }}>
-      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="hero-grid-layout">
-          
-          {/* Left: Brand Headline & Value Proposition */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', zIndex: 2 }}>
+    <section className="hero-fullbleed-section">
+      <div className="hero-fullbleed-grid">
+        
+        {/* Left: Brand Headline, Value Proposition & CTAs (aligned with site container) */}
+        <div className="hero-fullbleed-left">
+          <div className="hero-left-content">
             
             <h1 style={{
-              fontSize: 'clamp(2.2rem, 4.2vw, 3.4rem)',
+              fontSize: 'clamp(2.2rem, 4vw, 3.35rem)',
               lineHeight: 1.14,
               margin: 0,
               fontFamily: 'var(--font-serif)',
@@ -62,8 +62,7 @@ export const Hero: React.FC = () => {
               fontSize: '1.08rem',
               color: 'var(--text-muted)',
               lineHeight: 1.6,
-              margin: 0,
-              maxWidth: '560px'
+              margin: 0
             }}>
               {language === 'ru'
                 ? 'Авторские пошаговые маршруты, проверенные локальные риелторы, независимый аудит договоров аренды и персональное сопровождение — от первой e-Visa до комфортной жизни у моря.'
@@ -71,7 +70,7 @@ export const Hero: React.FC = () => {
             </p>
 
             {/* CTAs with 3D Icons */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '0.4rem' }}>
               <button
                 className="btn btn-primary"
                 style={{ fontSize: '1rem', padding: '0.85rem 1.85rem', borderRadius: '9999px', display: 'inline-flex', alignItems: 'center', gap: '0.55rem' }}
@@ -96,13 +95,13 @@ export const Hero: React.FC = () => {
               </button>
             </div>
 
-            {/* Social Proof Trust Strip (No fake promises, just honest rating & contract audit) */}
+            {/* Social Proof Trust Strip */}
             <div style={{
               display: 'flex',
               flexWrap: 'wrap',
               alignItems: 'center',
               gap: '1.25rem',
-              marginTop: '0.75rem',
+              marginTop: '0.6rem',
               paddingTop: '0.85rem',
               borderTop: '1px solid rgba(0, 0, 0, 0.07)'
             }}>
@@ -123,27 +122,18 @@ export const Hero: React.FC = () => {
             </div>
 
           </div>
-
-          {/* Right: Large Organic Borderless Vietnam Landscape (без рамок, широкая, чистая, без лишних плашек) */}
-          <div className="hero-organic-landscape-wrapper">
-            <div className="hero-organic-landscape">
-              <img
-                src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1600&q=85"
-                alt="Vietnam Karst Landscape Trang An Ninh Binh"
-                loading="eager"
-              />
-              
-              {/* Subtle ambient gradient overlay to seamlessly merge into the warm background */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(to right, rgba(250, 248, 245, 0.35) 0%, transparent 20%, transparent 80%, rgba(250, 248, 245, 0.4) 100%), linear-gradient(to bottom, transparent 65%, rgba(250, 248, 245, 0.85) 100%)',
-                pointerEvents: 'none'
-              }} />
-            </div>
-          </div>
-
         </div>
+
+        {/* Right: Full-Bleed Photograph (90vh-100vh, flush to right edge of screen, zero borders, pure photography) */}
+        <div className="hero-fullbleed-right">
+          <img
+            src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1800&q=85"
+            alt="Vietnam Karst Landscape Trang An Ninh Binh"
+            className="hero-fullbleed-img"
+            loading="eager"
+          />
+        </div>
+
       </div>
     </section>
   );

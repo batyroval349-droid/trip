@@ -800,68 +800,117 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transform-origin: center center;
 }
 
-/* Organic Borderless Hero Landscape (без рамок, естественное растворение в фоне) */
-.hero-grid-layout {
-  display: grid;
-  grid-template-columns: 1fr 1.32fr;
-  gap: 2.5rem;
-  align-items: center;
-}
-
-@media (max-width: 960px) {
-  .hero-grid-layout {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-}
-
-.hero-organic-landscape-wrapper {
+/* Full-Bleed Hero Section (90vh–100vh, flush to right viewport edge, clean photographic presentation) */
+.hero-fullbleed-section {
   position: relative;
   width: 100%;
-  min-height: 560px;
+  min-height: calc(100vh - 76px);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  background: var(--bg-main);
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-.hero-organic-landscape {
+.hero-fullbleed-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  width: 100%;
+  min-height: calc(100vh - 76px);
+  align-items: stretch;
+}
+
+.hero-fullbleed-left {
+  display: flex;
+  flex-direction: column;
+  justifyContent: center;
+  /* Aligns strictly with the site's 1200px centered container padding */
+  padding: 3.5rem 3rem 3.5rem max(1.5rem, calc((100vw - 1200px) / 2 + 1.5rem));
+  z-index: 2;
+  position: relative;
+}
+
+.hero-left-content {
+  max-width: 580px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.hero-fullbleed-right {
   position: relative;
   width: 100%;
-  height: 580px;
+  height: 100%;
+  min-height: calc(100vh - 76px);
   overflow: hidden;
-  border: none;
-  box-shadow: none;
-  background: transparent;
-  /* Multi-stop radial fade reaches 0 opacity at 95%, completely preventing hard edge cuts */
-  -webkit-mask-image: radial-gradient(ellipse 76% 70% at 55% 50%, #000000 30%, rgba(0, 0, 0, 0.75) 55%, rgba(0, 0, 0, 0.15) 75%, transparent 95%);
-  mask-image: radial-gradient(ellipse 76% 70% at 55% 50%, #000000 30%, rgba(0, 0, 0, 0.75) 55%, rgba(0, 0, 0, 0.15) 75%, transparent 95%);
+  margin: 0;
+  padding: 0;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
 }
 
-.hero-organic-landscape img {
+.hero-fullbleed-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
   display: block;
-  animation: cinematicKenBurns 24s ease-in-out infinite alternate;
-  transform-origin: 60% 45%;
-  filter: contrast(1.04) saturate(1.12);
+  /* Pure photograph: NO border-radius, NO shadow, flush to viewport edge */
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  filter: contrast(1.03) saturate(1.08);
+  animation: cinematicKenBurns 28s ease-in-out infinite alternate;
 }
 
-@media (max-width: 768px) {
-  .hero-organic-landscape-wrapper {
-    min-height: unset;
-    margin-top: 1rem;
+/* Subtle linear gradient on the inner left edge only, merging gently with the background without creating a box */
+.hero-fullbleed-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  background: linear-gradient(to right, var(--bg-main) 0%, transparent 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+@media (max-width: 960px) {
+  .hero-fullbleed-section {
+    min-height: auto;
   }
-  .hero-organic-landscape {
-    height: 330px;
-    -webkit-mask-image: radial-gradient(ellipse 82% 76% at 50% 50%, #000000 35%, rgba(0, 0, 0, 0.75) 60%, transparent 95%);
-    mask-image: radial-gradient(ellipse 82% 76% at 50% 50%, #000000 35%, rgba(0, 0, 0, 0.75) 60%, transparent 95%);
+  .hero-fullbleed-grid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .hero-fullbleed-left {
+    padding: 2.5rem 1.5rem 2rem 1.5rem;
+  }
+  .hero-left-content {
+    max-width: 100%;
+  }
+  .hero-fullbleed-right {
+    height: 60vh;
+    min-height: 380px;
+  }
+  .hero-fullbleed-right::before {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--bg-main) 0%, transparent 100%);
   }
 }
 
 @media (max-width: 480px) {
-  .hero-organic-landscape {
-    height: 270px;
+  .hero-fullbleed-right {
+    height: 50vh;
+    min-height: 300px;
   }
 }
 
