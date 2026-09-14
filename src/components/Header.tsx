@@ -84,7 +84,7 @@ export const Header: React.FC = () => {
       backdropFilter: 'blur(16px)',
       borderBottom: '1px solid var(--border-subtle)'
     }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1.5rem' }}>
+      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.85rem', paddingBottom: '0.85rem' }}>
         
         {/* Brand Logo with Compass */}
         <div

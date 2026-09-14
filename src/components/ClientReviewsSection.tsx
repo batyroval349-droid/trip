@@ -55,7 +55,7 @@ export const ClientReviewsSection: React.FC = () => {
 
   return (
     <section id="reviews-section" style={{ padding: '3.25rem 0 3.75rem 0', background: '#F8F6F0' }}>
-      <div className="container" style={{ maxWidth: '1240px' }}>
+      <div className="container">
         
         {/* Section Header */}
         <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 2rem auto' }}>

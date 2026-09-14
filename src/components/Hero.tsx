@@ -23,11 +23,11 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section className="hero-fullbleed-section">
-      <div className="hero-fullbleed-grid">
+    <section className="hero-section">
+      <div className="container hero-container">
         
         {/* Left: Free-flowing editorial typography directly on page background — zero wrapper box, zero card */}
-        <div className="hero-fullbleed-left">
+        <div className="hero-text-column">
           <h1 className="hero-editorial-title">
             {language === 'ru' ? (
               <>
@@ -103,12 +103,12 @@ export const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: Full-Bleed Photograph (90vh-100vh, flush to right edge of screen, zero borders, pure photography) */}
-        <div className="hero-fullbleed-right">
+        {/* Right: Scenic Photograph */}
+        <div className="hero-image-column">
           <img
             src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1800&q=85"
             alt="Vietnam Karst Landscape Trang An Ninh Binh"
-            className="hero-fullbleed-img"
+            className="hero-image-img"
             loading="eager"
           />
         </div>

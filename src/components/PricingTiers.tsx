@@ -119,7 +119,7 @@ export const PricingTiers: React.FC = () => {
         {language === 'ru' ? 'ТАРИФЫ И СТОИМОСТЬ' : 'PRICING & PLANS'}
       </div>
 
-      <div className="container" style={{ maxWidth: '1280px' }}>
+      <div className="container">
         
         {/* Header */}
         <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 2.5rem auto' }}>
