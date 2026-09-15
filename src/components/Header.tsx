@@ -143,7 +143,7 @@ export const Header: React.FC = () => {
                   className={`pill-item ${viewMode === 'marketing' && activeSection === 'reviews' ? 'active' : ''}`}
                   onClick={() => scrollTo('reviews-section', 'reviews')}
                 >
-                  {t('navReviews' as any) || (language === 'ru' ? 'Отзывы' : 'Reviews')}
+                  {language === 'ru' ? 'Опыт и подход' : 'Cases & Principles'}
                 </button>
                 <button
                   className={`pill-item ${viewMode === 'marketing' && activeSection === 'faq' ? 'active' : ''}`}
@@ -342,7 +342,7 @@ export const Header: React.FC = () => {
                 style={{ width: '100%', justifyContent: 'flex-start' }}
                 onClick={() => { scrollTo('reviews-section', 'reviews'); setMobileMenuOpen(false); }}
               >
-                {t('navReviews' as any) || (language === 'ru' ? 'Отзывы' : 'Reviews')}
+                {language === 'ru' ? 'Опыт и подход' : 'Cases & Principles'}
               </button>
               <button
                 className={`btn ${viewMode === 'marketing' && activeSection === 'faq' ? 'btn-primary' : 'btn-secondary'}`}
