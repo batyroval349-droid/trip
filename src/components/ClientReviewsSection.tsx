@@ -249,50 +249,95 @@ export const ClientReviewsSection: React.FC = () => {
                   <Send size={16} />
                   <span>{language === 'ru' ? 'Написать лично основательнице' : 'Message Founder on Telegram'}</span>
                 </a>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  Telegram: <strong style={{ color: 'var(--accent-emerald)' }}>@Likqwerty</strong>
-                </span>
               </div>
 
             </div>
 
-            {/* Right: Founder Photo */}
+            {/* Right: Founder Photo in Circle */}
             <div style={{
-              position: 'relative',
-              background: '#181A1B',
-              overflow: 'hidden',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: '380px'
+              padding: 'clamp(2.25rem, 4vw, 3.5rem) clamp(1.5rem, 2.5vw, 2.5rem)',
+              background: 'linear-gradient(145deg, #FBF9F5 0%, #F4EFE6 100%)',
+              borderLeft: '1px solid var(--border-subtle)',
+              textAlign: 'center'
             }} className="founder-photo-col">
-              <img
-                src="/founder-photo.jpg"
-                alt="Основательница VietReloc"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  objectPosition: 'center 20%',
-                  display: 'block'
-                }}
-              />
+              
+              {/* Circular portrait with ring */}
               <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: '1.5rem 1.25rem 1.25rem 1.25rem',
-                background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 65%, transparent 100%)',
-                color: '#FFFFFF'
+                position: 'relative',
+                marginBottom: '1.25rem'
               }}>
-                <div style={{ fontWeight: 700, fontSize: '0.96rem', letterSpacing: '-0.01em' }}>
-                  {language === 'ru' ? 'Основательница VietReloc' : 'VietReloc Founder'}
+                <div style={{
+                  width: 'clamp(180px, 17vw, 240px)',
+                  height: 'clamp(180px, 17vw, 240px)',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: '4px solid #FFFFFF',
+                  boxShadow: '0 14px 32px -6px rgba(28, 45, 42, 0.16), 0 0 0 1px rgba(0,0,0,0.06)',
+                  position: 'relative',
+                  background: '#1A1A1A'
+                }}>
+                  <img
+                    src="/founder-photo.jpg"
+                    alt="Основательница VietReloc"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      objectPosition: 'center 15%',
+                      display: 'block'
+                    }}
+                  />
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#D1D5DB', marginTop: '2px' }}>
-                  {language === 'ru' ? 'Дананг · Нячанг · Персональное сопровождение' : 'Da Nang · Nha Trang · Personal Concierge'}
+
+                {/* Badge overlapping circle bottom */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '-8px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: '#FFFFFF',
+                  border: '1px solid var(--border-emerald)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                  borderRadius: '9999px',
+                  padding: '0.28rem 0.8rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: 'var(--accent-emerald)',
+                  whiteSpace: 'nowrap'
+                }}>
+                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--accent-emerald)', display: 'inline-block' }}></span>
+                  <span>{language === 'ru' ? 'На связи во Вьетнаме' : 'Live in Vietnam'}</span>
                 </div>
               </div>
+
+              {/* Founder caption */}
+              <div style={{ marginTop: '0.4rem' }}>
+                <div style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '1.18rem',
+                  fontWeight: 700,
+                  color: 'var(--text-main)',
+                  letterSpacing: '-0.01em',
+                  marginBottom: '0.25rem'
+                }}>
+                  {language === 'ru' ? 'Основательница VietReloc' : 'VietReloc Founder'}
+                </div>
+                <div style={{
+                  fontSize: '0.84rem',
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.4
+                }}>
+                  {language === 'ru' ? 'Дананг · Нячанг · Личный контакт' : 'Da Nang · Nha Trang · Direct Support'}
+                </div>
+              </div>
+
             </div>
 
           </div>
@@ -499,8 +544,9 @@ export const ClientReviewsSection: React.FC = () => {
             grid-template-columns: 1fr !important;
           }
           .founder-photo-col {
-            min-height: 320px !important;
-            max-height: 400px !important;
+            border-left: none !important;
+            border-bottom: 1px solid var(--border-subtle) !important;
+            padding: 2.25rem 1.25rem !important;
             order: -1;
           }
           .situation-split-grid {
