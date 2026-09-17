@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Calendar,
@@ -50,11 +50,18 @@ export const AdminScheduleView: React.FC = () => {
   const [botToken, setBotToken] = useState(scheduleConfig.telegramBotToken || '');
   const [chatId, setChatId] = useState(scheduleConfig.telegramChatId || '');
   const [founderEmail, setFounderEmail] = useState(scheduleConfig.founderEmail || '');
-  const [emailWebhookUrl, setEmailWebhookUrl] = useState(scheduleConfig.emailWebhookUrl || '');
+  const [emailWebhookUrl, setEmailWebhookUrl] = useState(scheduleConfig.emailWebhookUrl || 'https://script.google.com/macros/s/AKfycbwx8A1phRs4yvSykbWX9TXrOT3fvY28pvAzz1EM7jnFTo47DBTozUFxSgTD2v-lh6An/exec');
   const [tgFeedback, setTgFeedback] = useState<{ success?: boolean; message: string } | null>(null);
   const [isTestingTg, setIsTestingTg] = useState(false);
   const [isTestingEmail, setIsTestingEmail] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+
+  useEffect(() => {
+    if (scheduleConfig.telegramBotToken) setBotToken(scheduleConfig.telegramBotToken);
+    if (scheduleConfig.telegramChatId) setChatId(scheduleConfig.telegramChatId);
+    if (scheduleConfig.founderEmail) setFounderEmail(scheduleConfig.founderEmail);
+    if (scheduleConfig.emailWebhookUrl) setEmailWebhookUrl(scheduleConfig.emailWebhookUrl);
+  }, [scheduleConfig]);
 
   // Day names mapping: 0=Sun, 1=Mon, ..., 6=Sat
   const daysOfWeek = [

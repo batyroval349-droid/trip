@@ -53,7 +53,8 @@ export const DEFAULT_SCHEDULE_CONFIG: FounderScheduleConfig = {
   blockedSlots: [],
   telegramBotToken: '',
   telegramChatId: '',
-  founderEmail: ''
+  founderEmail: '',
+  emailWebhookUrl: 'https://script.google.com/macros/s/AKfycbwx8A1phRs4yvSykbWX9TXrOT3fvY28pvAzz1EM7jnFTo47DBTozUFxSgTD2v-lh6An/exec'
 };
 
 export const INITIAL_DEMO_BOOKINGS: ExpressConsultationBooking[] = [
@@ -231,7 +232,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [scheduleConfig, setScheduleConfig] = useState<FounderScheduleConfig>(() => {
     try {
       const saved = localStorage.getItem('vietreloc_schedule_config');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          ...DEFAULT_SCHEDULE_CONFIG,
+          ...parsed,
+          emailWebhookUrl: parsed.emailWebhookUrl || DEFAULT_SCHEDULE_CONFIG.emailWebhookUrl
+        };
+      }
     } catch (e) {}
     return DEFAULT_SCHEDULE_CONFIG;
   });
