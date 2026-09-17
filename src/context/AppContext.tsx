@@ -786,7 +786,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         try {
           await fetch(scheduleConfig.emailWebhookUrl.trim(), {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
               event: 'consultation_booked',
               founderEmail: scheduleConfig.founderEmail,

@@ -54,6 +54,7 @@ export const AdminScheduleView: React.FC = () => {
   const [tgFeedback, setTgFeedback] = useState<{ success?: boolean; message: string } | null>(null);
   const [isTestingTg, setIsTestingTg] = useState(false);
   const [isTestingEmail, setIsTestingEmail] = useState(false);
+  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
 
   // Day names mapping: 0=Sun, 1=Mon, ..., 6=Sat
   const daysOfWeek = [
@@ -110,6 +111,51 @@ export const AdminScheduleView: React.FC = () => {
     const result = await sendTestEmailNotification(founderEmail.trim());
     setIsTestingEmail(false);
     setTgFeedback(result);
+  };
+
+  const handleTestWebhook = async () => {
+    if (!emailWebhookUrl.trim()) {
+      setTgFeedback({ success: false, message: language === 'ru' ? 'Сначала укажите Email Webhook URL' : 'Please enter Webhook URL first' });
+      return;
+    }
+    setIsTestingWebhook(true);
+    setTgFeedback(null);
+    updateScheduleConfig({
+      emailWebhookUrl: emailWebhookUrl.trim(),
+      founderEmail: founderEmail.trim()
+    });
+    try {
+      await fetch(emailWebhookUrl.trim(), {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          event: 'test_webhook',
+          founderEmail: founderEmail.trim() || 'test@example.com',
+          clientEmail: founderEmail.trim() || 'test@example.com',
+          clientName: 'Тестовый Клиент',
+          clientMessenger: '@test_client',
+          date: new Date().toISOString().split('T')[0],
+          vietnamBookingTime: '14:00 - 15:00',
+          clientBookingTime: '10:00 - 11:00',
+          clientTimezone: 'Europe/Moscow',
+          meetingPlatform: 'Google Meet',
+          topic: 'Тестирование вебхука Google Apps Script',
+          paymentMethod: 'card_ru',
+          amountUSD: 50
+        })
+      });
+      setTgFeedback({
+        success: true,
+        message: language === 'ru'
+          ? 'Тестовый сигнал успешно отправлен на Webhook! Проверьте вашу почту через 15-30 секунд.'
+          : 'Test request dispatched to Webhook! Check your inbox in 15-30 seconds.'
+      });
+    } catch (err: any) {
+      setTgFeedback({ success: false, message: 'Ошибка Webhook: ' + err.message });
+    } finally {
+      setIsTestingWebhook(false);
+    }
   };
 
   const handleAddSlot = (e: React.FormEvent) => {
@@ -943,7 +989,7 @@ export const AdminScheduleView: React.FC = () => {
                   />
                 </div>
 
-                <div>
+                <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     onClick={handleTestEmail}
@@ -952,6 +998,16 @@ export const AdminScheduleView: React.FC = () => {
                     style={{ padding: '0.55rem 1.1rem', fontSize: '0.84rem' }}
                   >
                     <CheckCircle2 size={14} /> {isTestingEmail ? (language === 'ru' ? 'Отправка...' : 'Sending...') : (language === 'ru' ? 'Протестировать отправку на Email' : 'Test Email Alert')}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleTestWebhook}
+                    disabled={isTestingWebhook || !emailWebhookUrl.trim()}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.55rem 1.1rem', fontSize: '0.84rem' }}
+                  >
+                    <Send size={14} /> {isTestingWebhook ? (language === 'ru' ? 'Отправка...' : 'Sending...') : (language === 'ru' ? 'Протестировать Webhook' : 'Test Webhook')}
                   </button>
                 </div>
               </div>
