@@ -53,7 +53,7 @@ export const DEFAULT_SCHEDULE_CONFIG: FounderScheduleConfig = {
   blockedSlots: [],
   telegramBotToken: '',
   telegramChatId: '',
-  founderEmail: 'batyroval42@gmail.com'
+  founderEmail: ''
 };
 
 export const INITIAL_DEMO_BOOKINGS: ExpressConsultationBooking[] = [
@@ -118,6 +118,7 @@ interface AppContextType {
     slots: SlotAvailability[];
   };
   sendTestTelegramNotification: () => Promise<{ success: boolean; message: string }>;
+  sendTestEmailNotification: (targetEmail?: string) => Promise<{ success: boolean; message: string }>;
   startBooking: (tierId: string) => void;
   updateAdminProject: (updates: Partial<ClientProject>) => void;
   t: (key: keyof typeof UI_STRINGS['en']) => string;
@@ -717,7 +718,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const text = `💰 *Новая ОПЛАЧЕННАЯ запись на консультацию ($50)*\n\n` +
             `👤 *Клиент:* ${(confirmedBooking as ExpressConsultationBooking).name}\n` +
             `📅 *Дата:* ${(confirmedBooking as ExpressConsultationBooking).bookingDate}\n` +
-            `⏰ *Время:* ${(confirmedBooking as ExpressConsultationBooking).bookingTime}\n` +
+            `⏰ *Время во Вьетнаме (ваше):* ${(confirmedBooking as ExpressConsultationBooking).vietnamBookingTime || (confirmedBooking as ExpressConsultationBooking).bookingTime}\n` +
+            ((confirmedBooking as ExpressConsultationBooking).clientBookingTime ? `🌍 *Время клиента:* ${(confirmedBooking as ExpressConsultationBooking).clientBookingTime} (${(confirmedBooking as ExpressConsultationBooking).clientTimezone || 'Местное'})\n` : '') +
             `💻 *Платформа:* ${(confirmedBooking as ExpressConsultationBooking).meetingPlatform}\n` +
             `💬 *Контакты:* ${(confirmedBooking as ExpressConsultationBooking).messenger} (${(confirmedBooking as ExpressConsultationBooking).email})\n` +
             `💳 *Способ оплаты:* ${methodLabels[paymentMethod] || paymentMethod}\n` +
@@ -744,29 +746,66 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
       }
 
-      // Trigger Email notification to founder
-      const targetFounderEmail = scheduleConfig.founderEmail || 'batyroval42@gmail.com';
-      try {
-        if (scheduleConfig.emailWebhookUrl) {
-          await fetch(scheduleConfig.emailWebhookUrl, {
+      // Trigger Email notification to founder via FormSubmit if founder email is configured
+      if (scheduleConfig.founderEmail && scheduleConfig.founderEmail.includes('@')) {
+        try {
+          const methodLabels: Record<string, string> = {
+            card_ru: '💳 Карта РФ / СБП (МИР, Сбер, Т-Банк)',
+            card_intl: '🌍 Зарубежная карта (Visa / Mastercard)',
+            crypto_usdt: '💎 Криптовалюта USDT (TRC-20)',
+            viet_qr: '🇻🇳 Вьетнамский VietQR (VND)'
+          };
+
+          await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(scheduleConfig.founderEmail.trim())}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              _subject: `VietReloc: Новая бронь консультации ($50) — ${(confirmedBooking as ExpressConsultationBooking).name}`,
+              'Клиент': (confirmedBooking as ExpressConsultationBooking).name,
+              'Email клиента': (confirmedBooking as ExpressConsultationBooking).email,
+              'Контакты / Мессенджер': (confirmedBooking as ExpressConsultationBooking).messenger,
+              'Дата встречи': (confirmedBooking as ExpressConsultationBooking).bookingDate,
+              'Время (Вьетнам ICT)': (confirmedBooking as ExpressConsultationBooking).vietnamBookingTime || (confirmedBooking as ExpressConsultationBooking).bookingTime,
+              'Время клиента': (confirmedBooking as ExpressConsultationBooking).clientBookingTime ? `${(confirmedBooking as ExpressConsultationBooking).clientBookingTime} (${(confirmedBooking as ExpressConsultationBooking).clientTimezone || 'Местное'})` : 'Не указано',
+              'Платформа': (confirmedBooking as ExpressConsultationBooking).meetingPlatform,
+              'Способ оплаты': methodLabels[paymentMethod] || paymentMethod,
+              'Тема': (confirmedBooking as ExpressConsultationBooking).topic || 'Общая консультация по релокации',
+              'Сумма': '$50 (зачтены в депозит)'
+            })
+          });
+        } catch (err) {
+          console.warn('FormSubmit founder email error:', err);
+        }
+      }
+
+      // Trigger Webhook (for automated client & founder email dispatch via Google Apps Script or Make)
+      if (scheduleConfig.emailWebhookUrl) {
+        try {
+          await fetch(scheduleConfig.emailWebhookUrl.trim(), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              to: targetFounderEmail,
-              subject: `VietReloc: Новая бронь консультации ($50) — ${(confirmedBooking as ExpressConsultationBooking).name}`,
-              clientName: (confirmedBooking as ExpressConsultationBooking).name,
+              event: 'consultation_booked',
+              founderEmail: scheduleConfig.founderEmail,
               clientEmail: (confirmedBooking as ExpressConsultationBooking).email,
+              clientName: (confirmedBooking as ExpressConsultationBooking).name,
               clientMessenger: (confirmedBooking as ExpressConsultationBooking).messenger,
               date: (confirmedBooking as ExpressConsultationBooking).bookingDate,
-              time: (confirmedBooking as ExpressConsultationBooking).bookingTime,
+              vietnamBookingTime: (confirmedBooking as ExpressConsultationBooking).vietnamBookingTime || (confirmedBooking as ExpressConsultationBooking).bookingTime,
+              clientBookingTime: (confirmedBooking as ExpressConsultationBooking).clientBookingTime,
+              clientTimezone: (confirmedBooking as ExpressConsultationBooking).clientTimezone,
+              meetingPlatform: (confirmedBooking as ExpressConsultationBooking).meetingPlatform,
               topic: (confirmedBooking as ExpressConsultationBooking).topic,
-              platform: (confirmedBooking as ExpressConsultationBooking).meetingPlatform,
-              priceUSD: 50
+              paymentMethod: paymentMethod,
+              amountUSD: 50
             })
           });
+        } catch (err) {
+          console.warn('Email Webhook error:', err);
         }
-      } catch (err) {
-        console.warn('Email dispatch error:', err);
       }
     }
 
@@ -801,6 +840,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       } else {
         return { success: false, message: `Ошибка Telegram: ${data.description || 'Неверный токен или Chat ID'}` };
       }
+    } catch (err: any) {
+      return { success: false, message: `Сетевая ошибка: ${err.message}` };
+    }
+  };
+
+  const sendTestEmailNotification = async (targetEmail?: string): Promise<{ success: boolean; message: string }> => {
+    const emailToSend = (targetEmail || scheduleConfig.founderEmail || '').trim();
+    if (!emailToSend || !emailToSend.includes('@')) {
+      return { success: false, message: 'Укажите корректный Email для отправки теста' };
+    }
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(emailToSend)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: 'VietReloc: Тестовое уведомление о бронировании',
+          'Статус': 'Тест связи успешен',
+          'Сообщение': 'Уведомления о бронированиях экспресс-консультаций за $50 подключены!',
+          'Время отправки': new Date().toLocaleString()
+        })
+      });
+      const data = await res.json();
+      if (data.success === 'true' || data.success === true) {
+        return { success: true, message: `Тестовое письмо отправлено на ${emailToSend}! Проверьте папку «Входящие» (или «Спам»).` };
+      } else if (data.message && data.message.includes('Activation')) {
+        return { success: true, message: `На ${emailToSend} отправлено письмо активации от FormSubmit. Откройте его и нажмите Activate, чтобы разрешить отправку заявок!` };
+      }
+      return { success: false, message: data.message || 'Ошибка отправки почты' };
     } catch (err: any) {
       return { success: false, message: `Сетевая ошибка: ${err.message}` };
     }
@@ -1373,7 +1443,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         cancelConsultationBooking,
         completeConsultationBooking,
         getDateSlotAvailability,
-        sendTestTelegramNotification
+        sendTestTelegramNotification,
+        sendTestEmailNotification
       }}
     >
       {children}

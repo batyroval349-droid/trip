@@ -14,9 +14,118 @@ import {
   QrCode,
   Sparkles,
   Timer,
-  AlertCircle
+  AlertCircle,
+  Globe
 } from 'lucide-react';
 import type { ExpressConsultationBooking } from '../types';
+
+export interface TimezoneOption {
+  value: string;
+  labelRu: string;
+  labelEn: string;
+  cityRu: string;
+  cityEn: string;
+}
+
+export const POPULAR_TIMEZONES: TimezoneOption[] = [
+  { value: 'Europe/Moscow', labelRu: 'Москва, Санкт-Петербург (МСК, UTC+3)', labelEn: 'Moscow, St. Petersburg (MSK, UTC+3)', cityRu: 'Москва', cityEn: 'Moscow' },
+  { value: 'Asia/Tbilisi', labelRu: 'Тбилиси, Грузия (GET, UTC+4)', labelEn: 'Tbilisi, Georgia (UTC+4)', cityRu: 'Тбилиси', cityEn: 'Tbilisi' },
+  { value: 'Asia/Yerevan', labelRu: 'Ереван, Армения (AMT, UTC+4)', labelEn: 'Yerevan, Armenia (UTC+4)', cityRu: 'Ереван', cityEn: 'Yerevan' },
+  { value: 'Asia/Dubai', labelRu: 'Дубай, ОАЭ (GST, UTC+4)', labelEn: 'Dubai, UAE (GST, UTC+4)', cityRu: 'Дубай', cityEn: 'Dubai' },
+  { value: 'Asia/Almaty', labelRu: 'Алматы, Астана (KZT, UTC+5)', labelEn: 'Almaty, Astana (UTC+5)', cityRu: 'Алматы', cityEn: 'Almaty' },
+  { value: 'Asia/Tashkent', labelRu: 'Ташкент, Узбекистан (UZT, UTC+5)', labelEn: 'Tashkent, Uzbekistan (UTC+5)', cityRu: 'Ташкент', cityEn: 'Tashkent' },
+  { value: 'Asia/Yekaterinburg', labelRu: 'Екатеринбург (YEKT, UTC+5)', labelEn: 'Yekaterinburg (UTC+5)', cityRu: 'Екатеринбург', cityEn: 'Yekaterinburg' },
+  { value: 'Asia/Novosibirsk', labelRu: 'Новосибирск (NOVT, UTC+7)', labelEn: 'Novosibirsk (UTC+7)', cityRu: 'Новосибирск', cityEn: 'Novosibirsk' },
+  { value: 'Asia/Ho_Chi_Minh', labelRu: 'Вьетнам: Дананг, Нячанг (ICT, UTC+7)', labelEn: 'Vietnam: Da Nang, Nha Trang (ICT, UTC+7)', cityRu: 'Вьетнам', cityEn: 'Vietnam' },
+  { value: 'Asia/Bangkok', labelRu: 'Таиланд: Бангкок, Пхукет (ICT, UTC+7)', labelEn: 'Thailand: Bangkok, Phuket (ICT, UTC+7)', cityRu: 'Таиланд', cityEn: 'Thailand' },
+  { value: 'Asia/Makassar', labelRu: 'Бали, Индонезия (WITA, UTC+8)', labelEn: 'Bali, Indonesia (UTC+8)', cityRu: 'Бали', cityEn: 'Bali' },
+  { value: 'Europe/Belgrade', labelRu: 'Белград, Сербия (CET, UTC+1)', labelEn: 'Belgrade, Serbia (CET, UTC+1)', cityRu: 'Белград', cityEn: 'Belgrade' },
+  { value: 'Europe/Berlin', labelRu: 'Берлин, Париж (CET, UTC+1)', labelEn: 'Berlin, Paris (CET, UTC+1)', cityRu: 'Берлин', cityEn: 'Berlin' },
+  { value: 'Europe/London', labelRu: 'Лондон (GMT/BST, UTC+0)', labelEn: 'London (GMT/BST, UTC+0)', cityRu: 'Лондон', cityEn: 'London' },
+  { value: 'Europe/Kaliningrad', labelRu: 'Калининград (EET, UTC+2)', labelEn: 'Kaliningrad (UTC+2)', cityRu: 'Калининград', cityEn: 'Kaliningrad' },
+  { value: 'Asia/Baku', labelRu: 'Баку, Азербайджан (AZT, UTC+4)', labelEn: 'Baku, Azerbaijan (UTC+4)', cityRu: 'Баку', cityEn: 'Baku' },
+  { value: 'Asia/Bishkek', labelRu: 'Бишкек, Кыргызстан (KGT, UTC+6)', labelEn: 'Bishkek, Kyrgyzstan (UTC+6)', cityRu: 'Бишкек', cityEn: 'Bishkek' },
+  { value: 'Asia/Vladivostok', labelRu: 'Владивосток (VLAT, UTC+10)', labelEn: 'Vladivostok (UTC+10)', cityRu: 'Владивосток', cityEn: 'Vladivostok' }
+];
+
+export const getDetectedTimezone = (): string => {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz) return tz;
+  } catch (e) {}
+  return 'Europe/Moscow';
+};
+
+export const convertSlotTime = (dateStr: string, slotTime: string, clientTz: string): {
+  clientTime: string;
+  vietnamTime: string;
+  isSameTime: boolean;
+} => {
+  try {
+    const parts = dateStr.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+
+    const [startPart, endPart] = slotTime.split('-');
+    const [startH, startM] = (startPart || '14:00').trim().split(':').map(Number);
+    const [endH, endM] = (endPart || '15:00').trim().split(':').map(Number);
+
+    // Vietnam is fixed UTC+7
+    const startDateUtc = new Date(Date.UTC(year, month, day, startH - 7, startM || 0, 0));
+    const endDateUtc = new Date(Date.UTC(year, month, day, endH - 7, endM || 0, 0));
+
+    const timeFmt = new Intl.DateTimeFormat('ru-RU', {
+      timeZone: clientTz,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+
+    const clientStart = timeFmt.format(startDateUtc);
+    const clientEnd = timeFmt.format(endDateUtc);
+    const clientTime = `${clientStart} - ${clientEnd}`;
+
+    return {
+      clientTime,
+      vietnamTime: slotTime,
+      isSameTime: clientTime === slotTime
+    };
+  } catch (e) {
+    return {
+      clientTime: slotTime,
+      vietnamTime: slotTime,
+      isSameTime: true
+    };
+  }
+};
+
+export const getTzDifferenceText = (clientTz: string, dateStr: string, language: 'ru' | 'en'): string => {
+  try {
+    const parts = dateStr.split('-');
+    const date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 12, 0, 0);
+
+    const getOffset = (tz: string) => {
+      const str = date.toLocaleString('en-US', { timeZone: tz, timeZoneName: 'longOffset' });
+      const m = str.match(/GMT([+-])(\d{1,2}):?(\d{2})?/);
+      if (!m) return 420;
+      const sign = m[1] === '-' ? -1 : 1;
+      return sign * ((parseInt(m[2], 10) || 0) * 60 + (parseInt(m[3], 10) || 0));
+    };
+
+    const vnOffset = 420; // UTC+7
+    const clientOffset = getOffset(clientTz);
+    const diffHours = Math.round((vnOffset - clientOffset) / 60);
+
+    if (diffHours === 0) {
+      return language === 'ru' ? ' (совпадает с вами)' : ' (same as your time)';
+    }
+    const signStr = diffHours > 0 ? `+${diffHours}` : `${diffHours}`;
+    return language === 'ru' ? ` (${signStr} ч к вашему времени)` : ` (${signStr}h from your time)`;
+  } catch (e) {
+    return '';
+  }
+};
 
 export const ExpressBookingForm: React.FC = () => {
   const {
@@ -35,6 +144,7 @@ export const ExpressBookingForm: React.FC = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(true);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [timeRemainingSeconds, setTimeRemainingSeconds] = useState<number>(15 * 60);
+  const [clientTimezone, setClientTimezone] = useState<string>(getDetectedTimezone());
 
   // Next 14 calendar days
   const getNextDays = () => {
@@ -129,15 +239,20 @@ export const ExpressBookingForm: React.FC = () => {
       return;
     }
 
+    const converted = convertSlotTime(formData.bookingDate, formData.bookingTime, clientTimezone);
+
     const reserved = reserveExpressBookingSlot({
       name: formData.name.trim(),
       messenger: formData.messenger.trim(),
       email: formData.email.trim(),
       topic: formData.topic.trim(),
       bookingDate: formData.bookingDate,
-      bookingTime: formData.bookingTime,
+      bookingTime: formData.bookingTime, // Canonical Vietnam time
       meetingPlatform: formData.meetingPlatform,
-      priceUSD: 50
+      priceUSD: 50,
+      clientTimezone,
+      clientBookingTime: converted.clientTime,
+      vietnamBookingTime: formData.bookingTime
     });
 
     setActiveBooking(reserved);
@@ -168,16 +283,23 @@ export const ExpressBookingForm: React.FC = () => {
 
   // STEP 3: SUCCESS CONFIRMATION SCREEN
   if (step === 'success' && activeBooking) {
-    const dateClean = activeBooking.bookingDate.replace(/-/g, '');
-    const [startHourStr] = activeBooking.bookingTime.split(':')[0].trim().split(' ');
-    const startHourNum = parseInt(startHourStr, 10) || 14;
-    const endHourNum = startHourNum + 1;
-    const startIsoHour = startHourNum.toString().padStart(2, '0');
-    const endIsoHour = endHourNum.toString().padStart(2, '0');
-    const gCalDates = `${dateClean}T${startIsoHour}0000Z/${dateClean}T${endIsoHour}0000Z`;
+    const parts = activeBooking.bookingDate.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+
+    const [startPart, endPart] = (activeBooking.vietnamBookingTime || activeBooking.bookingTime).split('-');
+    const [startH, startM] = (startPart || '14:00').trim().split(':').map(Number);
+    const [endH, endM] = (endPart || '15:00').trim().split(':').map(Number);
+
+    // Vietnam is fixed UTC+7
+    const startDateUtc = new Date(Date.UTC(year, month, day, startH - 7, startM || 0, 0));
+    const endDateUtc = new Date(Date.UTC(year, month, day, endH - 7, endM || 0, 0));
+
+    const gCalDates = `${startDateUtc.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDateUtc.toISOString().replace(/[-:]/g, '').split('.')[0]}Z`;
     const gCalTitle = encodeURIComponent(`VietReloc: Экспресс-консультация (${activeBooking.name})`);
     const gCalDetails = encodeURIComponent(
-      `Экспресс-консультация по переезду во Вьетнам VietReloc.\nПлатформа: ${activeBooking.meetingPlatform}\nТема: ${activeBooking.topic}\nОплачено: $50`
+      `Экспресс-консультация по переезду во Вьетнам VietReloc.\nПлатформа: ${activeBooking.meetingPlatform}\nТема: ${activeBooking.topic}\nВремя (клиент): ${activeBooking.clientBookingTime || activeBooking.bookingTime} (${activeBooking.clientTimezone || 'местное'})\nВремя (Вьетнам): ${activeBooking.vietnamBookingTime || activeBooking.bookingTime} ICT\nОплачено: $50`
     );
     const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${gCalTitle}&dates=${gCalDates}&details=${gCalDetails}&location=${encodeURIComponent(activeBooking.meetingPlatform)}`;
 
@@ -219,8 +341,8 @@ export const ExpressBookingForm: React.FC = () => {
 
             <p style={{ color: 'var(--text-muted)', fontSize: '1.02rem', lineHeight: 1.6, maxWidth: '560px', margin: '0 auto 1.75rem auto' }}>
               {language === 'ru'
-                ? 'Слот зафиксирован. Уведомление о бронировании мгновенно отправлено основателю в Telegram и на почту batyroval42@gmail.com, а вам на почту направлены детали созвона и персональная ссылка на встречу.'
-                : 'Your slot is officially secured. Instant booking alerts have been dispatched to the founder via Telegram and email (batyroval42@gmail.com), and meeting details were sent to your inbox.'}
+                ? 'Слот зафиксирован. Уведомление о бронировании мгновенно отправлено основательнице, а вам на почту направлены детали созвона и персональная ссылка на встречу.'
+                : 'Your slot is officially secured. Instant booking alerts have been dispatched to the founder, and meeting details were sent to your inbox.'}
             </p>
 
             {/* 100% Credit Guarantee Callout */}
@@ -259,11 +381,18 @@ export const ExpressBookingForm: React.FC = () => {
               fontSize: '0.94rem',
               boxShadow: '0 4px 16px rgba(0,0,0,0.03)'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.6rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Дата и время' : 'Date & Time'}:</span>
-                <strong style={{ color: 'var(--accent-emerald)', fontSize: '1.02rem' }}>
-                  {activeBooking.bookingDate} &bull; {activeBooking.bookingTime}
-                </strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.6rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Дата и время встречи:' : 'Date & Time:'}</span>
+                <div style={{ textAlign: 'right' }}>
+                  <strong style={{ color: 'var(--accent-emerald)', fontSize: '1.02rem' }}>
+                    {activeBooking.bookingDate} &bull; {activeBooking.clientBookingTime || activeBooking.bookingTime}
+                  </strong>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    {language === 'ru'
+                      ? `(${activeBooking.clientTimezone || 'По вашему времени'} · ${activeBooking.vietnamBookingTime || activeBooking.bookingTime} по Вьетнаму)`
+                      : `(${activeBooking.clientTimezone || 'Your local time'} · ${activeBooking.vietnamBookingTime || activeBooking.bookingTime} Vietnam ICT)`}
+                  </div>
+                </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.6rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Платформа' : 'Platform'}:</span>
@@ -409,8 +538,8 @@ export const ExpressBookingForm: React.FC = () => {
                   </h1>
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: 1.5 }}>
                     {language === 'ru'
-                      ? 'После завершения оплаты вам мгновенно поступит персональная ссылка на Google Meet / Zoom и чек, а основатель сразу получит уведомление в Telegram и на почту batyroval42@gmail.com.'
-                      : 'Upon payment completion, your personal meeting link and receipt will be issued immediately, and instant alerts are dispatched to the founder via Telegram and email.'}
+                      ? 'После завершения оплаты вам мгновенно поступит персональная ссылка на Google Meet / Zoom и чек, а основательница сразу получит уведомление о вашей записи.'
+                      : 'Upon payment completion, your personal meeting link and receipt will be issued immediately, and instant alerts are dispatched to the founder.'}
                   </p>
                 </div>
 
@@ -450,11 +579,18 @@ export const ExpressBookingForm: React.FC = () => {
                   gap: '0.75rem',
                   fontSize: '0.92rem'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem' }}>
-                    <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Забронированный слот:' : 'Reserved Slot:'}</span>
-                    <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.98rem' }}>
-                      {activeBooking.bookingDate} &bull; {activeBooking.bookingTime}
-                    </strong>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Забронированное время:' : 'Reserved Time:'}</span>
+                    <div style={{ textAlign: 'right' }}>
+                      <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.98rem' }}>
+                        {activeBooking.bookingDate} &bull; {activeBooking.clientBookingTime || activeBooking.bookingTime}
+                      </strong>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        {language === 'ru'
+                          ? `(по вашему времени, ${activeBooking.clientTimezone || 'местное'} · ${activeBooking.vietnamBookingTime || activeBooking.bookingTime} по Вьетнаму)`
+                          : `(your local time · ${activeBooking.vietnamBookingTime || activeBooking.bookingTime} Vietnam ICT)`}
+                      </div>
+                    </div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem' }}>
                     <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Клиент:' : 'Client:'}</span>
@@ -539,8 +675,8 @@ export const ExpressBookingForm: React.FC = () => {
                         </strong>
                         <p style={{ margin: '0 0 0.5rem 0', color: 'var(--text-muted)' }}>
                           {language === 'ru'
-                            ? 'Сумма к списанию: 4,850 ₽. Официальный электронный фискальный чек самозанятого поступает на ваш Email сразу после подтверждения.'
-                            : 'Amount: ~4,850 RUB. Electronic fiscal receipt is automatically issued to your email.'}
+                            ? 'Сумма к списанию: 4,850 ₽. Чек поступит вам на почту.'
+                            : 'Amount: 4,850 ₽. The receipt will be sent to your email.'}
                         </p>
                         <div style={{ fontSize: '0.78rem', color: '#16A34A', fontWeight: 600 }}>
                           ✓ {language === 'ru' ? 'Без комиссий. Мгновенное подтверждение в календаре.' : 'Zero fee. Instant confirmation.'}
@@ -911,15 +1047,53 @@ export const ExpressBookingForm: React.FC = () => {
               boxShadow: '0 4px 14px rgba(0,0,0,0.02)'
             }}>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Calendar size={18} style={{ color: 'var(--accent-emerald)' }} />
                   <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)' }}>
                     1. {language === 'ru' ? 'Выберите дату' : 'Select Date'}
                   </span>
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  {language === 'ru' ? 'Часовой пояс: Вьетнам / МСК' : 'Timezone: Vietnam (ICT) / MSK'}
+
+                {/* Timezone Indicator & Selector Bar */}
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  background: '#FAF8F5',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: '8px',
+                  padding: '0.35rem 0.65rem'
+                }}>
+                  <Globe size={14} style={{ color: 'var(--accent-emerald)', flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                    {language === 'ru' ? 'Ваш пояс:' : 'Timezone:'}
+                  </span>
+                  <select
+                    value={clientTimezone}
+                    onChange={(e) => setClientTimezone(e.target.value)}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: 'var(--accent-emerald)',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      padding: 0
+                    }}
+                  >
+                    {POPULAR_TIMEZONES.map((tz) => (
+                      <option key={tz.value} value={tz.value}>
+                        {language === 'ru' ? tz.labelRu : tz.labelEn}
+                      </option>
+                    ))}
+                    {!POPULAR_TIMEZONES.some((tz) => tz.value === clientTimezone) && (
+                      <option value={clientTimezone}>
+                        {clientTimezone} ({language === 'ru' ? 'Авто' : 'Auto'})
+                      </option>
+                    )}
+                  </select>
                 </div>
               </div>
 
@@ -997,24 +1171,31 @@ export const ExpressBookingForm: React.FC = () => {
               </div>
 
               {/* Time Slots Section */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Clock size={18} style={{ color: 'var(--accent-terracotta)' }} />
                   <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)' }}>
                     2. {language === 'ru' ? 'Выберите свободное время' : 'Select Free Time Slot'}
                   </span>
                 </div>
-                {currentAvailability.availableCount > 0 && (
-                  <span style={{ fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
-                    {language === 'ru' ? `Доступно: ${currentAvailability.availableCount} слотов` : `${currentAvailability.availableCount} slots available`}
-                  </span>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
+                    🇻🇳 {language === 'ru'
+                      ? `Дананг / Нячанг: UTC+7${getTzDifferenceText(clientTimezone, formData.bookingDate, language)}`
+                      : `Vietnam: UTC+7${getTzDifferenceText(clientTimezone, formData.bookingDate, language)}`}
+                  </div>
+                  {currentAvailability.availableCount > 0 && (
+                    <span style={{ fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
+                      {language === 'ru' ? `Доступно: ${currentAvailability.availableCount} слотов` : `${currentAvailability.availableCount} slots available`}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {currentAvailability.slots.length === 0 || !currentAvailability.isWorkingDay ? (
                 <div style={{ padding: '1.5rem', textAlign: 'center', background: '#F8FAFC', borderRadius: 'var(--radius-sm)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                   <Ban size={24} style={{ margin: '0 auto 0.5rem auto', color: '#94A3B8' }} />
-                  <div>{language === 'ru' ? 'На этот день основатель не принимает записи. Пожалуйста, выберите другой день в календаре.' : 'No slots available on this date. Please select another date above.'}</div>
+                  <div>{language === 'ru' ? 'На этот день основательница не принимает записи. Пожалуйста, выберите другой день в календаре.' : 'No slots available on this date. Please select another date above.'}</div>
                 </div>
               ) : (
                 <div style={{
@@ -1029,6 +1210,9 @@ export const ExpressBookingForm: React.FC = () => {
                     const isPending = slot.status === 'pending_payment';
                     const isBlocked = slot.status === 'blocked';
                     const isSelected = formData.bookingTime === slot.time && isAvailable;
+
+                    // Convert canonical slot time (Vietnam ICT UTC+7) to client timezone
+                    const converted = convertSlotTime(formData.bookingDate, slot.time, clientTimezone);
 
                     return (
                       <button
@@ -1078,10 +1262,25 @@ export const ExpressBookingForm: React.FC = () => {
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
-                          gap: '3px'
+                          gap: '2px'
                         }}
                       >
-                        <span>{slot.time}</span>
+                        {/* Client's Local Time */}
+                        <span style={{ fontSize: '0.96rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
+                          {converted.clientTime}
+                        </span>
+
+                        {/* Vietnam Reference Time (if different) */}
+                        {!converted.isSameTime && (
+                          <span style={{
+                            fontSize: '0.71rem',
+                            color: isSelected ? 'rgba(255,255,255,0.88)' : 'var(--text-muted)',
+                            fontWeight: 500
+                          }}>
+                            {language === 'ru' ? `${slot.time} Вьетнам` : `${slot.time} Vietnam`}
+                          </span>
+                        )}
+
                         {isBooked && (
                           <span style={{ fontSize: '0.7rem', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 700 }}>
                             <Lock size={11} /> {language === 'ru' ? 'Занято' : 'Booked'}
@@ -1098,8 +1297,10 @@ export const ExpressBookingForm: React.FC = () => {
                           </span>
                         )}
                         {isAvailable && (
-                          <span style={{ fontSize: '0.68rem', color: isSelected ? 'rgba(255,255,255,0.9)' : 'var(--accent-emerald)' }}>
-                            {language === 'ru' ? 'Свободно' : 'Available'}
+                          <span style={{ fontSize: '0.68rem', color: isSelected ? '#FFFFFF' : 'var(--accent-emerald)', fontWeight: 600 }}>
+                            {isSelected
+                              ? (language === 'ru' ? '✓ Выбран' : '✓ Selected')
+                              : (language === 'ru' ? 'Свободно' : 'Available')}
                           </span>
                         )}
                       </button>
@@ -1148,7 +1349,7 @@ export const ExpressBookingForm: React.FC = () => {
               <Video size={20} style={{ color: 'var(--accent-emerald)', flexShrink: 0, marginTop: '2px' }} />
               <div style={{ fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
                 {language === 'ru'
-                  ? 'Звонок проходит 1 на 1 лично с основателем. Ссылка на видеовстречу придет вам в Telegram и на Email сразу после подтверждения бронирования.'
+                  ? 'Звонок проходит 1 на 1 лично с основательницей. Ссылка на видеовстречу придет вам в Telegram и на Email сразу после подтверждения бронирования.'
                   : 'The call is 1-on-1 with the founder. Meeting link is sent directly to your Telegram and Email upon booking.'}
               </div>
             </div>

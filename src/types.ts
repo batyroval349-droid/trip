@@ -20,6 +20,9 @@ export interface ExpressConsultationBooking {
   expiresAt?: number; // timestamp in ms when 15-minute slot reservation expires
   paymentMethod?: 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr';
   founderNotes?: string;
+  clientTimezone?: string; // e.g. 'Europe/Moscow'
+  clientBookingTime?: string; // e.g. '10:00 - 11:00' (in client's local timezone)
+  vietnamBookingTime?: string; // e.g. '14:00 - 15:00' (canonical Vietnam ICT UTC+7)
 }
 
 export interface BlockedSlotItem {

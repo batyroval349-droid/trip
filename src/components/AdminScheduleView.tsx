@@ -32,6 +32,7 @@ export const AdminScheduleView: React.FC = () => {
     completeConsultationBooking,
     confirmExpressBookingPayment,
     sendTestTelegramNotification,
+    sendTestEmailNotification,
     language
   } = useApp();
 
@@ -48,9 +49,11 @@ export const AdminScheduleView: React.FC = () => {
   // Telegram and Email settings local state
   const [botToken, setBotToken] = useState(scheduleConfig.telegramBotToken || '');
   const [chatId, setChatId] = useState(scheduleConfig.telegramChatId || '');
-  const [founderEmail, setFounderEmail] = useState(scheduleConfig.founderEmail || 'batyroval42@gmail.com');
+  const [founderEmail, setFounderEmail] = useState(scheduleConfig.founderEmail || '');
+  const [emailWebhookUrl, setEmailWebhookUrl] = useState(scheduleConfig.emailWebhookUrl || '');
   const [tgFeedback, setTgFeedback] = useState<{ success?: boolean; message: string } | null>(null);
   const [isTestingTg, setIsTestingTg] = useState(false);
+  const [isTestingEmail, setIsTestingEmail] = useState(false);
 
   // Day names mapping: 0=Sun, 1=Mon, ..., 6=Sat
   const daysOfWeek = [
@@ -79,9 +82,10 @@ export const AdminScheduleView: React.FC = () => {
     updateScheduleConfig({
       telegramBotToken: botToken.trim(),
       telegramChatId: chatId.trim(),
-      founderEmail: founderEmail.trim()
+      founderEmail: founderEmail.trim(),
+      emailWebhookUrl: emailWebhookUrl.trim()
     });
-    setTgFeedback({ success: true, message: language === 'ru' ? 'Настройки уведомлений (Email и Telegram) сохранены!' : 'Notification settings saved!' });
+    setTgFeedback({ success: true, message: language === 'ru' ? 'Все настройки уведомлений сохранены!' : 'All notification settings saved!' });
     setTimeout(() => setTgFeedback(null), 3500);
   };
 
@@ -94,6 +98,17 @@ export const AdminScheduleView: React.FC = () => {
     });
     const result = await sendTestTelegramNotification();
     setIsTestingTg(false);
+    setTgFeedback(result);
+  };
+
+  const handleTestEmail = async () => {
+    setIsTestingEmail(true);
+    setTgFeedback(null);
+    updateScheduleConfig({
+      founderEmail: founderEmail.trim()
+    });
+    const result = await sendTestEmailNotification(founderEmail.trim());
+    setIsTestingEmail(false);
     setTgFeedback(result);
   };
 
@@ -275,7 +290,7 @@ export const AdminScheduleView: React.FC = () => {
           }}
         >
           <Send size={16} />
-          {language === 'ru' ? 'Telegram-уведомления' : 'Telegram Bot API'}
+          {language === 'ru' ? 'Уведомления (Telegram / Email)' : 'Alerts (Telegram / Email)'}
         </button>
       </div>
 
@@ -804,78 +819,142 @@ export const AdminScheduleView: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 4: TELEGRAM NOTIFICATIONS */}
+      {/* TAB 4: NOTIFICATIONS (TELEGRAM & EMAIL) */}
       {activeTab === 'telegram' && (
-        <div style={{ background: '#FFFFFF', borderRadius: 'var(--radius-md)', padding: '2rem', border: '1px solid var(--border-subtle)', maxWidth: '720px' }}>
+        <div style={{ background: '#FFFFFF', borderRadius: 'var(--radius-md)', padding: '2rem', border: '1px solid var(--border-subtle)', maxWidth: '740px' }}>
           <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Send size={20} color="var(--accent-emerald)" />
-            {language === 'ru' ? 'Мгновенные уведомления о бронированиях в Telegram' : 'Instant Telegram Booking Alerts'}
+            {language === 'ru' ? 'Уведомления о новых бронированиях (Telegram и Email)' : 'Booking Alerts (Telegram & Email)'}
           </h3>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
             {language === 'ru'
-              ? 'Когда клиент выбирает дату и бронирует созвон на сайте, вам на телефон моментально приходит сообщение от Telegram-бота с именем клиента, датой, временем и кнопкой перехода в диалог.'
-              : 'Receive instant Telegram push notifications the moment a client books a call, with full contact and date details.'}
+              ? 'Когда клиент выбирает дату и бронирует созвон на сайте, уведомление мгновенно отправляется вам в Telegram и на вашу почту с полными контактами клиента и датой.'
+              : 'When a client books a call, instant alerts are dispatched to your Telegram and email with full client details.'}
           </p>
 
           <form onSubmit={handleSaveTelegram} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                Telegram Bot Token *
-              </label>
-              <input
-                type="text"
-                placeholder="Например: 7123456789:AAHqxxxxxxxxxxxxxxxxxxxx"
-                value={botToken}
-                onChange={(e) => setBotToken(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border-subtle)',
-                  fontFamily: 'monospace',
-                  fontSize: '0.9rem'
-                }}
-              />
+            {/* Telegram Settings */}
+            <div style={{ padding: '1.25rem', background: '#F8FAFC', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Send size={16} color="#0284C7" />
+                {language === 'ru' ? '1. Мгновенные push-уведомления в Telegram (Рекомендуется)' : '1. Instant Telegram Push Alerts (Recommended)'}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                    Telegram Bot Token
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="7123456789:AAHqxxxxxxxxxxxxxxxxxxxx"
+                    value={botToken}
+                    onChange={(e) => setBotToken(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.9rem',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-subtle)',
+                      fontFamily: 'monospace',
+                      fontSize: '0.88rem'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                    Telegram Chat ID (Ваш личный ID или ID закрытого канала)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Например: 582491204"
+                    value={chatId}
+                    onChange={(e) => setChatId(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.9rem',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-subtle)',
+                      fontFamily: 'monospace',
+                      fontSize: '0.88rem'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleTestTelegram}
+                    disabled={isTestingTg}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.55rem 1.1rem', fontSize: '0.84rem' }}
+                  >
+                    <Send size={14} /> {isTestingTg ? (language === 'ru' ? 'Отправка...' : 'Sending...') : (language === 'ru' ? 'Протестировать Telegram' : 'Test Telegram')}
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                Telegram Chat ID (Ваш личный ID или ID закрытого канала) *
-              </label>
-              <input
-                type="text"
-                placeholder="Например: 582491204"
-                value={chatId}
-                onChange={(e) => setChatId(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border-subtle)',
-                  fontFamily: 'monospace',
-                  fontSize: '0.9rem'
-                }}
-              />
-            </div>
+            {/* Email Settings */}
+            <div style={{ padding: '1.25rem', background: '#F8FAFC', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Bell size={16} color="var(--accent-emerald)" />
+                {language === 'ru' ? '2. Почтовые уведомления (Email)' : '2. Email Alerts'}
+              </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                Email основателя для дублирования заявок *
-              </label>
-              <input
-                type="email"
-                placeholder="batyroval42@gmail.com"
-                value={founderEmail}
-                onChange={(e) => setFounderEmail(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border-subtle)',
-                  fontFamily: 'monospace',
-                  fontSize: '0.9rem'
-                }}
-              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                    Email основательницы для получения заявок
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="your-email@example.com"
+                    value={founderEmail}
+                    onChange={(e) => setFounderEmail(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.9rem',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-subtle)',
+                      fontFamily: 'monospace',
+                      fontSize: '0.88rem'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                    Email Webhook URL (опционально: Google Apps Script / Make / Zapier для отправки писем клиенту и чеков)
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://script.google.com/macros/s/.../exec"
+                    value={emailWebhookUrl}
+                    onChange={(e) => setEmailWebhookUrl(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.9rem',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-subtle)',
+                      fontFamily: 'monospace',
+                      fontSize: '0.88rem'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleTestEmail}
+                    disabled={isTestingEmail || !founderEmail.trim()}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.55rem 1.1rem', fontSize: '0.84rem' }}
+                  >
+                    <CheckCircle2 size={14} /> {isTestingEmail ? (language === 'ru' ? 'Отправка...' : 'Sending...') : (language === 'ru' ? 'Протестировать отправку на Email' : 'Test Email Alert')}
+                  </button>
+                </div>
+              </div>
             </div>
 
             {tgFeedback && (
@@ -899,19 +978,9 @@ export const AdminScheduleView: React.FC = () => {
               <button
                 type="submit"
                 className="btn btn-primary"
-                style={{ padding: '0.75rem 1.4rem', fontSize: '0.9rem' }}
+                style={{ padding: '0.75rem 1.6rem', fontSize: '0.92rem' }}
               >
-                <Check size={16} /> {language === 'ru' ? 'Сохранить настройки' : 'Save Settings'}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleTestTelegram}
-                disabled={isTestingTg}
-                className="btn btn-secondary"
-                style={{ padding: '0.75rem 1.4rem', fontSize: '0.9rem' }}
-              >
-                <Send size={16} /> {isTestingTg ? (language === 'ru' ? 'Отправка...' : 'Sending...') : (language === 'ru' ? 'Отправить тестовый пуш' : 'Send Test Alert')}
+                <Check size={16} /> {language === 'ru' ? 'Сохранить все настройки' : 'Save All Settings'}
               </button>
             </div>
           </form>
@@ -920,27 +989,17 @@ export const AdminScheduleView: React.FC = () => {
           <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-subtle)', fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
             <h4 style={{ color: 'var(--text-main)', fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <ShieldCheck size={16} color="var(--accent-emerald)" />
-              {language === 'ru' ? 'Как получить токен и ID за 2 минуты (бесплатно):' : 'How to get Token & ID (Free, 2 mins):'}
+              {language === 'ru' ? 'Как настроить мгновенные уведомления:' : 'How to set up instant notifications:'}
             </h4>
-            <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <li>
-                {language === 'ru' ? 'Откройте в Telegram официального бота ' : 'Open in Telegram '}
-                <a href="https://t.me/BotFather" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>@BotFather</a>
-                {language === 'ru' ? ', отправьте команду ' : ' and send '}
-                <code>/newbot</code>
-                {language === 'ru' ? ', задайте имя (например, ' : ', choose a name (e.g. '}
-                <em>VietReloc Alerts</em>) и скопируйте выданный <strong>HTTP API Token</strong>.
+                <strong>Telegram (Рекомендуется, 1 минута):</strong> в Telegram откройте <a href="https://t.me/BotFather" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>@BotFather</a>, введите <code>/newbot</code>, скопируйте токен. Затем в <a href="https://t.me/userinfobot" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>@userinfobot</a> скопируйте ваш Chat ID. Нажмите <strong>Start / Запустить</strong> в вашем созданном боте и сохраните настройки.
               </li>
               <li>
-                {language === 'ru' ? 'Откройте бота ' : 'Open '}
-                <a href="https://t.me/userinfobot" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>@userinfobot</a>
-                {language === 'ru' ? ', отправьте любое сообщение — бот пришлет ваш личный ' : ' to get your personal '}
-                <strong>Id</strong> (цифры, например <code>582491204</code>).
+                <strong>Email (FormSubmit):</strong> введите ваш Email в поле выше и нажмите «Протестировать отправку на Email». При первом тесте сервис пришлет вам письмо активации — нажмите ссылку в нем 1 раз, и все последующие заявки будут приходить автоматически.
               </li>
               <li>
-                {language === 'ru' ? '⚠️ Важно: перед тестированием нажмите ' : '⚠️ Important: click '}
-                <strong>Start / Запустить</strong>
-                {language === 'ru' ? ' в вашем созданном боте, чтобы Telegram разрешил ему писать вам в ЛС.' : ' inside your new bot so it has permission to message you.'}
+                <strong>Письма клиентам и чеки (Webhook):</strong> если вы хотите автоматически отправлять клиентам брендированные письма с деталями встречи и чеками, можно вставить URL бесплатного скрипта Google Apps Script или вебхука Make.
               </li>
             </ol>
           </div>
