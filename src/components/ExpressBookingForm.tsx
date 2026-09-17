@@ -15,7 +15,9 @@ import {
   Sparkles,
   Timer,
   AlertCircle,
-  Globe
+  Globe,
+  Copy,
+  Check
 } from 'lucide-react';
 import type { ExpressConsultationBooking } from '../types';
 
@@ -145,6 +147,7 @@ export const ExpressBookingForm: React.FC = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [timeRemainingSeconds, setTimeRemainingSeconds] = useState<number>(15 * 60);
   const [clientTimezone, setClientTimezone] = useState<string>(getDetectedTimezone());
+  const [copiedVietQr, setCopiedVietQr] = useState(false);
 
   // Next 14 calendar days
   const getNextDays = () => {
@@ -726,16 +729,76 @@ export const ExpressBookingForm: React.FC = () => {
 
                     {selectedPaymentMethod === 'viet_qr' && (
                       <div>
-                        <strong style={{ color: 'var(--accent-emerald)', display: 'block', marginBottom: '0.3rem' }}>
-                          🇻🇳 {language === 'ru' ? 'Вьетнамский VietQR (VND)' : 'Vietnam VietQR (VND)'}
-                        </strong>
-                        <p style={{ margin: '0 0 0.5rem 0', color: 'var(--text-muted)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                          <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.94rem' }}>
+                            🇻🇳 {language === 'ru' ? 'Vietcombank VietQR / NAPAS 247' : 'Vietcombank VietQR'}
+                          </strong>
+                          <span style={{ fontSize: '0.74rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                            0% комиссия
+                          </span>
+                        </div>
+                        <p style={{ margin: '0 0 0.6rem 0', color: 'var(--text-muted)', fontSize: '0.84rem' }}>
                           {language === 'ru'
-                            ? 'Сумма: 1,280,000 VND. Прямой межбанковский перевод через VietQR (MB Bank / Techcombank / VPBank).'
-                            : 'Amount: 1,280,000 VND. Direct interbank transfer via VietQR.'}
+                            ? 'Отсканируйте QR-код в приложении любого вьетнамского банка или переведите по реквизитам:'
+                            : 'Scan the QR code in any Vietnamese banking app or transfer via account details:'}
                         </p>
-                        <div style={{ fontSize: '0.78rem', color: '#16A34A', fontWeight: 600 }}>
-                          ✓ {language === 'ru' ? 'Удобно для тех, кто уже во Вьетнаме или имеет карту местного банка.' : 'Convenient for clients already in Vietnam.'}
+
+                        <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
+                          <img
+                            src="/vietqr-batyrova.png"
+                            alt="Vietcombank VietQR Batyrova Liana"
+                            style={{
+                              maxWidth: '200px',
+                              width: '100%',
+                              borderRadius: '12px',
+                              border: '1px solid var(--border-subtle)',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                              margin: '0 auto',
+                              display: 'block'
+                            }}
+                          />
+                        </div>
+
+                        <div style={{
+                          background: '#FFFFFF',
+                          padding: '0.75rem 0.9rem',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid var(--border-subtle)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.35rem',
+                          fontSize: '0.82rem'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Банк:' : 'Bank:'}</span>
+                            <strong>Vietcombank</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Получатель:' : 'Beneficiary:'}</span>
+                            <strong>BATYROVA LIANA</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Номер счёта:' : 'Account number:'}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <strong style={{ fontFamily: 'monospace', color: 'var(--accent-emerald)', fontSize: '0.9rem' }}>1064034371</strong>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText('1064034371');
+                                  setCopiedVietQr(true);
+                                  setTimeout(() => setCopiedVietQr(false), 2000);
+                                }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}
+                                title="Скопировать номер счета"
+                              >
+                                {copiedVietQr ? <Check size={14} color="#0F766E" /> : <Copy size={14} />}
+                              </button>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--border-subtle)', paddingTop: '0.35rem', marginTop: '0.15rem' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Сумма к списанию:' : 'Amount:'}</span>
+                            <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.88rem' }}>1,280,000 VND ($50)</strong>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -746,7 +809,7 @@ export const ExpressBookingForm: React.FC = () => {
                 <div style={{ marginBottom: '1.75rem' }}>
                   <label style={{
                     display: 'flex',
-                    alignItems: 'flex-start',
+                    alignItems: 'center',
                     gap: '0.65rem',
                     fontSize: '0.86rem',
                     color: 'var(--text-main)',
@@ -757,12 +820,12 @@ export const ExpressBookingForm: React.FC = () => {
                       type="checkbox"
                       checked={agreeToTerms}
                       onChange={(e) => setAgreeToTerms(e.target.checked)}
-                      style={{ marginTop: '2px', accentColor: 'var(--accent-emerald)', width: '16px', height: '16px' }}
+                      style={{ accentColor: 'var(--accent-emerald)', width: '16px', height: '16px' }}
                     />
                     <span>
                       {language === 'ru' ? (
                         <>
-                          Я ознакомлен(а) и согласен(на) с условиями{' '}
+                          Я принимаю условия{' '}
                           <button
                             type="button"
                             onClick={(e) => {
@@ -781,8 +844,7 @@ export const ExpressBookingForm: React.FC = () => {
                             }}
                           >
                             Публичной оферты
-                          </button>{' '}
-                          и регламентом бронирования и переноса времени консультации.
+                          </button>
                         </>
                       ) : (
                         <>

@@ -110,8 +110,8 @@ export const PaymentModal: React.FC = () => {
         </div>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem', lineHeight: 1.45 }}>
           {language === 'ru'
-            ? 'Деньги поступают напрямую на официальный расчетный счет или криптовалютный кошелек основателя сервиса.'
-            : 'Payments are settled directly to the founder’s official business account or crypto wallet.'}
+            ? 'Выберите удобный способ оплаты для активации тарифа и доступа к личному кабинету.'
+            : 'Select your preferred payment method to activate your relocation workspace.'}
         </p>
 
         {/* Order Summary Box */}
@@ -258,20 +258,20 @@ export const PaymentModal: React.FC = () => {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                {language === 'ru' ? 'Шлюз Prodamus / СБП (Россия)' : 'Prodamus Gateway / SBP (Russia)'}
+                {language === 'ru' ? 'Карта любого банка РФ или СБП' : 'Russian Card / SBP Payment'}
               </span>
-              <span style={{ fontSize: '0.72rem', background: '#E0F2FE', color: '#0369A1', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
-                Чек 54-ФЗ
+              <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                0% комиссия
               </span>
             </div>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
               {language === 'ru'
-                ? 'Оплата картами МИР, Visa, Mastercard РФ или через СБП без комиссии. Фискальный кассовый чек высылается на вашу почту, а средства зачисляются на официальный расчетный счет основателя на следующий рабочий день.'
-                : 'Payment via Russian Mir, Visa, Mastercard or SBP. Full official 54-FZ tax receipt, funds settled to founder bank account next business day.'}
+                ? 'Оплата картами МИР, Visa, Mastercard любого банка РФ или через СБП. Чек поступит вам на почту.'
+                : 'Payment via cards of any Russian bank or SBP. The receipt will be sent to your email.'}
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
               <ArrowRight size={14} />
-              <span>{language === 'ru' ? `Сумма к списанию: ${priceRUB} ₽ (фиксировано)` : `Charged: ${priceRUB} RUB (fixed)`}</span>
+              <span>{language === 'ru' ? `Сумма к списанию: ${priceRUB} ₽` : `Charged: ${priceRUB} RUB`}</span>
             </div>
           </div>
         )}
@@ -286,16 +286,16 @@ export const PaymentModal: React.FC = () => {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                {language === 'ru' ? 'Международные карты (Visa / Mastercard)' : 'International Credit Cards'}
+                {language === 'ru' ? 'Зарубежные карты (Visa / Mastercard)' : 'International Credit Cards'}
               </span>
               <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
-                MoR Compliance
+                3D-Secure
               </span>
             </div>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
               {language === 'ru'
-                ? 'Принимаются любые карты банков СНГ, Европы, ОАЭ, США. Процессинг через Merchant of Record (Lava / Stripe / Tribute), который удерживает НДС покупателя и выводит сумму в USD основателю.'
-                : 'Accepts all international cards. Processed via Merchant of Record (Lava / Stripe / Tribute) compliant with global VAT, settled directly to founder.'}
+                ? 'Карты банков Европы, СНГ, ОАЭ, США (Visa / Mastercard). Безопасный международный процессинг.'
+                : 'Cards of European, CIS, UAE, US banks (Visa / Mastercard). Secure international processing.'}
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
               <ArrowRight size={14} />
@@ -392,39 +392,69 @@ export const PaymentModal: React.FC = () => {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                VietQR / NAPAS 247 (Вьетнамский банк)
+                Vietcombank VietQR / NAPAS 247
               </span>
-              <span style={{ fontSize: '0.72rem', background: '#FEE2E2', color: '#B91C1C', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
-                0% Комиссия
+              <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                0% комиссия
               </span>
             </div>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
               {language === 'ru'
-                ? 'Прямой перевод по системе быстрых платежей NAPAS 247 на счет основателя в банке Techcombank / MBBank во Вьетнаме. Идеально для тех, у кого уже есть вьетнамский счет.'
-                : 'Direct transfer via NAPAS 247 to founder account at Techcombank/MBBank in Vietnam in VND.'}
+                ? 'Отсканируйте QR-код в приложении любого вьетнамского банка или переведите по реквизитам:'
+                : 'Scan the QR code in any Vietnamese banking app or transfer using the details below:'}
             </p>
+
+            <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
+              <img
+                src="/vietqr-batyrova.png"
+                alt="Vietcombank VietQR Batyrova Liana"
+                style={{
+                  maxWidth: '220px',
+                  width: '100%',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-subtle)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                  margin: '0 auto',
+                  display: 'block'
+                }}
+              />
+            </div>
+
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
               background: '#F8FAFC',
-              padding: '0.6rem 0.8rem',
+              padding: '0.75rem 0.9rem',
               borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--border-subtle)'
+              border: '1px solid var(--border-subtle)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.35rem'
             }}>
-              <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Techcombank (Vietnam) &bull; Назначение: VIETRELOC-{priceUSD}</div>
-                <div style={{ fontFamily: 'monospace', fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-emerald)' }}>
-                  1903 8888 2470 19 &bull; {priceVND} VND
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Банк:' : 'Bank:'}</span>
+                <strong>Vietcombank</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Получатель:' : 'Beneficiary:'}</span>
+                <strong>BATYROVA LIANA</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Номер счёта:' : 'Account number:'}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <strong style={{ fontFamily: 'monospace', color: 'var(--accent-emerald)', fontSize: '0.9rem' }}>1064034371</strong>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard('1064034371', 'vietqr')}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px' }}
+                    title="Скопировать"
+                  >
+                    {copiedText === 'vietqr' ? <Check size={14} color="#0F766E" /> : <Copy size={14} />}
+                  </button>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard('19038888247019', 'vietqr')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px' }}
-              >
-                {copiedText === 'vietqr' ? <Check size={16} color="#0F766E" /> : <Copy size={16} />}
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', borderTop: '1px dashed var(--border-subtle)', paddingTop: '0.35rem', marginTop: '0.2rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Сумма к оплате:' : 'Amount:'}</span>
+                <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.88rem' }}>{priceVND} VND (~${priceUSD})</strong>
+              </div>
             </div>
           </div>
         )}
@@ -439,18 +469,18 @@ export const PaymentModal: React.FC = () => {
           </span>
         </div>
 
-        {/* Public Offer & Non-Refundable Terms Checkbox */}
+        {/* Public Offer Checkbox */}
         <label style={{
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           gap: '0.65rem',
-          fontSize: '0.76rem',
-          color: 'var(--text-muted)',
+          fontSize: '0.82rem',
+          color: 'var(--text-main)',
           marginBottom: '1.35rem',
           cursor: 'pointer',
           lineHeight: 1.45,
           background: 'rgba(255, 255, 255, 0.6)',
-          padding: '0.75rem',
+          padding: '0.75rem 0.9rem',
           borderRadius: 'var(--radius-sm)',
           border: '1px solid var(--border-subtle)'
         }}>
@@ -458,7 +488,7 @@ export const PaymentModal: React.FC = () => {
             type="checkbox"
             checked={agreedToOffer}
             onChange={(e) => setAgreedToOffer(e.target.checked)}
-            style={{ marginTop: '2px', accentColor: 'var(--accent-emerald)', cursor: 'pointer' }}
+            style={{ accentColor: 'var(--accent-emerald)', cursor: 'pointer', width: '16px', height: '16px' }}
           />
           <span>
             {language === 'ru' ? (
@@ -471,19 +501,17 @@ export const PaymentModal: React.FC = () => {
                 >
                   Публичной оферты
                 </button>
-                . Услуга является дистанционной информационно-консультационной. 1-й этап ($100) — глубокий аудит анкеты и районов (невозвратный после начала работы); 2-й этап — подбор проверенного жилья с аудитом договора и EVN; 3-й этап — сопровождение заселения и гарантийный консьерж.
               </>
             ) : (
               <>
-                I accept the{' '}
+                I accept the terms of the{' '}
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); setIsOfferModalOpen(true); }}
                   style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent-emerald)', textDecoration: 'underline', fontWeight: 600, cursor: 'pointer', font: 'inherit' }}
                 >
-                  Public Offer agreement
+                  Public Offer
                 </button>
-                . The service is remote consulting: Stage 1 ($100) profile & district audit (non-refundable once started); Stage 2 vetted accommodation selection & contract review; Stage 3 arrival concierge.
               </>
             )}
           </span>
