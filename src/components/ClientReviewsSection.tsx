@@ -143,17 +143,12 @@ export const ClientReviewsSection: React.FC = () => {
         {/* PART 1: FOUNDER'S MANIFEST (FEMALE FIRST-PERSON DIRECT VOICE) */}
         {/* ============================================================ */}
         <div style={{
-          background: '#FFFFFF',
-          borderRadius: '28px',
-          border: '1px solid var(--border-subtle)',
-          boxShadow: '0 16px 36px -10px rgba(28, 45, 42, 0.07)',
-          overflow: 'hidden',
           marginBottom: '3.5rem'
         }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'minmax(0, 1.35fr) minmax(0, 0.85fr)',
-            alignItems: 'stretch'
+            alignItems: 'center'
           }} className="founder-manifest-grid">
             
             {/* Left: Text Manifesto */}
@@ -260,8 +255,6 @@ export const ClientReviewsSection: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               padding: 'clamp(2.25rem, 4vw, 3.5rem) clamp(1.5rem, 2.5vw, 2.5rem)',
-              background: 'linear-gradient(145deg, #FBF9F5 0%, #F4EFE6 100%)',
-              borderLeft: '1px solid var(--border-subtle)',
               textAlign: 'center'
             }} className="founder-photo-col">
               
@@ -271,12 +264,13 @@ export const ClientReviewsSection: React.FC = () => {
                 marginBottom: '1.25rem'
               }}>
                 <div style={{
-                  width: 'clamp(180px, 17vw, 240px)',
-                  height: 'clamp(180px, 17vw, 240px)',
+                  width: 'clamp(215px, 20vw, 285px)',
+                  height: 'clamp(215px, 20vw, 285px)',
+                  aspectRatio: '1 / 1',
                   borderRadius: '50%',
                   overflow: 'hidden',
                   border: '4px solid #FFFFFF',
-                  boxShadow: '0 14px 32px -6px rgba(28, 45, 42, 0.16), 0 0 0 1px rgba(0,0,0,0.06)',
+                  boxShadow: '0 16px 36px -8px rgba(28, 45, 42, 0.16), 0 0 0 1px rgba(0,0,0,0.06)',
                   position: 'relative',
                   background: '#1A1A1A'
                 }}>
@@ -292,47 +286,24 @@ export const ClientReviewsSection: React.FC = () => {
                     }}
                   />
                 </div>
-
-                {/* Badge overlapping circle bottom */}
-                <div style={{
-                  position: 'absolute',
-                  bottom: '-8px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  background: '#FFFFFF',
-                  border: '1px solid var(--border-emerald)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                  borderRadius: '9999px',
-                  padding: '0.28rem 0.8rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  color: 'var(--accent-emerald)',
-                  whiteSpace: 'nowrap'
-                }}>
-                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--accent-emerald)', display: 'inline-block' }}></span>
-                  <span>{language === 'ru' ? 'На связи во Вьетнаме' : 'Live in Vietnam'}</span>
-                </div>
               </div>
 
               {/* Founder caption */}
-              <div style={{ marginTop: '0.4rem' }}>
+              <div style={{ marginTop: '0.25rem' }}>
                 <div style={{
                   fontFamily: 'var(--font-serif)',
-                  fontSize: '1.18rem',
+                  fontSize: '1.22rem',
                   fontWeight: 700,
                   color: 'var(--text-main)',
                   letterSpacing: '-0.01em',
-                  marginBottom: '0.25rem'
+                  marginBottom: '0.35rem'
                 }}>
                   {language === 'ru' ? 'Основательница VietReloc' : 'VietReloc Founder'}
                 </div>
                 <div style={{
-                  fontSize: '0.84rem',
+                  fontSize: '0.86rem',
                   color: 'var(--text-muted)',
-                  lineHeight: 1.4
+                  lineHeight: 1.45
                 }}>
                   {language === 'ru' ? 'Дананг · Нячанг · Личный контакт' : 'Da Nang · Nha Trang · Direct Support'}
                 </div>
@@ -544,9 +515,7 @@ export const ClientReviewsSection: React.FC = () => {
             grid-template-columns: 1fr !important;
           }
           .founder-photo-col {
-            border-left: none !important;
-            border-bottom: 1px solid var(--border-subtle) !important;
-            padding: 2.25rem 1.25rem !important;
+            padding: 2rem 1.25rem 0.5rem 1.25rem !important;
             order: -1;
           }
           .situation-split-grid {
