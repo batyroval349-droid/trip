@@ -137,10 +137,17 @@ export const PaymentModal: React.FC = () => {
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--accent-emerald)', fontFamily: 'var(--font-serif)' }}>
+            <div style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: 'var(--accent-emerald)',
+              fontFamily: 'var(--font-sans)',
+              fontVariantNumeric: 'tabular-nums lining-nums',
+              letterSpacing: '-0.02em'
+            }}>
               ${priceUSD}
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums lining-nums' }}>
               ≈ {priceRUB} ₽ / {priceVND} ₫
             </div>
           </div>
@@ -284,23 +291,19 @@ export const PaymentModal: React.FC = () => {
             border: '1px solid var(--border-subtle)',
             marginBottom: '1.25rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                {language === 'ru' ? 'Зарубежные карты (Visa / Mastercard)' : 'International Credit Cards'}
+                {language === 'ru' ? 'Зарубежные карты (Visa / Mastercard)' : 'International Cards (Visa / Mastercard)'}
               </span>
               <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
                 3D-Secure
               </span>
             </div>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
               {language === 'ru'
-                ? 'Карты банков Европы, СНГ, ОАЭ, США (Visa / Mastercard). Безопасный международный процессинг.'
-                : 'Cards of European, CIS, UAE, US banks (Visa / Mastercard). Secure international processing.'}
+                ? `Сумма к списанию: $${priceUSD}. Чек поступит вам на почту.`
+                : `Amount: $${priceUSD} USD. The receipt will be sent to your email.`}
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
-              <ArrowRight size={14} />
-              <span>{language === 'ru' ? `Сумма к списанию: $${priceUSD}.00 USD` : `Charged: $${priceUSD}.00 USD`}</span>
-            </div>
           </div>
         )}
 
@@ -312,9 +315,9 @@ export const PaymentModal: React.FC = () => {
             border: '1px solid var(--border-subtle)',
             marginBottom: '1.25rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                USDT (TRC-20 / TON / BSC)
+                USDT (TRC-20)
               </span>
               <span style={{ fontSize: '0.72rem', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
                 Мгновенное зачисление
@@ -322,8 +325,8 @@ export const PaymentModal: React.FC = () => {
             </div>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
               {language === 'ru'
-                ? 'Прямой перевод на кошелек основателя. Комиссия сети TRC-20 всего ~1-2 USDT.'
-                : 'Direct transfer to founder wallet. Network fee ~1-2 USDT.'}
+                ? `Сумма к переводу: ${priceUSD} USDT (TRC-20).`
+                : `Amount to transfer: ${priceUSD} USDT (TRC-20).`}
             </p>
             
             <div style={{
@@ -390,9 +393,9 @@ export const PaymentModal: React.FC = () => {
             border: '1px solid var(--border-subtle)',
             marginBottom: '1.25rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                Vietcombank VietQR / NAPAS 247
+                VietQR
               </span>
               <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
                 0% комиссия
@@ -400,8 +403,8 @@ export const PaymentModal: React.FC = () => {
             </div>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
               {language === 'ru'
-                ? 'Отсканируйте QR-код в приложении любого вьетнамского банка или переведите по реквизитам:'
-                : 'Scan the QR code in any Vietnamese banking app or transfer using the details below:'}
+                ? `Сумма: ${priceVND} VND (~$${priceUSD}). Чек поступит вам на почту. Отсканируйте QR-код в приложении любого вьетнамского банка или переведите по реквизитам:`
+                : `Amount: ${priceVND} VND (~$${priceUSD}). The receipt will be sent to your email. Scan the QR code or transfer using details below:`}
             </p>
 
             <div style={{ textAlign: 'center', marginBottom: '0.85rem' }}>

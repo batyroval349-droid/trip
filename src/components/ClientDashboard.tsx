@@ -88,7 +88,12 @@ export const ClientDashboard: React.FC = () => {
               borderBottom: '1px solid var(--border-subtle)'
             }}>
               {[
-                { id: 'itinerary', label: language === 'ru' ? 'Маршрут (1–30 дней)' : 'Itinerary (1–30 Days)', icon: Compass },
+                {
+                  id: 'itinerary',
+                  label: language === 'ru' ? 'Маршрут (1–30 дней)' : 'Itinerary (1–30 Days)',
+                  icon: Compass,
+                  isPending: !isPlanPublished
+                },
                 { id: 'transit', label: language === 'ru' ? 'Города и Логистика' : 'Cities & Transit', icon: MapPin },
                 { id: 'sim', label: language === 'ru' ? 'Связь и SIM / eSIM' : 'SIM & Connectivity', icon: Sparkles },
                 { id: 'emergency', label: language === 'ru' ? 'SOS & Госпитали' : 'SOS & Hospitals', icon: MessageSquare }
@@ -118,13 +123,34 @@ export const ClientDashboard: React.FC = () => {
                   >
                     <Icon size={16} />
                     <span>{tab.label}</span>
+                    {(tab as any).isPending && (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '2px',
+                          marginLeft: '4px',
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          padding: '0.1rem 0.45rem',
+                          borderRadius: '9999px',
+                          background: isActive ? 'rgba(255, 255, 255, 0.25)' : '#FEF3C7',
+                          color: isActive ? '#FFFFFF' : '#B45309'
+                        }}
+                      >
+                        <Clock size={10} />
+                        {language === 'ru' ? 'В подготовке' : 'In prep'}
+                      </span>
+                    )}
                   </button>
                 );
               })}
             </div>
 
             {/* Travel Tab Content Panels */}
-            {travelTab === 'itinerary' && <DashboardItineraryView />}
+            {travelTab === 'itinerary' && (
+              !isPlanPublished ? <WaitingForPlanView /> : <DashboardItineraryView />
+            )}
             {travelTab === 'transit' && <DashboardTravelTransitView />}
             {travelTab === 'sim' && <DashboardSimConnectivityView />}
             {travelTab === 'emergency' && <DashboardEmergencySosView />}

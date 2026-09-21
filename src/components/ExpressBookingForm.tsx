@@ -560,7 +560,7 @@ export const ExpressBookingForm: React.FC = () => {
                   <Sparkles size={24} style={{ color: 'var(--accent-emerald)', flexShrink: 0, marginTop: '2px' }} />
                   <div>
                     <div style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '0.98rem', marginBottom: '0.2rem' }}>
-                      {language === 'ru' ? '💎 Гарантия 100% зачета в пакеты релокации' : '💎 100% Credit Guarantee'}
+                      {language === 'ru' ? 'Гарантия 100% зачета в пакеты релокации' : '100% Credit Guarantee'}
                     </div>
                     <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
                       {language === 'ru'
@@ -582,9 +582,9 @@ export const ExpressBookingForm: React.FC = () => {
                   gap: '0.75rem',
                   fontSize: '0.92rem'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem', flexWrap: 'wrap', gap: '0.4rem' }}>
-                    <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Забронированное время:' : 'Reserved Time:'}</span>
-                    <div style={{ textAlign: 'right' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem', gap: '0.75rem' }}>
+                    <span style={{ color: 'var(--text-muted)', flexShrink: 0 }}>{language === 'ru' ? 'Забронированное время:' : 'Reserved Time:'}</span>
+                    <div style={{ textAlign: 'right', flex: 1 }}>
                       <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.98rem' }}>
                         {activeBooking.bookingDate} &bull; {activeBooking.clientBookingTime || activeBooking.bookingTime}
                       </strong>
@@ -674,44 +674,38 @@ export const ExpressBookingForm: React.FC = () => {
                     {selectedPaymentMethod === 'card_ru' && (
                       <div>
                         <strong style={{ color: 'var(--accent-emerald)', display: 'block', marginBottom: '0.3rem' }}>
-                          💳 {language === 'ru' ? 'Оплата картой любого банка РФ или через СБП' : 'Payment via Russian Card / SBP'}
+                          {language === 'ru' ? 'Оплата картой любого банка РФ или через СБП' : 'Payment via Russian Card / SBP'}
                         </strong>
-                        <p style={{ margin: '0 0 0.5rem 0', color: 'var(--text-muted)' }}>
+                        <p style={{ margin: 0, color: 'var(--text-muted)' }}>
                           {language === 'ru'
                             ? 'Сумма к списанию: 4,850 ₽. Чек поступит вам на почту.'
                             : 'Amount: 4,850 ₽. The receipt will be sent to your email.'}
                         </p>
-                        <div style={{ fontSize: '0.78rem', color: '#16A34A', fontWeight: 600 }}>
-                          ✓ {language === 'ru' ? 'Без комиссий. Мгновенное подтверждение в календаре.' : 'Zero fee. Instant confirmation.'}
-                        </div>
                       </div>
                     )}
 
                     {selectedPaymentMethod === 'card_intl' && (
                       <div>
                         <strong style={{ color: 'var(--accent-emerald)', display: 'block', marginBottom: '0.3rem' }}>
-                          🌍 {language === 'ru' ? 'Зарубежные карты Visa / Mastercard' : 'International Visa / Mastercard'}
+                          {language === 'ru' ? 'Зарубежные карты (Visa / Mastercard)' : 'International Visa / Mastercard'}
                         </strong>
-                        <p style={{ margin: '0 0 0.5rem 0', color: 'var(--text-muted)' }}>
+                        <p style={{ margin: 0, color: 'var(--text-muted)' }}>
                           {language === 'ru'
-                            ? 'Для держателей карт банков Европы, Казахстана, Грузии, Турции, США, ОАЭ. Списание в USD ($50).'
-                            : 'For cardholders from Europe, Kazakhstan, Georgia, Turkey, US, UAE and others. Charged in USD ($50).'}
+                            ? 'Сумма к списанию: $50. Чек поступит вам на почту.'
+                            : 'Amount: $50 USD. The receipt will be sent to your email.'}
                         </p>
-                        <div style={{ fontSize: '0.78rem', color: '#16A34A', fontWeight: 600 }}>
-                          ✓ {language === 'ru' ? 'Безопасный международный шлюз с защитой 3D-Secure.' : 'Secure international processing with 3D-Secure.'}
-                        </div>
                       </div>
                     )}
 
                     {selectedPaymentMethod === 'crypto_usdt' && (
                       <div>
                         <strong style={{ color: 'var(--accent-emerald)', display: 'block', marginBottom: '0.3rem' }}>
-                          💎 {language === 'ru' ? 'Оплата в USDT (Сеть TRC-20)' : 'USDT TRC-20 Crypto Payment'}
+                          {language === 'ru' ? 'USDT (TRC-20)' : 'USDT TRC-20 Crypto Payment'}
                         </strong>
                         <p style={{ margin: '0 0 0.5rem 0', color: 'var(--text-muted)' }}>
                           {language === 'ru'
-                            ? 'Сумма: ровно 50 USDT. Мгновенная оплата без валютного контроля и банковских блокировок.'
-                            : 'Amount: exactly 50 USDT. Fast, borderless transaction without bank controls.'}
+                            ? 'Сумма к переводу: 50 USDT (TRC-20).'
+                            : 'Amount to transfer: 50 USDT (TRC-20).'}
                         </p>
                         <div style={{
                           background: '#FFFFFF',
@@ -731,7 +725,7 @@ export const ExpressBookingForm: React.FC = () => {
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                           <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.94rem' }}>
-                            🇻🇳 {language === 'ru' ? 'Vietcombank VietQR / NAPAS 247' : 'Vietcombank VietQR'}
+                            VietQR
                           </strong>
                           <span style={{ fontSize: '0.74rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
                             0% комиссия
@@ -739,8 +733,8 @@ export const ExpressBookingForm: React.FC = () => {
                         </div>
                         <p style={{ margin: '0 0 0.6rem 0', color: 'var(--text-muted)', fontSize: '0.84rem' }}>
                           {language === 'ru'
-                            ? 'Отсканируйте QR-код в приложении любого вьетнамского банка или переведите по реквизитам:'
-                            : 'Scan the QR code in any Vietnamese banking app or transfer via account details:'}
+                            ? 'Сумма: 1,280,000 VND ($50). Чек поступит вам на почту. Отсканируйте QR-код в приложении любого вьетнамского банка или переведите по реквизитам:'
+                            : 'Amount: 1,280,000 VND ($50). The receipt will be sent to your email. Scan QR or transfer via account details:'}
                         </p>
 
                         <div style={{ textAlign: 'center', marginBottom: '0.85rem' }}>

@@ -60,14 +60,22 @@ export const WaitingForPlanView: React.FC = () => {
 
             <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', margin: '0.2rem 0 0.75rem 0' }}>
               {language === 'ru'
-                ? 'Основатель проводит персональное исследование по вашей анкете'
-                : 'The Founder is Conducting Bespoke Research on Your Intake'}
+                ? (project.tierId === 'tier2'
+                    ? 'Основательница формирует ваш авторский маршрут путешествия'
+                    : 'Основатель проводит персональное исследование по вашей анкете')
+                : (project.tierId === 'tier2'
+                    ? 'The Founder is Curating Your Custom Travel Itinerary'
+                    : 'The Founder is Conducting Bespoke Research on Your Intake')}
             </h2>
 
             <p style={{ color: 'var(--text-muted)', fontSize: '0.96rem', lineHeight: 1.6, margin: 0 }}>
               {language === 'ru'
-                ? `Мы приняли вашу анкету (бюджет $${project.questionnaire.monthlyBudgetUSD}/мес, даты: ${project.questionnaire.travelDates || 'в планах'}). Основатель лично анализирует параметры, проверяет доступность проверенного жилья с надежным интернетом и просчитывает реалистичный бюджет. Как только всё будет готово, статус в кабинете изменится на «План опубликован и готов к просмотру», и откроются все персональные рекомендации.`
-                : `We received your intake (budget $${project.questionnaire.monthlyBudgetUSD}/mo, target date: ${project.questionnaire.travelDates || 'upcoming'}). The founder is personally auditing living options, verified fiber Wi-Fi spaces, and realistic cost models. Once ready, the status will advance to "Plan Ready & Published".`}
+                ? (project.tierId === 'tier2'
+                    ? `Мы приняли вашу анкету (даты: ${project.questionnaire.travelDates || 'в планах'}, состав: ${project.questionnaire.travelersCount || 1} чел., бюджет: $${project.questionnaire.monthlyBudgetUSD}). Основательница лично формирует подробный маршрут на 1–30 дней с таймингом (Утро / День / Вечер), точными геолокациями, проверенным транспортом и бюджетом (SLA первого аудита: до 48 часов). Как только маршрут будет готов, здесь появится интерактивный план, а также активируются кнопки «Печать / PDF» и «1 корректировка». А пока вы можете ознакомиться с общими базами знаний: «Города и Логистика», «Связь и SIM / eSIM» и «SOS & Госпитали».`
+                    : `Мы приняли вашу анкету (бюджет $${project.questionnaire.monthlyBudgetUSD}/мес, даты: ${project.questionnaire.travelDates || 'в планах'}). Основатель лично анализирует параметры, проверяет доступность проверенного жилья с надежным интернетом и просчитывает реалистичный бюджет. Как только всё будет готово, статус в кабинете изменится на «План опубликован и готов к просмотру», и откроются все персональные рекомендации.`)
+                : (project.tierId === 'tier2'
+                    ? `We received your intake (dates: ${project.questionnaire.travelDates || 'planned'}, travelers: ${project.questionnaire.travelersCount || 1}, budget: $${project.questionnaire.monthlyBudgetUSD}). The founder is personally crafting your 1–30 day daily itinerary with Morning/Day/Evening schedule, GPS spots and transit (SLA: within 48h). Once ready, the interactive plan, PDF export and revision request will be unlocked. In the meantime, explore the unlocked Cities, SIM, and SOS tabs.`
+                    : `We received your intake (budget $${project.questionnaire.monthlyBudgetUSD}/mo, target date: ${project.questionnaire.travelDates || 'upcoming'}). The founder is personally auditing living options, verified fiber Wi-Fi spaces, and realistic cost models. Once ready, the status will advance to "Plan Ready & Published".`)}
             </p>
           </div>
 

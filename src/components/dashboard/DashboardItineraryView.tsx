@@ -15,11 +15,18 @@ import {
   Navigation
 } from 'lucide-react';
 import { RevisionRequestModal } from './RevisionRequestModal';
+import { WaitingForPlanView } from './WaitingForPlanView';
 
 export const DashboardItineraryView: React.FC = () => {
   const { project, language } = useApp();
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(0);
   const [isRevisionModalOpen, setIsRevisionModalOpen] = useState<boolean>(false);
+
+  const isPlanPublished = project.status === 'plan_ready' || project.status === 'in_progress' || project.status === 'completed';
+
+  if (!isPlanPublished) {
+    return <WaitingForPlanView />;
+  }
 
   const days: TravelDayItem[] = (project.travelDays && project.travelDays.length > 0)
     ? project.travelDays
