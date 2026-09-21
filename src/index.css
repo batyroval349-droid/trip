@@ -1039,4 +1039,87 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transform: translateY(-2px);
 }
 
+/* ============================================================
+   A4 PRINT LAYOUT FOR ITINERARY (Clean, No Personal Cabinet)
+   ============================================================ */
+.a4-print-itinerary {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm 15mm 14mm;
+  }
+
+  /* Reset document background & fonts */
+  html, body {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+    font-size: 10pt !important;
+    line-height: 1.4 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide entire website chrome, headers, footers, modals, sidebars */
+  header,
+  footer,
+  .no-print,
+  .cloud-welcome-banner,
+  .mobile-sticky-bar,
+  .btn,
+  button,
+  nav,
+  input,
+  select,
+  textarea {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Make sure container doesn't apply shadows, backgrounds or maxWidth */
+  #root,
+  main,
+  section,
+  .container {
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Reveal only the dedicated A4 print layout */
+  .a4-print-itinerary {
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 100% !important;
+    background: #FFFFFF !important;
+    color: #111827 !important;
+  }
+
+  .a4-print-itinerary * {
+    visibility: visible !important;
+  }
+
+  /* Avoid breaking cards inside pages */
+  .a4-print-day-card {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 20px !important;
+  }
+
+  .a4-print-activity-item {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+
 

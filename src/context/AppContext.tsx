@@ -144,6 +144,10 @@ interface AppContextType {
   setIsOfferModalOpen: (open: boolean) => void;
   completePaymentAndUnlock: (method?: 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr') => void;
   upgradeToRelocation: () => void;
+  isUpgradeModalOpen: boolean;
+  setIsUpgradeModalOpen: (open: boolean) => void;
+  openUpgradeModal: () => void;
+  upgradeClientTier: (targetTierId: TierId, diffAmount: number, paymentMethod: string) => void;
   adminClients: AdminClientRecord[];
   setAdminClients: React.Dispatch<React.SetStateAction<AdminClientRecord[]>>;
   moveClientCategory: (clientId: string, newCategory: ClientFolderCategory) => void;
@@ -263,6 +267,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
   const [isOfferModalOpen, setIsOfferModalOpen] = useState<boolean>(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState<boolean>(false);
   const [pendingQuestionnaire, setPendingQuestionnaire] = useState<ClientQuestionnaire | null>(null);
 
   const [adminClients, setAdminClients] = useState<AdminClientRecord[]>(() => {
@@ -1161,17 +1166,60 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setViewModeState('dashboard');
   };
 
+  const openUpgradeModal = () => {
+    setIsUpgradeModalOpen(true);
+  };
+
   const upgradeToRelocation = () => {
-    setSelectedTier('tier3');
+    setIsUpgradeModalOpen(true);
+  };
+
+  const upgradeClientTier = (targetTierId: TierId, _diffAmount: number, paymentMethod: string) => {
+    setSelectedTier(targetTierId);
     try {
-      localStorage.setItem('indochine_selected_tier', 'tier3');
+      localStorage.setItem('indochine_selected_tier', targetTierId);
     } catch (e) {}
-    setProject((prev) => ({
-      ...prev,
-      tierId: 'tier3',
-      serviceName: TIERS_CONFIG['tier3'].name,
-      updatedAt: new Date().toISOString().split('T')[0]
-    }));
+
+    const newServiceName = TIERS_CONFIG[targetTierId]?.name || TIERS_CONFIG['tier3'].name;
+    const nowIso = new Date().toISOString();
+    const today = nowIso.split('T')[0];
+
+    setProject((prev) => {
+      const updated: ClientProject = {
+        ...prev,
+        tierId: targetTierId,
+        serviceName: newServiceName,
+        paymentMethod: paymentMethod,
+        paidAt: nowIso,
+        updatedAt: today
+      };
+      try {
+        localStorage.setItem('indochine_client_project', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    setAdminClients((prev) => {
+      const updated = prev.map((c) => {
+        if (c.id === project.id || c.email.toLowerCase() === project.email.toLowerCase()) {
+          return {
+            ...c,
+            tierId: targetTierId,
+            serviceName: newServiceName,
+            paymentMethod: paymentMethod,
+            paidAt: nowIso,
+            updatedAt: today
+          };
+        }
+        return c;
+      });
+      try {
+        localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    setIsUpgradeModalOpen(false);
   };
 
   const updateAdminProject = (updates: Partial<ClientProject>) => {
@@ -1536,6 +1584,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsOfferModalOpen,
         completePaymentAndUnlock,
         upgradeToRelocation,
+        isUpgradeModalOpen,
+        setIsUpgradeModalOpen,
+        openUpgradeModal,
+        upgradeClientTier,
         adminClients,
         setAdminClients,
         moveClientCategory,

@@ -82,12 +82,13 @@ export const DashboardItineraryView: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      {/* Top Banner with Quick Actions */}
-      <div className="glass-card" style={{
-        padding: '1.5rem',
-        background: '#FFFFFF',
-        borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border-subtle)',
+      <div className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+        {/* Top Banner with Quick Actions */}
+        <div className="glass-card" style={{
+          padding: '1.5rem',
+          background: '#FFFFFF',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--border-subtle)',
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
@@ -419,15 +420,222 @@ export const DashboardItineraryView: React.FC = () => {
                 </div>
               );
             })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Revision Request Modal */}
       <RevisionRequestModal
         isOpen={isRevisionModalOpen}
         onClose={() => setIsRevisionModalOpen(false)}
       />
+
+      {/* Pristine A4 Print Layout - ONLY visible when printing */}
+      <div className="a4-print-itinerary">
+        {/* Document Header */}
+        <div className="a4-print-header">
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            borderBottom: '2.5px solid #0F766E',
+            paddingBottom: '12px',
+            marginBottom: '16px'
+          }}>
+            <div>
+              <div style={{ fontSize: '22pt', fontWeight: 800, color: '#0F766E', letterSpacing: '-0.5px' }}>
+                VIETRELOC
+              </div>
+              <div style={{ fontSize: '9pt', color: '#4B5563', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px', fontWeight: 600 }}>
+                {language === 'ru' ? 'Консьерж-сервис по переезду и путешествиям во Вьетнам' : 'Vietnam Relocation & Travel Concierge'}
+              </div>
+            </div>
+            <div style={{ textAlign: 'right', fontSize: '8.5pt', color: '#4B5563', lineHeight: '1.4' }}>
+              <div><strong>WhatsApp:</strong> +84 394 583 217</div>
+              <div><strong>Telegram:</strong> @Likqwerty</div>
+              <div>likabatyrova7@gmail.com</div>
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', margin: '12px 0 18px 0' }}>
+            <h1 style={{ fontSize: '17pt', fontWeight: 800, color: '#111827', margin: '0 0 4px 0' }}>
+              {language === 'ru' ? 'Персональный авторский маршрут по Вьетнаму' : 'Bespoke Curated Vietnam Itinerary'}
+            </h1>
+            <div style={{ fontSize: '9.5pt', color: '#6B7280' }}>
+              {language === 'ru'
+                ? 'Эксклюзивный план поездки с проверенными локациями, логистикой и советами инсайдера'
+                : 'Curated trip plan with vetted spots, logistics and local insider tips'}
+            </div>
+          </div>
+
+          {/* Meta Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '8px',
+            background: '#F8FAFC',
+            border: '1px solid #CBD5E1',
+            borderRadius: '6px',
+            padding: '10px 14px',
+            marginBottom: '22px',
+            fontSize: '9pt'
+          }}>
+            <div>
+              <span style={{ color: '#64748B', display: 'block', fontSize: '7.5pt', textTransform: 'uppercase', fontWeight: 600 }}>
+                {language === 'ru' ? 'Клиент' : 'Client'}
+              </span>
+              <strong style={{ color: '#0F172A', fontSize: '9.5pt' }}>{project.clientName}</strong>
+            </div>
+            <div>
+              <span style={{ color: '#64748B', display: 'block', fontSize: '7.5pt', textTransform: 'uppercase', fontWeight: 600 }}>
+                {language === 'ru' ? 'Дата поездки' : 'Trip Date'}
+              </span>
+              <strong style={{ color: '#0F172A', fontSize: '9.5pt' }}>{project.questionnaire.travelDates || 'Не указана'}</strong>
+            </div>
+            <div>
+              <span style={{ color: '#64748B', display: 'block', fontSize: '7.5pt', textTransform: 'uppercase', fontWeight: 600 }}>
+                {language === 'ru' ? 'Длительность' : 'Duration'}
+              </span>
+              <strong style={{ color: '#0F172A', fontSize: '9.5pt' }}>{days.length} {language === 'ru' ? 'дней' : 'days'}</strong>
+            </div>
+            <div>
+              <span style={{ color: '#64748B', display: 'block', fontSize: '7.5pt', textTransform: 'uppercase', fontWeight: 600 }}>
+                {language === 'ru' ? 'Города' : 'Cities'}
+              </span>
+              <strong style={{ color: '#0F172A', fontSize: '9.5pt' }}>
+                {Array.from(new Set(days.map(d => d.cityName[language] || d.cityName.ru))).join(', ')}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        {/* All Days in Sequence */}
+        <div className="a4-print-days">
+          {days.map((day) => {
+            const sortedActivities = [...(day.activities || [])].sort((a, b) => {
+              const order = { morning: 1, afternoon: 2, evening: 3 };
+              return (order[a.timeSlot] || 2) - (order[b.timeSlot] || 2);
+            });
+
+            return (
+              <div key={day.dayNumber} className="a4-print-day-card">
+                {/* Day Header Banner */}
+                <div style={{
+                  background: '#0F766E',
+                  color: '#FFFFFF',
+                  padding: '8px 12px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '10px'
+                }}>
+                  <div style={{ fontSize: '10.5pt', fontWeight: 700 }}>
+                    {language === 'ru' ? `ДЕНЬ ${day.dayNumber}: ${day.cityName[language] || day.cityName.ru}` : `DAY ${day.dayNumber}: ${day.cityName[language] || day.cityName.en}`}
+                    <span style={{ fontWeight: 400, marginLeft: '8px', opacity: 0.95 }}>
+                      — {day.title[language] || day.title.ru}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Logistics Tip */}
+                {day.logisticsTip && (
+                  <div style={{
+                    background: '#FEF3C7',
+                    borderLeft: '3px solid #D97706',
+                    padding: '6px 10px',
+                    fontSize: '8.5pt',
+                    color: '#92400E',
+                    marginBottom: '10px',
+                    borderRadius: '0 4px 4px 0'
+                  }}>
+                    <strong>{language === 'ru' ? '💡 Логистика дня:' : '💡 Daily Logistics:'}</strong> {day.logisticsTip}
+                  </div>
+                )}
+
+                {/* Activities */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {sortedActivities.map((act) => {
+                    const slotLabel = act.timeSlot === 'morning' ? (language === 'ru' ? 'УТРО' : 'MORNING')
+                      : act.timeSlot === 'afternoon' ? (language === 'ru' ? 'ДЕНЬ' : 'AFTERNOON')
+                      : (language === 'ru' ? 'ВЕЧЕР' : 'EVENING');
+
+                    return (
+                      <div key={act.id} className="a4-print-activity-item" style={{
+                        border: '1px solid #CBD5E1',
+                        borderRadius: '4px',
+                        padding: '8px 10px',
+                        background: '#FFFFFF'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{
+                              fontSize: '7pt',
+                              fontWeight: 700,
+                              background: act.timeSlot === 'morning' ? '#FEF3C7' : act.timeSlot === 'afternoon' ? '#FFEDD5' : '#F3E8FF',
+                              color: act.timeSlot === 'morning' ? '#92400E' : act.timeSlot === 'afternoon' ? '#9A3412' : '#6B21A8',
+                              padding: '2px 6px',
+                              borderRadius: '3px',
+                              letterSpacing: '0.5px'
+                            }}>
+                              {slotLabel}
+                            </span>
+                            <strong style={{ fontSize: '9.5pt', color: '#0F172A' }}>
+                              {act.title}
+                            </strong>
+                          </div>
+                          {act.estimatedCostVND && (
+                            <span style={{ fontSize: '8pt', color: '#059669', fontWeight: 600 }}>
+                              {act.estimatedCostVND}
+                            </span>
+                          )}
+                        </div>
+
+                        <div style={{ fontSize: '8.5pt', color: '#334155', lineHeight: '1.35', marginBottom: act.proTip ? '4px' : '0' }}>
+                          {act.description}
+                        </div>
+
+                        {act.proTip && (
+                          <div style={{
+                            fontSize: '8pt',
+                            color: '#0F766E',
+                            background: 'rgba(15, 118, 110, 0.06)',
+                            padding: '4px 8px',
+                            borderRadius: '3px',
+                            marginTop: '3px'
+                          }}>
+                            <strong>{language === 'ru' ? '✨ Совет:' : '✨ Pro-tip:'}</strong> {act.proTip}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Print Footer */}
+        <div style={{
+          marginTop: '24px',
+          borderTop: '1px solid #CBD5E1',
+          paddingTop: '10px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '7.5pt',
+          color: '#64748B'
+        }}>
+          <div>
+            VietReloc Concierge • Экстренные службы: 115 (Скорая), 113 (Полиция) • Поддержка WhatsApp: +84 394 583 217
+          </div>
+          <div>
+            Страница авторского маршрута
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

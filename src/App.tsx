@@ -15,6 +15,7 @@ import { Footer } from './components/Footer';
 import { FounderLoginModal } from './components/FounderLoginModal';
 import { ClientLoginModal } from './components/ClientLoginModal';
 import { PaymentModal } from './components/PaymentModal';
+import { UpgradeModal } from './components/UpgradeModal';
 import { PublicOfferModal } from './components/PublicOfferModal';
 import { ExpressBookingForm } from './components/ExpressBookingForm';
 import { MobileStickyBar } from './components/MobileStickyBar';
@@ -28,6 +29,7 @@ const MainContent: React.FC = () => {
       <FounderLoginModal />
       <ClientLoginModal />
       <PaymentModal />
+      <UpgradeModal />
       <PublicOfferModal />
       
       <main style={{ flex: 1 }}>

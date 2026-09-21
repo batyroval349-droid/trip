@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { DashboardHeader } from './dashboard/DashboardHeader';
 import { DashboardCityView } from './dashboard/DashboardCityView';
@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 
 export const ClientDashboard: React.FC = () => {
-  const { project, t, language, upgradeToRelocation, setViewMode } = useApp();
+  const { project, setProject, setAdminClients, t, language, upgradeToRelocation, setViewMode } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'city' | 'neighborhoods' | 'budget' | 'roadmap' | 'housing' | 'resources' | 'realtor' | 'lease_audit' | 'vip_concierge'>('overview');
   const [travelTab, setTravelTab] = useState<'itinerary' | 'transit' | 'sim' | 'emergency'>('itinerary');
   const isTravelPlan = project.tierId === 'tier2';
@@ -45,12 +45,41 @@ export const ClientDashboard: React.FC = () => {
   // Bespoke plan recommendations are only available once founder publishes the plan
   const isPlanPublished = project.status === 'plan_ready' || project.status === 'in_progress' || project.status === 'completed';
 
+  // Automatically transition status from 'plan_ready' to 'in_progress' ("План активен и изучается") upon client viewing
+  useEffect(() => {
+    if (project.status === 'plan_ready') {
+      setProject((prev) => {
+        const updated = {
+          ...prev,
+          status: 'in_progress' as const,
+          progressPercent: 90
+        };
+        try {
+          localStorage.setItem('indochine_client_project', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+
+      setAdminClients((prev) => {
+        const updated = prev.map((c) =>
+          c.id === project.id || c.email.toLowerCase() === project.email.toLowerCase()
+            ? { ...c, status: 'in_progress' as const }
+            : c
+        );
+        try {
+          localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+    }
+  }, [project.status, project.id, project.email, setProject, setAdminClients]);
+
   return (
     <section style={{ padding: '2rem 0 5rem 0', background: 'var(--bg-main)' }}>
       <div className="container">
         
         {/* Return to Home / Pricing for seamless UX navigation */}
-        <div style={{ marginBottom: '1.25rem' }}>
+        <div className="no-print" style={{ marginBottom: '1.25rem' }}>
           <button
             onClick={() => setViewMode('marketing')}
             style={{
@@ -74,12 +103,14 @@ export const ClientDashboard: React.FC = () => {
         </div>
 
         {/* Workspace Top Header & Status Tracker */}
-        <DashboardHeader />
+        <div className="no-print">
+          <DashboardHeader />
+        </div>
 
         {isTravelPlan ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {/* Travel Navigation Bar */}
-            <div style={{
+            <div className="no-print" style={{
               display: 'flex',
               gap: '0.5rem',
               overflowX: 'auto',

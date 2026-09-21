@@ -205,13 +205,16 @@ export const Header: React.FC = () => {
         {/* Right Controls: Consultation CTA + Client Login + Language Switcher */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
           
-          <button
-            onClick={() => setViewMode('express_booking')}
-            className="btn btn-promo desktop-nav"
-            style={{ fontSize: '0.8rem', padding: '0.45rem 0.9rem', borderRadius: '9999px' }}
-          >
-            <Sparkles size={14} /> {t('navConsultation')}
-          </button>
+          {/* Consultation CTA (hidden in client dashboard) */}
+          {viewMode !== 'dashboard' && (
+            <button
+              onClick={() => setViewMode('express_booking')}
+              className="btn btn-promo desktop-nav"
+              style={{ fontSize: '0.8rem', padding: '0.45rem 0.9rem', borderRadius: '9999px' }}
+            >
+              <Sparkles size={14} /> {t('navConsultation')}
+            </button>
+          )}
 
           {/* Client Login or Client Profile */}
           {!currentClient ? (
@@ -397,13 +400,15 @@ export const Header: React.FC = () => {
               </button>
             </>
           )}
-          <button
-            className="btn btn-promo"
-            style={{ width: '100%', justifyContent: 'flex-start' }}
-            onClick={() => { setViewMode('express_booking'); setMobileMenuOpen(false); }}
-          >
-            <Sparkles size={16} /> {t('navConsultation')}
-          </button>
+          {viewMode !== 'dashboard' && (
+            <button
+              className="btn btn-promo"
+              style={{ width: '100%', justifyContent: 'flex-start' }}
+              onClick={() => { setViewMode('express_booking'); setMobileMenuOpen(false); }}
+            >
+              <Sparkles size={16} /> {t('navConsultation')}
+            </button>
+          )}
         </div>
       )}
     </header>

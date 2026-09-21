@@ -42,7 +42,7 @@ export const DashboardHeader: React.FC = () => {
             <div className="badge badge-emerald">
               <span className="icon-3d-hover" style={{ marginRight: '4px' }}><UserCheck size={14} /></span>
               {project.tierId === 'tier2'
-                ? (language === 'ru' ? 'Кабинет путешественника • 14 дней поддержки' : 'Traveler Workspace • 14-Day Concierge')
+                ? (language === 'ru' ? 'Кабинет путешественника' : 'Traveler Workspace')
                 : t('dashWorkspaceBadge')}
             </div>
 
@@ -98,7 +98,7 @@ export const DashboardHeader: React.FC = () => {
 
           <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem' }}>
             {project.tierId === 'tier2'
-              ? (language === 'ru' ? 'Даты поездки' : 'Trip Dates')
+              ? (language === 'ru' ? 'Дата поездки' : 'Trip Date')
               : t('dashTargetArrival')}: <strong style={{ color: 'var(--text-main)' }}>{project.questionnaire.travelDates}</strong>
           </p>
         </div>
