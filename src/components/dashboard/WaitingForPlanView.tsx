@@ -12,8 +12,7 @@ import {
   CreditCard,
   ShieldPlus,
   AlertCircle,
-  HelpCircle,
-  FileCheck2
+  HelpCircle
 } from 'lucide-react';
 
 export const WaitingForPlanView: React.FC = () => {
@@ -146,34 +145,6 @@ export const WaitingForPlanView: React.FC = () => {
 
       </div>
 
-      {/* 3. Ваша отправленная анкета в кратком виде */}
-      <div className="glass-card" style={{ padding: '1.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem', color: 'var(--accent-emerald)' }}>
-          <FileCheck2 size={20} />
-          <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-sans)', fontWeight: 700, margin: 0 }}>
-            {language === 'ru' ? 'Параметры вашей принятой анкеты' : 'Summary of Your Submitted Intake'}
-          </h3>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', fontSize: '0.88rem' }}>
-          <div style={{ background: 'var(--bg-panel)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Клиент:</span>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)', marginTop: '2px' }}>{project.clientName}</div>
-          </div>
-          <div style={{ background: 'var(--bg-panel)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Планируемый приезд:</span>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)', marginTop: '2px' }}>{project.questionnaire.travelDates || 'Уточняется'} ({project.questionnaire.duration || '1 мес'})</div>
-          </div>
-          <div style={{ background: 'var(--bg-panel)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Бюджет в месяц:</span>
-            <div style={{ fontWeight: 700, color: 'var(--accent-emerald)', marginTop: '2px' }}>${project.questionnaire.monthlyBudgetUSD} USD</div>
-          </div>
-          <div style={{ background: 'var(--bg-panel)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Формат работы:</span>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)', marginTop: '2px' }}>{project.questionnaire.workSituation || 'Удаленная работа'}</div>
-          </div>
-        </div>
-      </div>
 
       {/* 4. Блок: Общая полезная информация по Вьетнаму (пока клиент ожидает исследование) */}
       <div>

@@ -16,7 +16,8 @@ import {
   CheckCircle2,
   Send,
   RefreshCw,
-  Plane
+  Plane,
+  Edit2
 } from 'lucide-react';
 
 interface AdminTravelItineraryBuilderProps {
@@ -35,6 +36,15 @@ const SUPPORTED_CITIES = [
   { id: 'phuquoc', nameRu: 'Фукуок', nameEn: 'Phu Quoc' }
 ];
 
+const SLOT_ORDER: Record<string, number> = { morning: 1, afternoon: 2, evening: 3 };
+const sortActivities = (activities: TravelActivityItem[]): TravelActivityItem[] => {
+  return [...activities].sort((a, b) => {
+    const orderA = SLOT_ORDER[a.timeSlot] || 99;
+    const orderB = SLOT_ORDER[b.timeSlot] || 99;
+    return orderA - orderB;
+  });
+};
+
 export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderProps> = ({
   selectedClient,
   onPublishSuccess
@@ -50,11 +60,12 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
   const [activeSubTab, setActiveSubTab] = useState<'itinerary' | 'transit'>('itinerary');
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(0);
 
-  // Modals for adding
+  // Modals for adding & editing
   const [isAddActivityOpen, setIsAddActivityOpen] = useState(false);
+  const [editingActId, setEditingActId] = useState<string | null>(null);
   const [isAddLegOpen, setIsAddLegOpen] = useState(false);
 
-  // New Activity form state
+  // Activity form state
   const [newSlot, setNewSlot] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [newActTitle, setNewActTitle] = useState('');
   const [newActDesc, setNewActDesc] = useState('');
@@ -186,31 +197,83 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
   };
 
   // Activity Handlers
-  const handleAddActivity = (e: React.FormEvent) => {
+  const handleOpenAddActivity = () => {
+    setEditingActId(null);
+    setNewSlot('morning');
+    setNewActTitle('');
+    setNewActDesc('');
+    setNewActCost('');
+    setNewActTip('');
+    setNewActMaps('');
+    setIsAddActivityOpen(true);
+  };
+
+  const handleOpenEditActivity = (act: TravelActivityItem) => {
+    setEditingActId(act.id);
+    setNewSlot(act.timeSlot);
+    setNewActTitle(act.title);
+    setNewActDesc(act.description);
+    setNewActCost(act.estimatedCostVND || '');
+    setNewActTip(act.proTip || '');
+    setNewActMaps(act.googleMapsUrl || '');
+    setIsAddActivityOpen(true);
+  };
+
+  const handleSaveActivity = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newActTitle.trim()) return;
 
-    const newAct: TravelActivityItem = {
-      id: 'act-' + Date.now(),
-      timeSlot: newSlot,
-      title: newActTitle.trim(),
-      description: newActDesc.trim(),
-      estimatedCostVND: newActCost.trim() || undefined,
-      proTip: newActTip.trim() || undefined,
-      googleMapsUrl: newActMaps.trim() || undefined
-    };
+    if (editingActId) {
+      // Update existing activity
+      const updated = days.map((d, idx) => {
+        if (idx === selectedDayIndex) {
+          const updatedActs = (d.activities || []).map((a) => {
+            if (a.id === editingActId) {
+              return {
+                ...a,
+                timeSlot: newSlot,
+                title: newActTitle.trim(),
+                description: newActDesc.trim(),
+                estimatedCostVND: newActCost.trim() || undefined,
+                proTip: newActTip.trim() || undefined,
+                googleMapsUrl: newActMaps.trim() || undefined
+              };
+            }
+            return a;
+          });
+          return {
+            ...d,
+            activities: sortActivities(updatedActs)
+          };
+        }
+        return d;
+      });
+      updateTravelDays(selectedClient.id, updated);
+    } else {
+      // Create new activity
+      const newAct: TravelActivityItem = {
+        id: 'act-' + Date.now(),
+        timeSlot: newSlot,
+        title: newActTitle.trim(),
+        description: newActDesc.trim(),
+        estimatedCostVND: newActCost.trim() || undefined,
+        proTip: newActTip.trim() || undefined,
+        googleMapsUrl: newActMaps.trim() || undefined
+      };
 
-    const updated = days.map((d, idx) => {
-      if (idx === selectedDayIndex) {
-        return {
-          ...d,
-          activities: [...(d.activities || []), newAct]
-        };
-      }
-      return d;
-    });
+      const updated = days.map((d, idx) => {
+        if (idx === selectedDayIndex) {
+          return {
+            ...d,
+            activities: sortActivities([...(d.activities || []), newAct])
+          };
+        }
+        return d;
+      });
+      updateTravelDays(selectedClient.id, updated);
+    }
 
-    updateTravelDays(selectedClient.id, updated);
+    setEditingActId(null);
     setNewActTitle('');
     setNewActDesc('');
     setNewActCost('');
@@ -601,7 +664,7 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
                   </h4>
                   <button
                     type="button"
-                    onClick={() => setIsAddActivityOpen(true)}
+                    onClick={handleOpenAddActivity}
                     className="btn btn-primary"
                     style={{ padding: '0.45rem 0.9rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
                   >
@@ -616,7 +679,7 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {currentDay.activities.map((act) => (
+                    {sortActivities(currentDay.activities || []).map((act) => (
                       <div
                         key={act.id}
                         style={{
@@ -675,19 +738,43 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
                           )}
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteActivity(act.id)}
-                          style={{
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: '#9CA3AF',
-                            padding: '0.3rem'
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditActivity(act)}
+                            style={{
+                              background: 'rgba(15, 118, 110, 0.08)',
+                              border: '1px solid rgba(15, 118, 110, 0.25)',
+                              borderRadius: 'var(--radius-sm)',
+                              cursor: 'pointer',
+                              color: 'var(--accent-emerald)',
+                              padding: '0.35rem 0.6rem',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                              fontSize: '0.74rem',
+                              fontWeight: 600
+                            }}
+                            title="Редактировать активность"
+                          >
+                            <Edit2 size={13} />
+                            <span>Редактировать</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteActivity(act.id)}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              color: '#9CA3AF',
+                              padding: '0.35rem'
+                            }}
+                            title="Удалить"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -799,10 +886,10 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
             boxShadow: '0 20px 50px rgba(0,0,0,0.25)'
           }}>
             <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.2rem', color: 'var(--text-main)' }}>
-              Добавить активность в День {currentDay.dayNumber}
+              {editingActId ? 'Редактировать активность' : `Добавить активность в День ${currentDay.dayNumber}`}
             </h3>
 
-            <form onSubmit={handleAddActivity}>
+            <form onSubmit={handleSaveActivity}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.3rem' }}>
@@ -891,7 +978,10 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem' }}>
                 <button
                   type="button"
-                  onClick={() => setIsAddActivityOpen(false)}
+                  onClick={() => {
+                    setIsAddActivityOpen(false);
+                    setEditingActId(null);
+                  }}
                   style={{ padding: '0.5rem 1rem', background: '#FFFFFF', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}
                 >
                   Отмена
@@ -901,7 +991,7 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
                   className="btn btn-primary"
                   style={{ padding: '0.5rem 1.1rem', fontSize: '0.85rem' }}
                 >
-                  Сохранить активность
+                  {editingActId ? 'Сохранить изменения' : 'Сохранить активность'}
                 </button>
               </div>
             </form>

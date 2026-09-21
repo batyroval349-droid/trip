@@ -172,8 +172,60 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch (e) {}
     return 'ru';
   });
-  const [project, setProject] = useState<ClientProject>(DEMO_CLIENT_PROJECT);
-  
+  const [project, setProject] = useState<ClientProject>(() => {
+    try {
+      const savedProj = localStorage.getItem('indochine_client_project');
+      const savedClientStr = localStorage.getItem('indochine_current_client');
+      const savedClientsStr = localStorage.getItem('indochine_all_clients');
+      const allClients: AdminClientRecord[] = savedClientsStr ? JSON.parse(savedClientsStr) : INITIAL_ADMIN_CLIENTS;
+
+      if (savedClientStr) {
+        const savedClient: ClientAccount = JSON.parse(savedClientStr);
+        const matched = allClients.find(c => c.email.toLowerCase() === savedClient.email.toLowerCase());
+        if (matched) {
+          return {
+            id: matched.id,
+            clientName: matched.clientName,
+            email: matched.email,
+            serviceName: matched.serviceName,
+            status: matched.status,
+            progressPercent: matched.status === 'plan_ready' || matched.status === 'in_progress' || matched.status === 'completed' ? 75 : 50,
+            questionnaire: matched.questionnaire,
+            recommendedCityId: matched.recommendedCityId,
+            recommendedCityWhy: matched.recommendedCityWhy,
+            recommendedNeighborhoodIds: [],
+            recommendedStartingBudget: matched.userCurrentBudget,
+            userCurrentBudget: matched.userCurrentBudget,
+            roadmapTasks: matched.roadmapTasks || [],
+            resources: [],
+            verifiedHousing: (matched.verifiedHousing || []).filter(h => h.publishedToClient),
+            overallFounderNote: matched.overallFounderNote,
+            tierId: matched.tierId,
+            slaDeadline: matched.slaDeadline,
+            paidAt: matched.paidAt,
+            paymentMethod: matched.paymentMethod,
+            travelDays: matched.travelDays,
+            travelTransitLegs: matched.travelTransitLegs,
+            travelRevision: matched.travelRevision,
+            travelSimGuide: matched.travelSimGuide,
+            travelEmergencyHospitals: matched.travelEmergencyHospitals,
+            partnerRealtor: matched.partnerRealtor,
+            leaseContractAudit: matched.leaseContractAudit,
+            vipConciergePerks: matched.vipConciergePerks,
+            founderTelegramAccompaniment: matched.founderTelegramAccompaniment,
+            hasUnpublishedChanges: matched.hasUnpublishedChanges,
+            lastPublishedAt: matched.lastPublishedAt,
+            updatedAt: matched.updatedAt
+          };
+        }
+      }
+
+      if (savedProj) {
+        return JSON.parse(savedProj);
+      }
+    } catch (e) {}
+    return DEMO_CLIENT_PROJECT;
+  });
   const [isFounderLoggedIn, setIsFounderLoggedIn] = useState<boolean>(() => {
     try {
       return localStorage.getItem('indochine_founder_auth') === 'true';
@@ -243,6 +295,51 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch (e) {}
     return DEFAULT_SCHEDULE_CONFIG;
   });
+
+  // Keep project strictly synchronized with currentClient and adminClients
+  useEffect(() => {
+    if (!currentClient) return;
+    const matched = adminClients.find(c => c.email.toLowerCase() === currentClient.email.toLowerCase());
+    if (matched) {
+      setProject((prev) => {
+        const updated: ClientProject = {
+          ...prev,
+          id: matched.id,
+          clientName: matched.clientName,
+          email: matched.email,
+          serviceName: matched.serviceName,
+          status: matched.status,
+          tierId: matched.tierId,
+          questionnaire: matched.questionnaire,
+          recommendedCityId: matched.recommendedCityId,
+          recommendedCityWhy: matched.recommendedCityWhy,
+          overallFounderNote: matched.overallFounderNote,
+          userCurrentBudget: matched.userCurrentBudget,
+          verifiedHousing: (matched.verifiedHousing || []).filter((h) => h.publishedToClient),
+          roadmapTasks: matched.roadmapTasks || prev.roadmapTasks,
+          travelDays: matched.travelDays || prev.travelDays,
+          travelTransitLegs: matched.travelTransitLegs || prev.travelTransitLegs,
+          travelRevision: matched.travelRevision || prev.travelRevision,
+          travelSimGuide: matched.travelSimGuide || prev.travelSimGuide,
+          travelEmergencyHospitals: matched.travelEmergencyHospitals || prev.travelEmergencyHospitals,
+          partnerRealtor: matched.partnerRealtor || prev.partnerRealtor,
+          leaseContractAudit: matched.leaseContractAudit || prev.leaseContractAudit,
+          vipConciergePerks: matched.vipConciergePerks || prev.vipConciergePerks,
+          founderTelegramAccompaniment: matched.founderTelegramAccompaniment || prev.founderTelegramAccompaniment,
+          slaDeadline: matched.slaDeadline,
+          paidAt: matched.paidAt,
+          paymentMethod: matched.paymentMethod,
+          hasUnpublishedChanges: matched.hasUnpublishedChanges,
+          lastPublishedAt: matched.lastPublishedAt,
+          updatedAt: matched.updatedAt
+        };
+        try {
+          localStorage.setItem('indochine_client_project', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+    }
+  }, [currentClient, adminClients]);
 
   const moveClientCategory = (clientId: string, newCategory: ClientFolderCategory) => {
     setAdminClients((prev) => {
@@ -1097,6 +1194,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const rec: AdminClientRecord = {
             ...c,
             verifiedHousing: publishedHousing,
+            status: 'plan_ready',
+            category: 'active',
             hasUnpublishedChanges: false,
             lastPublishedAt: new Date().toISOString(),
             updatedAt: new Date().toISOString().split('T')[0]
@@ -1115,12 +1214,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (publishedRecord) {
       const rec = publishedRecord as AdminClientRecord;
       setProject((prev) => {
-        if (prev.email.toLowerCase() === rec.email.toLowerCase() || currentClient?.email.toLowerCase() === rec.email.toLowerCase()) {
-          return {
+        if (
+          prev.id === rec.id ||
+          prev.email.toLowerCase() === rec.email.toLowerCase() ||
+          currentClient?.email.toLowerCase() === rec.email.toLowerCase()
+        ) {
+          const updatedProj: ClientProject = {
             ...prev,
+            id: rec.id,
             clientName: rec.clientName,
             email: rec.email,
-            status: rec.status,
+            status: 'plan_ready',
+            tierId: rec.tierId,
+            serviceName: rec.serviceName,
+            questionnaire: rec.questionnaire,
             recommendedCityId: rec.recommendedCityId,
             recommendedCityWhy: rec.recommendedCityWhy,
             overallFounderNote: rec.overallFounderNote,
@@ -1140,6 +1247,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             lastPublishedAt: rec.lastPublishedAt,
             updatedAt: rec.updatedAt
           };
+          try {
+            localStorage.setItem('indochine_client_project', JSON.stringify(updatedProj));
+          } catch (e) {}
+          return updatedProj;
         }
         return prev;
       });

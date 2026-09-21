@@ -1,10 +1,10 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import type { ProjectStatus } from '../../types';
-import { UserCheck, MessageCircle, Send, CheckCircle2, Clock } from 'lucide-react';
+import { UserCheck, MessageCircle, Send, CheckCircle2, Clock, Sparkles } from 'lucide-react';
 
 export const DashboardHeader: React.FC = () => {
-  const { project, t, language } = useApp();
+  const { project, t, language, upgradeToRelocation } = useApp();
 
   const statuses: { id: ProjectStatus; label: string }[] = [
     { id: 'new', label: t('statusNew') },
@@ -38,10 +38,58 @@ export const DashboardHeader: React.FC = () => {
         
         {/* Left Welcome Info */}
         <div>
-          <div className="badge badge-emerald" style={{ marginBottom: '0.6rem' }}>
-            <span className="icon-3d-hover" style={{ marginRight: '4px' }}><UserCheck size={14} /></span> {project.tierId === 'tier2'
-              ? (language === 'ru' ? 'Кабинет путешественника • 14 дней поддержки' : 'Traveler Workspace • 14-Day Concierge')
-              : t('dashWorkspaceBadge')}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.6rem' }}>
+            <div className="badge badge-emerald">
+              <span className="icon-3d-hover" style={{ marginRight: '4px' }}><UserCheck size={14} /></span>
+              {project.tierId === 'tier2'
+                ? (language === 'ru' ? 'Кабинет путешественника • 14 дней поддержки' : 'Traveler Workspace • 14-Day Concierge')
+                : t('dashWorkspaceBadge')}
+            </div>
+
+            {/* Minimal Elegant Tier & Upgrade Strip */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              background: '#FFFFFF',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '9999px',
+              padding: '0.2rem 0.35rem 0.2rem 0.7rem',
+              fontSize: '0.78rem',
+              color: 'var(--text-main)',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+            }}>
+              <span>
+                {language === 'ru' ? 'Ваш тариф:' : 'Your Plan:'}{' '}
+                <strong style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>
+                  {project.serviceName[language]}
+                </strong>
+              </span>
+              {project.tierId !== 'tier4' && (
+                <button
+                  type="button"
+                  onClick={upgradeToRelocation}
+                  style={{
+                    background: 'var(--accent-emerald)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '9999px',
+                    padding: '0.2rem 0.6rem',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title={language === 'ru' ? 'Перейти на расширенный тариф сопровождения' : 'Upgrade your plan'}
+                >
+                  <Sparkles size={11} />
+                  <span>{language === 'ru' ? 'Апгрейд' : 'Upgrade'}</span>
+                </button>
+              )}
+            </div>
           </div>
           
           <h1 style={{ fontSize: '2.2rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
@@ -49,7 +97,7 @@ export const DashboardHeader: React.FC = () => {
           </h1>
 
           <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem' }}>
-            {project.serviceName[language]} &bull; {project.tierId === 'tier2'
+            {project.tierId === 'tier2'
               ? (language === 'ru' ? 'Даты поездки' : 'Trip Dates')
               : t('dashTargetArrival')}: <strong style={{ color: 'var(--text-main)' }}>{project.questionnaire.travelDates}</strong>
           </p>
@@ -75,7 +123,7 @@ export const DashboardHeader: React.FC = () => {
             className="btn btn-secondary"
             style={{ fontSize: '0.88rem', padding: '0.65rem 1.25rem', borderRadius: '9999px', display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}
           >
-            <span className="icon-3d-hover"><Send size={16} /></span> {t('dashTelegramFounder')} (@Likqwerty)
+            <span className="icon-3d-hover"><Send size={16} /></span> {t('dashTelegramFounder')}
           </a>
         </div>
 
