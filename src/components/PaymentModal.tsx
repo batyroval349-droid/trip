@@ -404,20 +404,26 @@ export const PaymentModal: React.FC = () => {
                 : 'Scan the QR code in any Vietnamese banking app or transfer using the details below:'}
             </p>
 
-            <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-              <img
-                src="/vietqr-batyrova.png"
-                alt="Vietcombank VietQR Batyrova Liana"
-                style={{
-                  maxWidth: '220px',
-                  width: '100%',
-                  borderRadius: '12px',
-                  border: '1px solid var(--border-subtle)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
-                  margin: '0 auto',
-                  display: 'block'
-                }}
-              />
+            <div style={{ textAlign: 'center', marginBottom: '0.85rem' }}>
+              <div style={{
+                display: 'inline-block',
+                background: '#FFFFFF',
+                padding: '0.65rem',
+                borderRadius: '12px',
+                border: '1px solid var(--border-subtle)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+              }}>
+                <img
+                  src="/vietqr-batyrova.png"
+                  alt="Vietcombank VietQR"
+                  style={{
+                    width: '180px',
+                    height: '180px',
+                    display: 'block',
+                    borderRadius: '6px'
+                  }}
+                />
+              </div>
             </div>
 
             <div style={{
