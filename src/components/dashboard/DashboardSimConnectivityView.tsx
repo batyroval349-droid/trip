@@ -35,7 +35,7 @@ export const DashboardSimConnectivityView: React.FC = () => {
   // Ensure stale localStorage is immediately upgraded
   useEffect(() => {
     const hasOutdated = project.travelSimGuide?.some(
-      (s) => s.provider.includes('Airalo') || s.provider.includes('Maya') || (s.provider.includes('Vinaphone') && !s.googleMapsUrl)
+      (s) => s.provider.includes('Airalo') || s.provider.includes('Maya') || (s.provider.includes('Vinaphone') && !s.googleMapsUrl) || (s.provider.includes('Viettel') && s.googleMapsUrl !== DEFAULT_TRAVEL_SIM_GUIDE[0].googleMapsUrl)
     );
 
     if (hasOutdated) {
@@ -191,28 +191,21 @@ export const DashboardSimConnectivityView: React.FC = () => {
             </div>
 
             {sim.externalLinks && sim.externalLinks.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.75rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.75rem' }}>
                 {sim.externalLinks.map((link, lIdx) => (
                   <a
                     key={lIdx}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-primary"
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.45rem',
+                      gap: '0.4rem',
                       fontSize: '0.82rem',
-                      padding: '0.55rem 0.9rem',
-                      borderRadius: 'var(--radius-sm)',
-                      textDecoration: 'none',
-                      background: lIdx === 0 ? 'var(--accent-emerald)' : '#0284C7',
-                      borderColor: lIdx === 0 ? 'var(--accent-emerald)' : '#0284C7',
-                      color: '#FFFFFF',
-                      fontWeight: 700,
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+                      fontWeight: 600,
+                      color: 'var(--accent-emerald)',
+                      textDecoration: 'none'
                     }}
                   >
                     <ExternalLink size={14} />

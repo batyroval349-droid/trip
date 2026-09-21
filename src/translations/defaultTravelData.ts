@@ -252,7 +252,7 @@ export const DEFAULT_TRAVEL_SIM_GUIDE: TravelSimGuideItem[] = [
     dataPackage: '4–5 GB/день (60–150 GB в месяц)',
     priceUSD: 10,
     officialStoreAddress: 'Официальный салон Viettel Store (Дананг: 95 Nguyễn Văn Linh; Ханой: 53 Lương Văn Can). В салоне с паспортом оформляют физическую SIM, по запросу также можно выпустить eSIM.',
-    googleMapsUrl: 'https://maps.google.com/?q=Viettel+Store+95+Nguyen+Van+Linh+Da+Nang',
+    googleMapsUrl: 'https://www.google.com/maps/place/Viettel+Sim+Card/@16.0469031,108.2323367,16z/data=!4m10!1m2!2m1!1sViettel+Store!3m6!1s0x3142171ad126502d:0xdafe36151dfff261!8m2!3d16.0459945!4d108.23938!15sCg1WaWV0dGVsIFN0b3JlIgOIAQFaDyINdmlldHRlbCBzdG9yZZIBI3RlbGVjb21tdW5pY2F0aW9uc19zZXJ2aWNlX3Byb3ZpZGVymgEkQ2hkRFNVaE5NRzluUzBWSlEwRm5UVVJ2YTNaeWFYQjNSUkFC4AEA-gEECAAQNQ!16s%2Fg%2F11x0_stydg?entry=ttu&g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D',
     warningNote: 'Не покупайте безымянные SIM у водителей такси или на уличных лотках — по закону Вьетнама неавторизованные номера блокируются через 72 часа.'
   },
   {
@@ -264,12 +264,12 @@ export const DEFAULT_TRAVEL_SIM_GUIDE: TravelSimGuideItem[] = [
     warningNote: 'Самые выгодные цены на рынке: в 3–5 раз дешевле Airalo/Maya ($1.5–$3 вместо $15). Работает через высокоскоростные сети Viettel и Vinaphone 4G/5G.',
     externalLinks: [
       {
-        label: 'Купить на Trip.com ($1.5–$3) ↗',
-        url: 'https://ru.trip.com/sale/4283/esim-vietnam.html'
+        label: 'Купить на Trip.com ↗',
+        url: 'https://ru.trip.com/things-to-do/list?pagetype=city&citytype=dt&id=100046&name=Vietnam&pshowcode=Communicationequipment&ctm_ref=vactang_page_23810'
       },
       {
-        label: 'Купить на Klook ($2–$4) ↗',
-        url: 'https://www.klook.com/ru/activity/87413-vietnam-esim-high-speed/'
+        label: 'Купить на Klook ↗',
+        url: 'https://www.klook.com/en-US/activity/123902-vietnam-esim-high-speed-internet-qr-code-voucher/'
       }
     ]
   },
