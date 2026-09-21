@@ -20,7 +20,9 @@ import type {
   RoadmapTask,
   PartnerRealtorAssignment,
   LeaseContractAudit,
-  VipConciergePerks
+  VipConciergePerks,
+  TravelSimGuideItem,
+  TravelEmergencyHospital
 } from '../types';
 import { DEMO_CLIENT_PROJECT, UI_STRINGS } from '../translations/content';
 import { INITIAL_ADMIN_CLIENTS } from '../translations/adminClientsData';
@@ -165,6 +167,37 @@ interface AppContextType {
   updateRelocationRoadmap: (clientId: string, tasks: RoadmapTask[]) => void;
 }
 
+const normalizeSimGuide = (guides?: TravelSimGuideItem[]): TravelSimGuideItem[] => {
+  if (!guides || guides.length === 0) return DEFAULT_TRAVEL_SIM_GUIDE;
+  return guides.map((item) => {
+    if (item.provider.includes('Airalo') || item.provider.includes('Maya') || item.provider.includes('Trip.com')) {
+      return DEFAULT_TRAVEL_SIM_GUIDE[1]; // Trip.com & Klook
+    }
+    if (item.provider.includes('Vinaphone')) {
+      return {
+        ...item,
+        ...DEFAULT_TRAVEL_SIM_GUIDE[2],
+        googleMapsUrl: item.googleMapsUrl || DEFAULT_TRAVEL_SIM_GUIDE[2].googleMapsUrl
+      };
+    }
+    if (item.provider.includes('Viettel')) {
+      return {
+        ...item,
+        ...DEFAULT_TRAVEL_SIM_GUIDE[0],
+        type: 'physical' as const
+      };
+    }
+    return item;
+  });
+};
+
+const normalizeHospitals = (hospitals?: TravelEmergencyHospital[]): TravelEmergencyHospital[] => {
+  if (!hospitals || hospitals.length < DEFAULT_TRAVEL_HOSPITALS.length) {
+    return DEFAULT_TRAVEL_HOSPITALS;
+  }
+  return hospitals;
+};
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -211,8 +244,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             travelDays: matched.travelDays,
             travelTransitLegs: matched.travelTransitLegs,
             travelRevision: matched.travelRevision,
-            travelSimGuide: matched.travelSimGuide,
-            travelEmergencyHospitals: matched.travelEmergencyHospitals,
+            travelSimGuide: normalizeSimGuide(matched.travelSimGuide),
+            travelEmergencyHospitals: normalizeHospitals(matched.travelEmergencyHospitals),
             partnerRealtor: matched.partnerRealtor,
             leaseContractAudit: matched.leaseContractAudit,
             vipConciergePerks: matched.vipConciergePerks,
@@ -225,7 +258,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
 
       if (savedProj) {
-        return JSON.parse(savedProj);
+        const parsed = JSON.parse(savedProj);
+        return {
+          ...parsed,
+          travelSimGuide: normalizeSimGuide(parsed.travelSimGuide),
+          travelEmergencyHospitals: normalizeHospitals(parsed.travelEmergencyHospitals)
+        };
       }
     } catch (e) {}
     return DEMO_CLIENT_PROJECT;
@@ -273,9 +311,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [adminClients, setAdminClients] = useState<AdminClientRecord[]>(() => {
     try {
       const saved = localStorage.getItem('indochine_all_clients');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed: AdminClientRecord[] = JSON.parse(saved);
+        return parsed.map((c) => ({
+          ...c,
+          travelSimGuide: normalizeSimGuide(c.travelSimGuide),
+          travelEmergencyHospitals: normalizeHospitals(c.travelEmergencyHospitals)
+        }));
+      }
     } catch (e) {}
-    return INITIAL_ADMIN_CLIENTS;
+    return INITIAL_ADMIN_CLIENTS.map((c) => ({
+      ...c,
+      travelSimGuide: normalizeSimGuide(c.travelSimGuide),
+      travelEmergencyHospitals: normalizeHospitals(c.travelEmergencyHospitals)
+    }));
   });
 
   const [consultationBookings, setConsultationBookings] = useState<ExpressConsultationBooking[]>(() => {
@@ -325,8 +374,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           travelDays: matched.travelDays || prev.travelDays,
           travelTransitLegs: matched.travelTransitLegs || prev.travelTransitLegs,
           travelRevision: matched.travelRevision || prev.travelRevision,
-          travelSimGuide: matched.travelSimGuide || prev.travelSimGuide,
-          travelEmergencyHospitals: matched.travelEmergencyHospitals || prev.travelEmergencyHospitals,
+          travelSimGuide: normalizeSimGuide(matched.travelSimGuide || prev.travelSimGuide),
+          travelEmergencyHospitals: normalizeHospitals(matched.travelEmergencyHospitals || prev.travelEmergencyHospitals),
           partnerRealtor: matched.partnerRealtor || prev.partnerRealtor,
           leaseContractAudit: matched.leaseContractAudit || prev.leaseContractAudit,
           vipConciergePerks: matched.vipConciergePerks || prev.vipConciergePerks,

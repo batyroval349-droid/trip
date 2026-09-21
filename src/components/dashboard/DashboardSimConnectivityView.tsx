@@ -1,13 +1,65 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { DEFAULT_TRAVEL_SIM_GUIDE } from '../../translations/defaultTravelData';
 import { Wifi, AlertTriangle, ExternalLink, MapPin } from 'lucide-react';
 
 export const DashboardSimConnectivityView: React.FC = () => {
-  const { project, language } = useApp();
-  const simGuides = (project.travelSimGuide && project.travelSimGuide.length > 0)
+  const { project, setProject, setAdminClients, language } = useApp();
+
+  // Always normalize simGuides so Trip.com / Klook and Vinaphone Maps are 100% active regardless of stale localStorage
+  const rawSimGuides = (project.travelSimGuide && project.travelSimGuide.length > 0)
     ? project.travelSimGuide
     : DEFAULT_TRAVEL_SIM_GUIDE;
+
+  const simGuides = rawSimGuides.map((item) => {
+    if (item.provider.includes('Airalo') || item.provider.includes('Maya') || item.provider.includes('Trip.com')) {
+      return DEFAULT_TRAVEL_SIM_GUIDE[1]; // Trip.com & Klook
+    }
+    if (item.provider.includes('Vinaphone')) {
+      return {
+        ...item,
+        ...DEFAULT_TRAVEL_SIM_GUIDE[2],
+        googleMapsUrl: item.googleMapsUrl || DEFAULT_TRAVEL_SIM_GUIDE[2].googleMapsUrl
+      };
+    }
+    if (item.provider.includes('Viettel')) {
+      return {
+        ...item,
+        ...DEFAULT_TRAVEL_SIM_GUIDE[0],
+        type: 'physical' as const
+      };
+    }
+    return item;
+  });
+
+  // Ensure stale localStorage is immediately upgraded
+  useEffect(() => {
+    const hasOutdated = project.travelSimGuide?.some(
+      (s) => s.provider.includes('Airalo') || s.provider.includes('Maya') || (s.provider.includes('Vinaphone') && !s.googleMapsUrl)
+    );
+
+    if (hasOutdated) {
+      setProject((prev) => {
+        const updated = { ...prev, travelSimGuide: simGuides };
+        try {
+          localStorage.setItem('indochine_client_project', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+
+      setAdminClients((prev) => {
+        const updated = prev.map((c) =>
+          c.id === project.id || c.email.toLowerCase() === project.email.toLowerCase()
+            ? { ...c, travelSimGuide: simGuides }
+            : c
+        );
+        try {
+          localStorage.setItem('indochine_all_clients', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+    }
+  }, [project.travelSimGuide, project.id, project.email, simGuides, setProject, setAdminClients]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
