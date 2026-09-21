@@ -248,32 +248,44 @@ export const DEFAULT_TRAVEL_REVISION: TravelRevisionState = {
 export const DEFAULT_TRAVEL_SIM_GUIDE: TravelSimGuideItem[] = [
   {
     provider: 'Viettel',
-    type: 'eSIM',
+    type: 'physical',
     dataPackage: '4–5 GB/день (60–150 GB в месяц)',
-    priceUSD: 12,
-    officialStoreAddress: 'Официальный салон: Viettel Store (Ханой: 53 Lương Văn Can; Дананг: 95 Nguyễn Văn Linh)',
-    googleMapsUrl: 'https://maps.google.com/?q=Viettel+Store+Da+Nang',
-    warningNote: 'Не покупайте безымянные SIM у водителей такси или на лотках без паспорта — их блокируют через 3 дня.'
+    priceUSD: 10,
+    officialStoreAddress: 'Официальный салон Viettel Store (Дананг: 95 Nguyễn Văn Linh; Ханой: 53 Lương Văn Can). В салоне с паспортом оформляют физическую SIM, по запросу также можно выпустить eSIM.',
+    googleMapsUrl: 'https://maps.google.com/?q=Viettel+Store+95+Nguyen+Van+Linh+Da+Nang',
+    warningNote: 'Не покупайте безымянные SIM у водителей такси или на уличных лотках — по закону Вьетнама неавторизованные номера блокируются через 72 часа.'
   },
   {
-    provider: 'Airalo / Maya Mobile',
+    provider: 'Trip.com / Klook (eSIM онлайн)',
     type: 'eSIM',
-    dataPackage: '10–20 GB на 15–30 дней',
-    priceUSD: 15,
-    officialStoreAddress: 'Покупается онлайн до вылета, QR-код сканируется в настройках смартфона за 2 минуты',
-    warningNote: 'Идеально для интернета сразу по прилету в аэропорт без очередей. Работает через сеть Vinaphone 4G/5G.'
+    dataPackage: 'От 1 до 5 GB/день или безлимит (1–30 дней)',
+    priceUSD: 2,
+    officialStoreAddress: 'Покупка онлайн через проверенные агрегаторы Trip.com или Klook. QR-код мгновенно поступает на Email, сканируется за 2 минуты в настройках смартфона.',
+    warningNote: 'Самые выгодные цены на рынке: в 3–5 раз дешевле Airalo/Maya ($1.5–$3 вместо $15). Работает через высокоскоростные сети Viettel и Vinaphone 4G/5G.',
+    externalLinks: [
+      {
+        label: 'Купить на Trip.com ($1.5–$3) ↗',
+        url: 'https://ru.trip.com/sale/4283/esim-vietnam.html'
+      },
+      {
+        label: 'Купить на Klook ($2–$4) ↗',
+        url: 'https://www.klook.com/ru/activity/87413-vietnam-esim-high-speed/'
+      }
+    ]
   },
   {
     provider: 'Vinaphone',
     type: 'physical',
     dataPackage: '4 GB в день + звонки',
     priceUSD: 10,
-    officialStoreAddress: 'Официальный салон в аэропорту Дананга (выход из зала прилета, официальная стойка VNPT)',
+    officialStoreAddress: 'Официальный салон в аэропорту Дананга (стойка VNPT в зале прилета) или салон VNPT на ул. Nguyễn Văn Linh',
+    googleMapsUrl: 'https://maps.google.com/?q=Trung+tam+Kinh+doanh+VNPT+Vinaphone+4+Nguyen+Van+Linh+Da+Nang',
     warningNote: 'Обязательно предъявляйте оригинальный загранпаспорт для внесения в единый государственный реестр связи Вьетнама.'
   }
 ];
 
 export const DEFAULT_TRAVEL_HOSPITALS: TravelEmergencyHospital[] = [
+  // Дананг
   {
     city: 'Дананг',
     name: 'Vinmec Danang International Hospital',
@@ -286,10 +298,92 @@ export const DEFAULT_TRAVEL_HOSPITALS: TravelEmergencyHospital[] = [
     city: 'Дананг',
     name: 'Family Medical Practice Danang',
     address: '96–98 Nguyễn Văn Linh, Nam Dương, Hải Châu, Đà Nẵng',
-    phone: '+84 236 3582 699',
+    phone: '0913 917 303 (Скорая 24/7) / +84 236 3582 699',
     hasEnglish: true,
     type: 'international'
   },
+  {
+    city: 'Дананг',
+    name: '199 Hospital (Bệnh viện 199 - Bộ Công An)',
+    address: '216 Nguyễn Công Trứ, An Hải Bắc, Sơn Trà, Đà Nẵng',
+    phone: '1900 986 868 / +84 236 3985 276',
+    hasEnglish: true,
+    type: 'general'
+  },
+
+  // Хойан
+  {
+    city: 'Хойан',
+    name: 'Pacific Hospital Hoi An (Bệnh viện Đa khoa Thái Bình Dương)',
+    address: '06 Phan Đình Phùng, Cẩm Hà, TP. Hội An, Quảng Nam',
+    phone: '+84 235 3929 444 / +84 905 133 711',
+    hasEnglish: true,
+    type: 'international'
+  },
+  {
+    city: 'Хойан',
+    name: 'Bệnh viện Đa khoa TP. Hội An (Hoi An General Hospital)',
+    address: '04 Trần Hưng Đạo, Sơn Phong, TP. Hội An',
+    phone: '+84 235 3861 247',
+    hasEnglish: true,
+    type: 'general'
+  },
+
+  // Нячанг
+  {
+    city: 'Нячанг',
+    name: 'Vinmec Nha Trang International Hospital',
+    address: '42A Trần Phú, Vĩnh Nguyên, TP. Nha Trang, Khánh Hòa',
+    phone: '+84 258 3900 168 / 1900 232 389',
+    hasEnglish: true,
+    type: 'international'
+  },
+  {
+    city: 'Нячанг',
+    name: 'VK Hospital (Bệnh viện Đa khoa Sài Gòn Nha Trang)',
+    address: '34/4 Quang Trung, Vạn Thắng, TP. Nha Trang',
+    phone: '+84 258 3528 888',
+    hasEnglish: true,
+    type: 'general'
+  },
+
+  // Фукуок
+  {
+    city: 'Фукуок',
+    name: 'Vinmec Phu Quoc International Hospital',
+    address: 'Bãi Dài, Gành Dầu, TP. Phú Quốc, Kiên Giang',
+    phone: '+84 297 3985 588 / +84 297 3985 585',
+    hasEnglish: true,
+    type: 'international'
+  },
+  {
+    city: 'Фукуок',
+    name: 'Trung tâm Y tế TP. Phú Quốc (Phu Quoc Medical Center)',
+    address: '128 Đường 30 Tháng 4, Dương Đông, TP. Phú Quốc',
+    phone: '+84 297 3846 074',
+    hasEnglish: false,
+    type: 'general'
+  },
+
+  // Сапа
+  {
+    city: 'Сапа',
+    name: 'Bệnh viện Đa khoa Thị xã Sa Pa (Sapa Town Hospital)',
+    address: 'Đường Điện Biên Phủ, Sa Pa, Lào Cai',
+    phone: '+84 214 3871 236 / +84 967 981 515',
+    hasEnglish: true,
+    type: 'general'
+  },
+  {
+    city: 'Сапа',
+    name: 'Bệnh viện Đa khoa tỉnh Lào Cai (Lao Cai Provincial Hospital)',
+    address: 'Chiềng Ken, Bình Minh, TP. Lào Cai (главный стационар региона)',
+    phone: '+84 214 3820 188',
+    hasEnglish: true,
+    type: 'general'
+  },
+
+  // Ханой
   {
     city: 'Ханой',
     name: 'Vinmec Times City International Hospital',
@@ -298,6 +392,8 @@ export const DEFAULT_TRAVEL_HOSPITALS: TravelEmergencyHospital[] = [
     hasEnglish: true,
     type: 'international'
   },
+
+  // Хошимин
   {
     city: 'Хошимин',
     name: 'FV Hospital (Franco-Vietnamese)',
@@ -307,3 +403,4 @@ export const DEFAULT_TRAVEL_HOSPITALS: TravelEmergencyHospital[] = [
     type: 'international'
   }
 ];
+

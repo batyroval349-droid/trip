@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { DEFAULT_TRAVEL_HOSPITALS } from '../../translations/defaultTravelData';
 import { PhoneCall, ShieldAlert, MapPin, Globe } from 'lucide-react';
 
 export const DashboardEmergencySosView: React.FC = () => {
   const { project, language } = useApp();
-  const hospitals = (project.travelEmergencyHospitals && project.travelEmergencyHospitals.length > 0)
+  const [selectedCity, setSelectedCity] = useState<string>('all');
+
+  const hospitals = (project.travelEmergencyHospitals && project.travelEmergencyHospitals.length >= DEFAULT_TRAVEL_HOSPITALS.length)
     ? project.travelEmergencyHospitals
     : DEFAULT_TRAVEL_HOSPITALS;
+
+  const availableCities = ['all', ...Array.from(new Set(hospitals.map(h => h.city)))];
+
+  const filteredHospitals = selectedCity === 'all'
+    ? hospitals
+    : hospitals.filter(h => h.city === selectedCity);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
@@ -116,12 +124,45 @@ export const DashboardEmergencySosView: React.FC = () => {
 
       {/* Hospitals List */}
       <div>
-        <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem', color: 'var(--text-main)', fontWeight: 700 }}>
-          {language === 'ru' ? 'Международные госпитали (англоговорящий персонал)' : 'International Hospitals (English-Speaking)'}
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-main)', fontWeight: 700 }}>
+            {language === 'ru' ? 'Проверенные клиники и госпитали по городам' : 'Vetted Hospitals by City'}
+          </h3>
+
+          {/* City Filter Pills */}
+          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+            {availableCities.map((c) => {
+              const isSelected = selectedCity === c;
+              const label = c === 'all'
+                ? (language === 'ru' ? 'Все города' : 'All Cities')
+                : c;
+
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setSelectedCity(c)}
+                  style={{
+                    padding: '0.3rem 0.75rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    border: isSelected ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                    background: isSelected ? 'var(--accent-emerald)' : '#FFFFFF',
+                    color: isSelected ? '#FFFFFF' : 'var(--text-main)',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
-          {hospitals.map((hosp, index) => (
+          {filteredHospitals.map((hosp, index) => (
             <div
               key={index}
               className="glass-card"

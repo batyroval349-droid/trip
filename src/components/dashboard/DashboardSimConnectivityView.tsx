@@ -93,10 +93,14 @@ export const DashboardSimConnectivityView: React.FC = () => {
                   padding: '0.2rem 0.6rem',
                   borderRadius: '9999px'
                 }}>
-                  {sim.type === 'eSIM' ? 'eSIM (без пластика)' : 'Физическая SIM-карта'}
+                  {sim.provider.includes('Viettel')
+                    ? (language === 'ru' ? 'Физическая SIM (в салоне) / eSIM' : 'Physical SIM (Store) / eSIM')
+                    : sim.type === 'eSIM'
+                    ? (language === 'ru' ? 'eSIM онлайн (без пластика)' : 'Online eSIM')
+                    : (language === 'ru' ? 'Физическая SIM-карта' : 'Physical SIM Card')}
                 </span>
                 <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-terracotta)' }}>
-                  ${sim.priceUSD}
+                  {sim.priceUSD <= 2 ? (language === 'ru' ? `от $${sim.priceUSD}` : `from $${sim.priceUSD}`) : `$${sim.priceUSD}`}
                 </span>
               </div>
 
@@ -134,7 +138,37 @@ export const DashboardSimConnectivityView: React.FC = () => {
               )}
             </div>
 
-            {sim.googleMapsUrl && (
+            {sim.externalLinks && sim.externalLinks.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.75rem' }}>
+                {sim.externalLinks.map((link, lIdx) => (
+                  <a
+                    key={lIdx}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.45rem',
+                      fontSize: '0.82rem',
+                      padding: '0.55rem 0.9rem',
+                      borderRadius: 'var(--radius-sm)',
+                      textDecoration: 'none',
+                      background: lIdx === 0 ? 'var(--accent-emerald)' : '#0284C7',
+                      borderColor: lIdx === 0 ? 'var(--accent-emerald)' : '#0284C7',
+                      color: '#FFFFFF',
+                      fontWeight: 700,
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+                    }}
+                  >
+                    <ExternalLink size={14} />
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            ) : sim.googleMapsUrl ? (
               <a
                 href={sim.googleMapsUrl}
                 target="_blank"
@@ -146,13 +180,14 @@ export const DashboardSimConnectivityView: React.FC = () => {
                   fontSize: '0.82rem',
                   fontWeight: 600,
                   color: 'var(--accent-emerald)',
-                  textDecoration: 'none'
+                  textDecoration: 'none',
+                  marginTop: '0.75rem'
                 }}
               >
                 <ExternalLink size={14} />
                 {language === 'ru' ? 'Показать адрес на Google Maps ↗' : 'Show Location on Google Maps ↗'}
               </a>
-            )}
+            ) : null}
           </div>
         ))}
       </div>

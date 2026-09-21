@@ -234,6 +234,7 @@ export interface TravelSimGuideItem {
   officialStoreAddress: string;
   googleMapsUrl?: string;
   warningNote?: string;
+  externalLinks?: { label: string; url: string }[];
 }
 
 export interface TravelEmergencyHospital {
