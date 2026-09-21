@@ -35,7 +35,7 @@ export const DashboardSimConnectivityView: React.FC = () => {
   // Ensure stale localStorage is immediately upgraded
   useEffect(() => {
     const hasOutdated = project.travelSimGuide?.some(
-      (s) => s.provider.includes('Airalo') || s.provider.includes('Maya') || (s.provider.includes('Vinaphone') && !s.googleMapsUrl) || (s.provider.includes('Viettel') && s.googleMapsUrl !== DEFAULT_TRAVEL_SIM_GUIDE[0].googleMapsUrl)
+      (s) => s.provider.includes('Airalo') || s.provider.includes('Maya') || (s.provider.includes('Vinaphone') && !s.googleMapsUrl) || (s.provider.includes('Viettel') && s.googleMapsUrl !== DEFAULT_TRAVEL_SIM_GUIDE[0].googleMapsUrl) || (s.provider.includes('Trip.com') && s.priceUSD !== DEFAULT_TRAVEL_SIM_GUIDE[1].priceUSD)
     );
 
     if (hasOutdated) {

@@ -259,9 +259,9 @@ export const DEFAULT_TRAVEL_SIM_GUIDE: TravelSimGuideItem[] = [
     provider: 'Trip.com / Klook (eSIM онлайн)',
     type: 'eSIM',
     dataPackage: 'От 1 до 5 GB/день или безлимит (1–30 дней)',
-    priceUSD: 2,
+    priceUSD: 0.5,
     officialStoreAddress: 'Покупка онлайн через проверенные агрегаторы Trip.com или Klook. QR-код мгновенно поступает на Email, сканируется за 2 минуты в настройках смартфона.',
-    warningNote: 'Самые выгодные цены на рынке: в 3–5 раз дешевле Airalo/Maya ($1.5–$3 вместо $15). Работает через высокоскоростные сети Viettel и Vinaphone 4G/5G.',
+    warningNote: 'Самые выгодные цены на рынке: в разы дешевле Airalo/Maya ($0.5–$3 вместо $15). Работает через высокоскоростные сети Viettel и Vinaphone 4G/5G.',
     externalLinks: [
       {
         label: 'Купить на Trip.com ↗',
