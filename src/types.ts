@@ -281,21 +281,31 @@ export interface LeaseAuditCheckItem {
   comment: string;
 }
 
+export interface LeaseAuditRevisionItem {
+  id: string;
+  date: string;
+  status: LeaseAuditStatus;
+  notes: string;
+  flawsFound?: string[];
+}
+
 export interface LeaseContractAudit {
   status: LeaseAuditStatus;
   contractDraftTitle?: string;
   contractFileOrUrl?: string;
   draftReceivedAt?: string;
   auditedAt?: string;
-  checks: {
+  checks?: {
     depositRefundSafety: LeaseAuditCheckItem;
     evnElectricityTariff: LeaseAuditCheckItem & { tariffVND?: number };
     waterAndInternetSpeed: LeaseAuditCheckItem;
     policeRegistrationTamTru: LeaseAuditCheckItem;
     earlyTerminationClause: LeaseAuditCheckItem;
   };
-  overallVerdict: { ru: string; en: string };
-  recommendedAmendments: string[];
+  flawsAndRisks?: string[];
+  overallVerdict?: { ru: string; en: string };
+  revisionHistory?: LeaseAuditRevisionItem[];
+  recommendedAmendments?: string[];
 }
 
 export type VipPsychologistStatus =
@@ -315,14 +325,15 @@ export interface FounderTelegramAccompaniment {
 
 export interface VipConciergePerks {
   psychologistSession: {
-    status: VipPsychologistStatus;
+    status?: VipPsychologistStatus;
     specialistName: string;
     specialistTitle: string;
     specialistPhotoUrl: string;
     telegramContact: string;
     whatsappContact: string;
     sessionDate?: string;
-    secondSessionPromoCode: string;
+    secondSessionPromoCode?: string;
+    nextSessionDiscount?: string;
     notes: { ru: string; en: string };
   };
   founderTelegramAccompaniment: FounderTelegramAccompaniment;
@@ -364,6 +375,8 @@ export interface ClientProject {
   lastPublishedAt?: string;
   updatedAt: string;
   // Travel Specific Plan Fields (tier2)
+  hasTravelPlan?: boolean;
+  upgradedFromTier?: TierId;
   travelDays?: TravelDayItem[];
   travelTransitLegs?: TravelTransitLeg[];
   travelRevision?: TravelRevisionState;
@@ -401,6 +414,8 @@ export interface AdminClientRecord {
   createdAt: string;
   updatedAt: string;
   // Travel Specific Plan Fields (tier2)
+  hasTravelPlan?: boolean;
+  upgradedFromTier?: TierId;
   travelDays?: TravelDayItem[];
   travelTransitLegs?: TravelTransitLeg[];
   travelRevision?: TravelRevisionState;

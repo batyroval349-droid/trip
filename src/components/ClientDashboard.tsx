@@ -6,7 +6,6 @@ import { DashboardNeighborhoodsView } from './dashboard/DashboardNeighborhoodsVi
 import { DashboardBudgetView } from './dashboard/DashboardBudgetView';
 import { DashboardRoadmapView } from './dashboard/DashboardRoadmapView';
 import { DashboardResourcesView } from './dashboard/DashboardResourcesView';
-import { CurrencyConverter } from './dashboard/CurrencyConverter';
 import { LockedFeatureCard } from './dashboard/LockedFeatureCard';
 import { WaitingForPlanView } from './dashboard/WaitingForPlanView';
 import { PendingRecommendationNotice } from './dashboard/PendingRecommendationNotice';
@@ -33,14 +32,16 @@ import {
   Users,
   ShieldCheck,
   Crown,
-  Send
+  Send,
+  Printer
 } from 'lucide-react';
 
 export const ClientDashboard: React.FC = () => {
   const { project, setProject, setAdminClients, t, language, upgradeToRelocation, setViewMode } = useApp();
-  const [activeTab, setActiveTab] = useState<'overview' | 'city' | 'neighborhoods' | 'budget' | 'roadmap' | 'housing' | 'resources' | 'realtor' | 'lease_audit' | 'vip_concierge'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'city' | 'neighborhoods' | 'budget' | 'roadmap' | 'housing' | 'resources' | 'realtor' | 'lease_audit' | 'vip_concierge' | 'itinerary'>('overview');
   const [travelTab, setTravelTab] = useState<'itinerary' | 'transit' | 'sim' | 'emergency'>('itinerary');
   const isTravelPlan = project.tierId === 'tier2';
+  const hasTravelPlan = Boolean(project.hasTravelPlan || project.tierId === 'tier2' || (project.travelDays && project.travelDays.length > 0));
   
   // Bespoke plan recommendations are only available once founder publishes the plan
   const isPlanPublished = project.status === 'plan_ready' || project.status === 'in_progress' || project.status === 'completed';
@@ -200,13 +201,21 @@ export const ClientDashboard: React.FC = () => {
           {[
             {
               id: 'overview',
-              label: isTravelPlan
-                ? (language === 'ru' ? 'Маршрут поездки и Вьетнам' : 'Trip Itinerary & Guides')
-                : (!isPlanPublished && language === 'ru' ? 'Статус исследования и Вьетнам' : t('dashTabOverview')),
+              label: !isPlanPublished && language === 'ru' ? 'Статус исследования и Вьетнам' : t('dashTabOverview'),
               icon: LayoutDashboard
             },
+            ...(hasTravelPlan ? [
+              {
+                id: 'itinerary',
+                label: language === 'ru' ? 'Маршрут (1–30 дней)' : 'Itinerary (1–30 Days)',
+                icon: Compass,
+                isPending: !isPlanPublished
+              }
+            ] : []),
             { id: 'roadmap', label: language === 'ru' ? 'Маршрут переезда' : 'Relocation Roadmap', icon: Calendar, isPending: !isPlanPublished },
-            { id: 'realtor', label: language === 'ru' ? 'Партнер-риелтор' : 'Partner Realtor', icon: Users, isPending: !isPlanPublished },
+            ...(isPlanPublished && project.partnerRealtor ? [
+              { id: 'realtor', label: language === 'ru' ? 'Партнер-риелтор' : 'Partner Realtor', icon: Users }
+            ] : []),
             { id: 'lease_audit', label: language === 'ru' ? 'Аудит договора' : 'Lease Audit', icon: ShieldCheck, isPending: !isPlanPublished },
             { id: 'budget', label: t('dashTabBudget'), icon: DollarSign, isPending: !isPlanPublished },
             { id: 'city', label: language === 'ru' ? 'Город и районы' : 'City & Districts', icon: MapPin, isPending: !isPlanPublished },
@@ -398,8 +407,58 @@ export const ClientDashboard: React.FC = () => {
               </div>
             )}
 
-            {/* Compact Currency Converter in Client Dashboard */}
-            <CurrencyConverter />
+            {/* Preserved Author Travel Itinerary Card on Upgrade */}
+            {hasTravelPlan && isPlanPublished && (
+              <div className="glass-card" style={{
+                padding: '1.5rem 1.75rem',
+                background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(217, 119, 6, 0.05) 100%)',
+                border: '1.5px solid var(--accent-emerald)',
+                borderRadius: 'var(--radius-md)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '1rem',
+                marginBottom: '1.5rem'
+              }}>
+                <div style={{ maxWidth: '620px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                    <Compass size={16} />
+                    <span>{language === 'ru' ? 'Ваш авторский маршрут сохранен' : 'Your Itinerary is Preserved'}</span>
+                  </div>
+                  <h3 style={{ margin: '0 0 0.35rem 0', fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
+                    {language === 'ru' ? 'Персональный авторский маршрут по Вьетнаму' : 'Curated Vietnam Travel Itinerary'}
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                    {language === 'ru'
+                      ? 'Ваш 14-дневный маршрут с проверенными локациями, логистикой и рекомендациями по слотам Утро/День/Вечер сохранен после перехода на расширенный тариф. Доступен онлайн и для печати в PDF.'
+                      : 'Your curated travel itinerary with vetted spots and pro-tips is preserved and ready for viewing and A4 PDF export.'}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('itinerary')}
+                    className="btn btn-primary"
+                    style={{ fontSize: '0.86rem', padding: '0.6rem 1.15rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                  >
+                    <Compass size={15} />
+                    <span>{language === 'ru' ? 'Открыть маршрут' : 'Open Itinerary'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="btn btn-secondary"
+                    style={{ fontSize: '0.86rem', padding: '0.6rem 1.15rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                  >
+                    <Printer size={15} />
+                    <span>{language === 'ru' ? 'Печать A4 (PDF)' : 'Print A4 (PDF)'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Overview Quick Widgets Grid */}
             <div className="grid-3">
@@ -584,7 +643,7 @@ export const ClientDashboard: React.FC = () => {
                       <ShieldCheck size={14} /> {language === 'ru' ? 'Аудит договора аренды' : 'Lease Due Diligence'}
                     </div>
                     <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
-                      EVN {project.leaseContractAudit?.checks.evnElectricityTariff.tariffVND || 4200} ₫/кВт
+                      EVN {project.leaseContractAudit?.checks?.evnElectricityTariff?.tariffVND || 4200} ₫/кВт
                     </span>
                   </div>
                   <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
@@ -645,7 +704,7 @@ export const ClientDashboard: React.FC = () => {
                         <Send size={14} /> {language === 'ru' ? 'Личное сопровождение (1 месяц)' : '1-Month Accompaniment'}
                       </div>
                       <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
-                        @Likqwerty
+                        {language === 'ru' ? 'Активно' : 'Active'}
                       </span>
                     </div>
                     <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
@@ -665,7 +724,7 @@ export const ClientDashboard: React.FC = () => {
                     style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', textDecoration: 'none', borderRadius: '9999px' }}
                   >
                     <span className="icon-3d-hover"><Send size={14} /></span>
-                    <span>{language === 'ru' ? 'Написать в Telegram (@Likqwerty)' : 'Message Founder on Telegram'}</span>
+                    <span>{language === 'ru' ? 'Написать в Telegram' : 'Message on Telegram'}</span>
                   </a>
                 </div>
               )}
@@ -777,7 +836,21 @@ export const ClientDashboard: React.FC = () => {
         {activeTab === 'resources' && (
           <DashboardResourcesView />
         )}
+        {activeTab === 'itinerary' && (
+          !isPlanPublished ? (
+            <PendingRecommendationNotice sectionName={language === 'ru' ? 'Авторский маршрут' : 'Travel Itinerary'} onGoBack={() => setActiveTab('overview')} />
+          ) : (
+            <DashboardItineraryView />
+          )
+        )}
           </>
+        )}
+
+        {/* Persistent A4 Print Mount for Itinerary from any tab */}
+        {hasTravelPlan && isPlanPublished && (
+          <div className="itinerary-print-mount">
+            <DashboardItineraryView printOnly={true} />
+          </div>
         )}
 
       </div>

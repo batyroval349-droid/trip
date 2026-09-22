@@ -241,6 +241,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             slaDeadline: matched.slaDeadline,
             paidAt: matched.paidAt,
             paymentMethod: matched.paymentMethod,
+            hasTravelPlan: matched.hasTravelPlan ?? (matched.tierId === 'tier2' || Boolean(matched.travelDays && matched.travelDays.length > 0)),
+            upgradedFromTier: matched.upgradedFromTier,
             travelDays: matched.travelDays,
             travelTransitLegs: matched.travelTransitLegs,
             travelRevision: matched.travelRevision,
@@ -371,6 +373,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           userCurrentBudget: matched.userCurrentBudget,
           verifiedHousing: (matched.verifiedHousing || []).filter((h) => h.publishedToClient),
           roadmapTasks: matched.roadmapTasks || prev.roadmapTasks,
+          hasTravelPlan: matched.hasTravelPlan ?? (matched.tierId === 'tier2' || Boolean(matched.travelDays && matched.travelDays.length > 0) || prev.hasTravelPlan),
+          upgradedFromTier: matched.upgradedFromTier || prev.upgradedFromTier,
           travelDays: matched.travelDays || prev.travelDays,
           travelTransitLegs: matched.travelTransitLegs || prev.travelTransitLegs,
           travelRevision: matched.travelRevision || prev.travelRevision,
@@ -1234,13 +1238,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const today = nowIso.split('T')[0];
 
     setProject((prev) => {
+      const hadTravel = prev.tierId === 'tier2' || prev.hasTravelPlan || Boolean(prev.travelDays && prev.travelDays.length > 0);
       const updated: ClientProject = {
         ...prev,
         tierId: targetTierId,
         serviceName: newServiceName,
         paymentMethod: paymentMethod,
         paidAt: nowIso,
-        updatedAt: today
+        updatedAt: today,
+        hasTravelPlan: hadTravel ? true : prev.hasTravelPlan,
+        upgradedFromTier: prev.upgradedFromTier || prev.tierId,
+        travelDays: prev.travelDays,
+        travelTransitLegs: prev.travelTransitLegs,
+        travelRevision: prev.travelRevision,
+        travelSimGuide: prev.travelSimGuide,
+        travelEmergencyHospitals: prev.travelEmergencyHospitals,
+        leaseContractAudit: prev.leaseContractAudit || {
+          status: 'waiting_for_client_draft',
+          flawsAndRisks: [],
+          revisionHistory: []
+        }
       };
       try {
         localStorage.setItem('indochine_client_project', JSON.stringify(updated));
@@ -1251,13 +1268,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAdminClients((prev) => {
       const updated = prev.map((c) => {
         if (c.id === project.id || c.email.toLowerCase() === project.email.toLowerCase()) {
+          const hadTravel = c.tierId === 'tier2' || c.hasTravelPlan || Boolean(c.travelDays && c.travelDays.length > 0);
           return {
             ...c,
             tierId: targetTierId,
             serviceName: newServiceName,
             paymentMethod: paymentMethod,
             paidAt: nowIso,
-            updatedAt: today
+            updatedAt: today,
+            hasTravelPlan: hadTravel ? true : c.hasTravelPlan,
+            upgradedFromTier: c.upgradedFromTier || c.tierId,
+            travelDays: c.travelDays,
+            travelTransitLegs: c.travelTransitLegs,
+            travelRevision: c.travelRevision,
+            travelSimGuide: c.travelSimGuide,
+            travelEmergencyHospitals: c.travelEmergencyHospitals,
+            leaseContractAudit: c.leaseContractAudit || {
+              status: 'waiting_for_client_draft',
+              flawsAndRisks: [],
+              revisionHistory: []
+            }
           };
         }
         return c;

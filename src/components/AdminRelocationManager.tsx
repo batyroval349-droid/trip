@@ -95,17 +95,27 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
   const [editRealtorNoteRu, setEditRealtorNoteRu] = useState(realtor.founderNoteToClient.ru);
 
   // Form states for editing lease audit
+  const defaultAuditChecks = {
+    depositRefundSafety: { status: 'pass' as const, comment: 'Депозит защищен условиями возврата.' },
+    evnElectricityTariff: { status: 'pass' as const, tariffVND: 4200, comment: 'Прямой тариф EVN зафиксирован в договоре.' },
+    waterAndInternetSpeed: { status: 'pass' as const, comment: 'Оптоволоконный интернет включен.' },
+    policeRegistrationTamTru: { status: 'pass' as const, comment: 'Собственник подает регистрацию tạm trú онлайн.' },
+    earlyTerminationClause: { status: 'warning' as const, comment: 'Требуется фиксация уведомления за 30 дней.' }
+  };
+  const auditChecks = leaseAudit.checks || defaultAuditChecks;
+  const auditVerdict = leaseAudit.overallVerdict || { en: 'Audit completed.', ru: 'Аудит завершен.' };
+
   const [editAuditStatus, setEditAuditStatus] = useState<LeaseAuditStatus>(leaseAudit.status);
   const [editContractTitle, setEditContractTitle] = useState(leaseAudit.contractDraftTitle || '');
-  const [editEvnTariff, setEditEvnTariff] = useState(leaseAudit.checks.evnElectricityTariff.tariffVND || 4200);
-  const [editDepositComment, setEditDepositComment] = useState(leaseAudit.checks.depositRefundSafety.comment);
-  const [editEvnComment, setEditEvnComment] = useState(leaseAudit.checks.evnElectricityTariff.comment);
-  const [editTamTruComment, setEditTamTruComment] = useState(leaseAudit.checks.policeRegistrationTamTru.comment);
-  const [editEarlyTermComment, setEditEarlyTermComment] = useState(leaseAudit.checks.earlyTerminationClause.comment);
-  const [editOverallVerdictRu, setEditOverallVerdictRu] = useState(leaseAudit.overallVerdict.ru);
+  const [editEvnTariff, setEditEvnTariff] = useState(auditChecks.evnElectricityTariff?.tariffVND || 4200);
+  const [editDepositComment, setEditDepositComment] = useState(auditChecks.depositRefundSafety?.comment || '');
+  const [editEvnComment, setEditEvnComment] = useState(auditChecks.evnElectricityTariff?.comment || '');
+  const [editTamTruComment, setEditTamTruComment] = useState(auditChecks.policeRegistrationTamTru?.comment || '');
+  const [editEarlyTermComment, setEditEarlyTermComment] = useState(auditChecks.earlyTerminationClause?.comment || '');
+  const [editOverallVerdictRu, setEditOverallVerdictRu] = useState(auditVerdict.ru || '');
 
   // Form states for editing VIP perks
-  const [editPsyStatus, setEditPsyStatus] = useState(vipPerks.psychologistSession.status);
+  const [editPsyStatus, setEditPsyStatus] = useState(vipPerks.psychologistSession.status || 'included_not_booked');
   const [editPsyDate, setEditPsyDate] = useState(vipPerks.psychologistSession.sessionDate || '');
   const [editPsyPromo, setEditPsyPromo] = useState(vipPerks.psychologistSession.secondSessionPromoCode || 'VIETRELOC-VIP20');
   const [editTgAccStatus, setEditTgAccStatus] = useState(vipPerks.founderTelegramAccompaniment?.status || 'active');
@@ -124,16 +134,19 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
     setEditRealtorStatus(realtor.status);
     setEditRealtorNoteRu(realtor.founderNoteToClient.ru);
 
+    const safeChecks = leaseAudit.checks || defaultAuditChecks;
+    const safeVerdict = leaseAudit.overallVerdict || { en: 'Audit completed.', ru: 'Аудит завершен.' };
+
     setEditAuditStatus(leaseAudit.status);
     setEditContractTitle(leaseAudit.contractDraftTitle || '');
-    setEditEvnTariff(leaseAudit.checks.evnElectricityTariff.tariffVND || 4200);
-    setEditDepositComment(leaseAudit.checks.depositRefundSafety.comment);
-    setEditEvnComment(leaseAudit.checks.evnElectricityTariff.comment);
-    setEditTamTruComment(leaseAudit.checks.policeRegistrationTamTru.comment);
-    setEditEarlyTermComment(leaseAudit.checks.earlyTerminationClause.comment);
-    setEditOverallVerdictRu(leaseAudit.overallVerdict.ru);
+    setEditEvnTariff(safeChecks.evnElectricityTariff?.tariffVND || 4200);
+    setEditDepositComment(safeChecks.depositRefundSafety?.comment || '');
+    setEditEvnComment(safeChecks.evnElectricityTariff?.comment || '');
+    setEditTamTruComment(safeChecks.policeRegistrationTamTru?.comment || '');
+    setEditEarlyTermComment(safeChecks.earlyTerminationClause?.comment || '');
+    setEditOverallVerdictRu(safeVerdict.ru || '');
 
-    setEditPsyStatus(vipPerks.psychologistSession.status);
+    setEditPsyStatus(vipPerks.psychologistSession.status || 'included_not_booked');
     setEditPsyDate(vipPerks.psychologistSession.sessionDate || '');
     setEditPsyPromo(vipPerks.psychologistSession.secondSessionPromoCode || 'VIETRELOC-VIP20');
     const tgAcc = vipPerks.founderTelegramAccompaniment || {
@@ -178,7 +191,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
     {
       id: 'lease_audit_active',
       title: language === 'ru' ? 'Модуль аудита договора аренды настроен' : 'Lease contract audit module active',
-      passed: Boolean(leaseAudit.checks && leaseAudit.overallVerdict.ru),
+      passed: Boolean(leaseAudit.checks && leaseAudit.overallVerdict?.ru),
       hint: leaseAudit.status === 'approved_with_notes' ? 'Одобрено с правками' : 'Аудит активен'
     },
     ...(isVip ? [{
@@ -216,19 +229,21 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
 
   const handleSaveLeaseAudit = (e: React.FormEvent) => {
     e.preventDefault();
+    const currentChecks = leaseAudit.checks || defaultAuditChecks;
+    const currentVerdict = leaseAudit.overallVerdict || { en: 'Audit completed.', ru: 'Аудит завершен.' };
     const updatedAudit: LeaseContractAudit = {
       ...leaseAudit,
       status: editAuditStatus,
       contractDraftTitle: editContractTitle.trim(),
       checks: {
-        ...leaseAudit.checks,
-        depositRefundSafety: { ...leaseAudit.checks.depositRefundSafety, comment: editDepositComment.trim() },
-        evnElectricityTariff: { ...leaseAudit.checks.evnElectricityTariff, tariffVND: Number(editEvnTariff), comment: editEvnComment.trim() },
-        policeRegistrationTamTru: { ...leaseAudit.checks.policeRegistrationTamTru, comment: editTamTruComment.trim() },
-        earlyTerminationClause: { ...leaseAudit.checks.earlyTerminationClause, comment: editEarlyTermComment.trim() }
+        depositRefundSafety: { ...currentChecks.depositRefundSafety, comment: editDepositComment.trim() },
+        evnElectricityTariff: { ...currentChecks.evnElectricityTariff, tariffVND: Number(editEvnTariff), comment: editEvnComment.trim() },
+        waterAndInternetSpeed: currentChecks.waterAndInternetSpeed,
+        policeRegistrationTamTru: { ...currentChecks.policeRegistrationTamTru, comment: editTamTruComment.trim() },
+        earlyTerminationClause: { ...currentChecks.earlyTerminationClause, comment: editEarlyTermComment.trim() }
       },
       overallVerdict: {
-        en: leaseAudit.overallVerdict.en,
+        en: currentVerdict.en,
         ru: editOverallVerdictRu.trim()
       }
     };

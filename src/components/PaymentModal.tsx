@@ -9,10 +9,10 @@ import {
   Wallet,
   Zap,
   Building2,
-  ArrowRight,
   Copy,
   Check
 } from 'lucide-react';
+import { CardPaymentInputForm } from './CardPaymentInputForm';
 
 type PaymentChannel = 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr';
 
@@ -254,56 +254,92 @@ export const PaymentModal: React.FC = () => {
           </div>
         </div>
 
-        {/* Dynamic Channel Breakdown & Instructions */}
-        {channel === 'card_ru' && (
-          <div style={{
-            background: '#FFFFFF',
-            padding: '1rem',
-            borderRadius: 'var(--radius-sm)',
-            border: '1px solid var(--border-subtle)',
-            marginBottom: '1.25rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                {language === 'ru' ? 'Карта любого банка РФ или СБП' : 'Russian Card / SBP Payment'}
-              </span>
-              <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
-                0% комиссия
-              </span>
-            </div>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.6rem 0', lineHeight: 1.4 }}>
-              {language === 'ru'
-                ? 'Оплата картами МИР, Visa, Mastercard любого банка РФ или через СБП. Чек поступит вам на почту.'
-                : 'Payment via cards of any Russian bank or SBP. The receipt will be sent to your email.'}
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
-              <ArrowRight size={14} />
-              <span>{language === 'ru' ? `Сумма к списанию: ${priceRUB} ₽` : `Charged: ${priceRUB} RUB`}</span>
-            </div>
-          </div>
-        )}
+        {/* Public Offer Checkbox */}
+        <label style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.65rem',
+          fontSize: '0.82rem',
+          color: 'var(--text-main)',
+          marginBottom: '1rem',
+          cursor: 'pointer',
+          lineHeight: 1.45,
+          background: 'rgba(255, 255, 255, 0.6)',
+          padding: '0.65rem 0.85rem',
+          borderRadius: 'var(--radius-sm)',
+          border: '1px solid var(--border-subtle)'
+        }}>
+          <input
+            type="checkbox"
+            checked={agreedToOffer}
+            onChange={(e) => setAgreedToOffer(e.target.checked)}
+            style={{ accentColor: 'var(--accent-emerald)', cursor: 'pointer', width: '16px', height: '16px' }}
+          />
+          <span>
+            {language === 'ru' ? (
+              <>
+                Я принимаю условия{' '}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setIsOfferModalOpen(true); }}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent-emerald)', textDecoration: 'underline', fontWeight: 600, cursor: 'pointer', font: 'inherit' }}
+                >
+                  Публичной оферты
+                </button>
+              </>
+            ) : (
+              <>
+                I accept the terms of the{' '}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setIsOfferModalOpen(true); }}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent-emerald)', textDecoration: 'underline', fontWeight: 600, cursor: 'pointer', font: 'inherit' }}
+                >
+                  Public Offer
+                </button>
+              </>
+            )}
+          </span>
+        </label>
 
-        {channel === 'card_intl' && (
+        {/* Dynamic Channel Breakdown & Instructions */}
+        {(channel === 'card_ru' || channel === 'card_intl') && (
           <div style={{
             background: '#FFFFFF',
-            padding: '1rem',
+            padding: '1.15rem',
             borderRadius: 'var(--radius-sm)',
             border: '1px solid var(--border-subtle)',
-            marginBottom: '1.25rem'
+            marginBottom: '0.75rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
               <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                {language === 'ru' ? 'Зарубежные карты (Visa / Mastercard)' : 'International Cards (Visa / Mastercard)'}
+                {channel === 'card_ru'
+                  ? (language === 'ru' ? 'Карта любого банка РФ или СБП (МИР, Visa, MC)' : 'Russian Bank Card / SBP (MIR, Visa, MC)')
+                  : (language === 'ru' ? 'Зарубежная карта (Visa / Mastercard)' : 'International Card (Visa / Mastercard)')}
               </span>
               <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
-                3D-Secure
+                {channel === 'card_ru' ? '0% комиссия' : '3D-Secure'}
               </span>
             </div>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-              {language === 'ru'
-                ? `Сумма к списанию: $${priceUSD}. Чек поступит вам на почту.`
-                : `Amount: $${priceUSD} USD. The receipt will be sent to your email.`}
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.85rem 0', lineHeight: 1.4 }}>
+              {channel === 'card_ru'
+                ? (language === 'ru'
+                  ? `Сумма к списанию: ${priceRUB} ₽ ($${priceUSD}). Чек поступит вам на почту.`
+                  : `Amount: ${priceRUB} RUB ($${priceUSD}). The receipt will be sent to your email.`)
+                : (language === 'ru'
+                  ? `Сумма к списанию: $${priceUSD}. Чек поступит вам на почту.`
+                  : `Amount: $${priceUSD} USD. The receipt will be sent to your email.`)}
             </p>
+
+            <CardPaymentInputForm
+              amountUSD={priceUSD}
+              amountLocalStr={channel === 'card_ru' ? `${priceRUB} ₽` : `$${priceUSD}`}
+              channel={channel}
+              language={language}
+              isProcessing={isProcessing}
+              disabled={!agreedToOffer}
+              onPay={handlePay}
+            />
           </div>
         )}
 
@@ -478,82 +514,36 @@ export const PaymentModal: React.FC = () => {
           </span>
         </div>
 
-        {/* Public Offer Checkbox */}
-        <label style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.65rem',
-          fontSize: '0.82rem',
-          color: 'var(--text-main)',
-          marginBottom: '1.35rem',
-          cursor: 'pointer',
-          lineHeight: 1.45,
-          background: 'rgba(255, 255, 255, 0.6)',
-          padding: '0.75rem 0.9rem',
-          borderRadius: 'var(--radius-sm)',
-          border: '1px solid var(--border-subtle)'
-        }}>
-          <input
-            type="checkbox"
-            checked={agreedToOffer}
-            onChange={(e) => setAgreedToOffer(e.target.checked)}
-            style={{ accentColor: 'var(--accent-emerald)', cursor: 'pointer', width: '16px', height: '16px' }}
-          />
-          <span>
-            {language === 'ru' ? (
-              <>
-                Я принимаю условия{' '}
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); setIsOfferModalOpen(true); }}
-                  style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent-emerald)', textDecoration: 'underline', fontWeight: 600, cursor: 'pointer', font: 'inherit' }}
-                >
-                  Публичной оферты
-                </button>
-              </>
+        {/* Pay Button for crypto and vietqr */}
+        {(channel === 'crypto_usdt' || channel === 'viet_qr') && (
+          <button
+            onClick={handlePay}
+            disabled={isProcessing || !agreedToOffer}
+            className="btn btn-primary"
+            style={{
+              width: '100%',
+              padding: '0.95rem',
+              fontSize: '1.05rem',
+              justifyContent: 'center',
+              gap: '0.6rem',
+              opacity: (!agreedToOffer || isProcessing) ? 0.6 : 1,
+              cursor: (!agreedToOffer || isProcessing) ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isProcessing ? (
+              <span>{language === 'ru' ? 'Обработка и активация...' : 'Processing & activating...'}</span>
             ) : (
               <>
-                I accept the terms of the{' '}
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); setIsOfferModalOpen(true); }}
-                  style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent-emerald)', textDecoration: 'underline', fontWeight: 600, cursor: 'pointer', font: 'inherit' }}
-                >
-                  Public Offer
-                </button>
+                <CheckCircle2 size={18} />
+                <span>
+                  {language === 'ru'
+                    ? `Оплатить $${priceUSD} и активировать кабинет`
+                    : `Pay $${priceUSD} & Activate Workspace`}
+                </span>
               </>
             )}
-          </span>
-        </label>
-
-        {/* Pay Button */}
-        <button
-          onClick={handlePay}
-          disabled={isProcessing || !agreedToOffer}
-          className="btn btn-primary"
-          style={{
-            width: '100%',
-            padding: '0.95rem',
-            fontSize: '1.05rem',
-            justifyContent: 'center',
-            gap: '0.6rem',
-            opacity: (!agreedToOffer || isProcessing) ? 0.6 : 1,
-            cursor: (!agreedToOffer || isProcessing) ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {isProcessing ? (
-            <span>{language === 'ru' ? 'Обработка и активация...' : 'Processing & activating...'}</span>
-          ) : (
-            <>
-              <CheckCircle2 size={18} />
-              <span>
-                {language === 'ru'
-                  ? `Оплатить $${priceUSD} и активировать кабинет`
-                  : `Pay $${priceUSD} & Activate Workspace`}
-              </span>
-            </>
-          )}
-        </button>
+          </button>
+        )}
       </div>
     </div>
   );

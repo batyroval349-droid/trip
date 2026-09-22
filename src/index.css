@@ -1042,11 +1042,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
 /* ============================================================
    A4 PRINT LAYOUT FOR ITINERARY (Clean, No Personal Cabinet)
    ============================================================ */
-.a4-print-itinerary {
+.a4-print-itinerary,
+.itinerary-print-mount {
   display: none;
 }
 
 @media print {
+  .itinerary-print-mount {
+    display: block !important;
+    visibility: visible !important;
+  }
   @page {
     size: A4 portrait;
     margin: 12mm 14mm 15mm 14mm;

@@ -142,7 +142,7 @@ export const DashboardRealtorView: React.FC = () => {
               }}
             >
               <MessageCircle size={18} />
-              <span>Написать в Telegram (@{realtor.telegramUsername.replace('@', '')})</span>
+              <span>{language === 'ru' ? 'Написать в Telegram' : 'Message on Telegram'}</span>
               <ExternalLink size={14} style={{ opacity: 0.8 }} />
             </a>
 
@@ -163,7 +163,7 @@ export const DashboardRealtorView: React.FC = () => {
                 }}
               >
                 <Phone size={16} />
-                <span>Написать в WhatsApp ({realtor.whatsappNumber})</span>
+                <span>{language === 'ru' ? 'Написать в WhatsApp' : 'Message on WhatsApp'}</span>
               </a>
             )}
           </div>

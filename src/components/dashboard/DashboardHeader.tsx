@@ -1,10 +1,33 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import type { ProjectStatus } from '../../types';
-import { UserCheck, MessageCircle, Send, CheckCircle2, Clock, Sparkles } from 'lucide-react';
+import { UserCheck, MessageCircle, Send, CheckCircle2, Clock, Sparkles, Calendar } from 'lucide-react';
 
 export const DashboardHeader: React.FC = () => {
   const { project, t, language, upgradeToRelocation } = useApp();
+
+  const formatArrivalDate = (raw?: string): string => {
+    if (!raw) return '—';
+    const trimmed = raw.trim();
+    const monthDayMatch = trimmed.match(/^([a-zа-яё]+)\s+(\d{1,2})(.*)$/i);
+    if (monthDayMatch) {
+      const month = monthDayMatch[1];
+      const day = monthDayMatch[2];
+      const rest = monthDayMatch[3];
+      if (language === 'ru') {
+        const genitiveMonths: Record<string, string> = {
+          'январь': 'января', 'февраль': 'февраля', 'март': 'марта', 'апрель': 'апреля',
+          'май': 'мая', 'июнь': 'июня', 'июль': 'июля', 'август': 'августа',
+          'сентябрь': 'сентября', 'октябрь': 'октября', 'ноябрь': 'ноября', 'декабрь': 'декабря'
+        };
+        const gen = genitiveMonths[month.toLowerCase()] || month;
+        return `${day} ${gen}${rest ? ' ' + rest.trim() : ''}`;
+      }
+      const capMonth = month.charAt(0).toUpperCase() + month.slice(1).toLowerCase();
+      return `${capMonth} ${day}${rest ? ' ' + rest.trim() : ''}`;
+    }
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+  };
 
   const statuses: { id: ProjectStatus; label: string }[] = [
     { id: 'new', label: t('statusNew') },
@@ -96,11 +119,30 @@ export const DashboardHeader: React.FC = () => {
             {t('dashWelcome')}, {project.clientName}
           </h1>
 
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem' }}>
-            {project.tierId === 'tier2'
-              ? (language === 'ru' ? 'Дата поездки' : 'Trip Date')
-              : t('dashTargetArrival')}: <strong style={{ color: 'var(--text-main)' }}>{project.questionnaire.travelDates}</strong>
-          </p>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            marginTop: '0.2rem',
+            color: 'var(--text-muted)',
+            fontSize: '0.92rem'
+          }}>
+            <Calendar size={15} style={{ color: 'var(--accent-emerald)', flexShrink: 0 }} />
+            <span>
+              {project.tierId === 'tier2'
+                ? (language === 'ru' ? 'Даты поездки:' : 'Trip Dates:')
+                : (language === 'ru' ? 'Планируемый приезд:' : 'Target Arrival:')}
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '1.15rem',
+              fontWeight: 700,
+              color: 'var(--text-main)',
+              letterSpacing: '0.01em'
+            }}>
+              {formatArrivalDate(project.questionnaire.travelDates)}
+            </span>
+          </div>
         </div>
 
         {/* WhatsApp & Telegram Direct Founder CTA */}

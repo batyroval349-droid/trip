@@ -14,6 +14,7 @@ import {
   Check,
   Crown
 } from 'lucide-react';
+import { CardPaymentInputForm } from './CardPaymentInputForm';
 
 type PaymentChannel = 'card_ru' | 'card_intl' | 'crypto_usdt' | 'viet_qr';
 
@@ -65,13 +66,13 @@ export const UpgradeModal: React.FC = () => {
         ru: [
           'Всё из тарифа за $490 + неограниченный аудит квартир и договоров',
           'Личное VIP-сопровождение основательницы 24/7 в Telegram',
-          'Встреча в аэропорту, трансфер и сопровождение при заселении',
+          'Сессия с психологом (1-я бесплатно, 20% скидка на следующую)',
           'Приоритетное решение любых бытовых и юридических вопросов'
         ],
         en: [
           'Everything in $490 + unlimited housing & contract audits',
           '24/7 personal VIP founder accompaniment via Telegram',
-          'Airport greeting, private transfer & check-in accompaniment',
+          'Psychology session (1st free, 20% discount on next)',
           'Priority resolution for any daily or legal relocation questions'
         ]
       }
@@ -456,47 +457,33 @@ export const UpgradeModal: React.FC = () => {
                 </div>
 
                 {/* Channel Details */}
-                {channel === 'card_ru' && (
+                {(channel === 'card_ru' || channel === 'card_intl') && (
                   <div style={{
                     background: '#FFFFFF',
                     border: '1px solid var(--border-subtle)',
                     borderRadius: 'var(--radius-md)',
-                    padding: '0.9rem 1rem',
-                    marginBottom: '1.25rem',
-                    fontSize: '0.82rem',
-                    color: 'var(--text-muted)'
+                    padding: '1.15rem',
+                    marginBottom: '1.25rem'
                   }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                      <strong style={{ color: 'var(--text-main)' }}>
-                        {language === 'ru' ? 'Сумма к списанию:' : 'Amount to charge:'}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                      <strong style={{ fontSize: '0.84rem', color: 'var(--text-main)' }}>
+                        {channel === 'card_ru'
+                          ? (language === 'ru' ? 'Карта любого банка РФ или СБП (МИР, Visa, MC)' : 'Russian Bank Card / SBP (MIR, Visa, MC)')
+                          : (language === 'ru' ? 'Зарубежная карта (Visa / Mastercard)' : 'International Card (Visa / Mastercard)')}
                       </strong>
-                      <strong style={{ color: 'var(--accent-emerald)' }}>
-                        {priceRUB} ₽ (${diffUSD})
-                      </strong>
+                      <span style={{ fontSize: '0.72rem', background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                        {channel === 'card_ru' ? '0% комиссия' : '3D-Secure'}
+                      </span>
                     </div>
-                    <div>{language === 'ru' ? 'Чек поступит вам на почту.' : 'The receipt will be sent to your email.'}</div>
-                  </div>
-                )}
 
-                {channel === 'card_intl' && (
-                  <div style={{
-                    background: '#FFFFFF',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '0.9rem 1rem',
-                    marginBottom: '1.25rem',
-                    fontSize: '0.82rem',
-                    color: 'var(--text-muted)'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                      <strong style={{ color: 'var(--text-main)' }}>
-                        {language === 'ru' ? 'Сумма к списанию:' : 'Amount to charge:'}
-                      </strong>
-                      <strong style={{ color: 'var(--accent-emerald)' }}>
-                        ${diffUSD} USD
-                      </strong>
-                    </div>
-                    <div>{language === 'ru' ? 'Чек поступит вам на почту.' : 'The receipt will be sent to your email.'}</div>
+                    <CardPaymentInputForm
+                      amountUSD={diffUSD}
+                      amountLocalStr={channel === 'card_ru' ? `${priceRUB} ₽` : `$${diffUSD}`}
+                      channel={channel}
+                      language={language}
+                      isProcessing={isProcessing}
+                      onPay={handlePayUpgrade}
+                    />
                   </div>
                 )}
 
@@ -599,37 +586,39 @@ export const UpgradeModal: React.FC = () => {
                   </div>
                 )}
 
-                {/* Pay Button */}
-                <button
-                  type="button"
-                  onClick={handlePayUpgrade}
-                  disabled={isProcessing}
-                  className="btn btn-promo"
-                  style={{
-                    width: '100%',
-                    padding: '0.85rem 1.25rem',
-                    fontSize: '0.95rem',
-                    fontWeight: 700,
-                    borderRadius: 'var(--radius-md)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  {isProcessing ? (
-                    <span>{language === 'ru' ? 'Обработка доплаты...' : 'Processing upgrade...'}</span>
-                  ) : (
-                    <>
-                      <Lock size={16} />
-                      <span>
-                        {language === 'ru'
-                          ? `Оплатить разницу $${diffUSD} и активировать тариф`
-                          : `Pay difference of $${diffUSD} & Upgrade`}
-                      </span>
-                    </>
-                  )}
-                </button>
+                {/* Pay Button for crypto and vietqr */}
+                {(channel === 'crypto_usdt' || channel === 'viet_qr') && (
+                  <button
+                    type="button"
+                    onClick={handlePayUpgrade}
+                    disabled={isProcessing}
+                    className="btn btn-promo"
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 1.25rem',
+                      fontSize: '0.95rem',
+                      fontWeight: 700,
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    {isProcessing ? (
+                      <span>{language === 'ru' ? 'Обработка доплаты...' : 'Processing upgrade...'}</span>
+                    ) : (
+                      <>
+                        <Lock size={16} />
+                        <span>
+                          {language === 'ru'
+                            ? `Оплатить разницу $${diffUSD} и активировать тариф`
+                            : `Pay difference of $${diffUSD} & Upgrade`}
+                        </span>
+                      </>
+                    )}
+                  </button>
+                )}
               </>
             )}
           </div>

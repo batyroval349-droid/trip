@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { AlertCircle, RefreshCw, Sparkles } from 'lucide-react';
+import { CurrencyConverter } from './CurrencyConverter';
 
 const USD_TO_VND_RATE = 25000;
 
@@ -39,7 +40,9 @@ export const DashboardBudgetView: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      
+      {/* Quick Currency Converter */}
+      <CurrencyConverter />
+
       {/* Founder Recommended Starting Budget Card */}
       <div className="glass-card glass-card-emerald">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
@@ -133,7 +136,7 @@ export const DashboardBudgetView: React.FC = () => {
             </div>
             <input
               type="range"
-              min={400}
+              min={250}
               max={1200}
               step={25}
               value={current.accommodation}

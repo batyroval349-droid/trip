@@ -27,25 +27,31 @@ export const CurrencyConverter: React.FC = () => {
     return '$' + val.toLocaleString();
   };
 
+  const handleSwap = () => {
+    const prevFrom = fromCurr;
+    setFromCurr(toCurr);
+    setToCurr(prevFrom);
+  };
+
   return (
     <div style={{
       background: 'var(--bg-panel)',
       border: '1px solid var(--border-subtle)',
       borderRadius: 'var(--radius-md)',
       padding: '1.25rem 1.5rem',
-      marginBottom: '2rem'
+      marginBottom: '1.5rem'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)' }}>
           <ArrowRightLeft size={16} style={{ color: 'var(--accent-emerald)' }} />
-          <span>{language === 'ru' ? 'Компактный конвертер валют' : 'Compact Currency Converter'}</span>
+          <span>{language === 'ru' ? 'Конвертер валют' : 'Currency Converter'}</span>
         </div>
         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          {language === 'ru' ? 'Ориентировочный курс' : 'Planning Reference Rates'}
+          {language === 'ru' ? 'Ориентировочный курс (1 USD ≈ 25 000 VND / 93 RUB)' : 'Planning Reference Rates (1 USD ≈ 25,000 VND)'}
         </span>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
         {/* Amount Input */}
         <input
           type="number"
@@ -85,22 +91,28 @@ export const CurrencyConverter: React.FC = () => {
           <option value="VND">VND (₫)</option>
         </select>
 
-        <span style={{ color: 'var(--text-muted)', fontWeight: 700 }}>=</span>
-
-        {/* Result Badge */}
-        <div style={{
-          background: 'var(--accent-emerald-light)',
-          border: '1px solid var(--border-emerald)',
-          borderRadius: 'var(--radius-sm)',
-          padding: '0.45rem 1rem',
-          fontSize: '1.05rem',
-          fontWeight: 700,
-          color: 'var(--accent-emerald)',
-          minWidth: '140px',
-          textAlign: 'center'
-        }}>
-          {formatResult(convertedAmount, toCurr)}
-        </div>
+        {/* Swap Button */}
+        <button
+          type="button"
+          onClick={handleSwap}
+          title={language === 'ru' ? 'Поменять валюты местами' : 'Swap currencies'}
+          style={{
+            background: '#FFFFFF',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.5rem 0.65rem',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            fontWeight: 700,
+            color: 'var(--accent-emerald)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          ⇄
+        </button>
 
         {/* To Select */}
         <select
@@ -122,6 +134,23 @@ export const CurrencyConverter: React.FC = () => {
           <option value="EUR">EUR (€)</option>
           <option value="RUB">RUB (₽)</option>
         </select>
+
+        <span style={{ color: 'var(--text-muted)', fontWeight: 700 }}>=</span>
+
+        {/* Result Badge */}
+        <div style={{
+          background: 'var(--accent-emerald-light)',
+          border: '1px solid var(--border-emerald)',
+          borderRadius: 'var(--radius-sm)',
+          padding: '0.45rem 1rem',
+          fontSize: '1.05rem',
+          fontWeight: 700,
+          color: 'var(--accent-emerald)',
+          minWidth: '140px',
+          textAlign: 'center'
+        }}>
+          {formatResult(convertedAmount, toCurr)}
+        </div>
       </div>
     </div>
   );

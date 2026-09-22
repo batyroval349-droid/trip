@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Crown,
@@ -7,18 +7,15 @@ import {
   Sparkles,
   MessageCircle,
   Phone,
-  Copy,
-  Check,
   Send,
   ExternalLink,
   ShieldCheck
 } from 'lucide-react';
 import { DEFAULT_VIP_PERKS } from '../../translations/defaultRelocationData';
-import type { VipConciergePerks } from '../../types';
+import type { VipConciergePerks, VipPsychologistStatus } from '../../types';
 
 export const DashboardVipConciergeView: React.FC = () => {
   const { project, language } = useApp();
-  const [copiedPromo, setCopiedPromo] = useState(false);
 
   const vipPerks: VipConciergePerks = project.vipConciergePerks || DEFAULT_VIP_PERKS;
   const psy = vipPerks.psychologistSession;
@@ -29,18 +26,14 @@ export const DashboardVipConciergeView: React.FC = () => {
     telegramUsername: 'Likqwerty'
   };
 
-  const handleCopyPromo = () => {
-    navigator.clipboard.writeText(psy.secondSessionPromoCode || 'VIETRELOC-VIP20');
-    setCopiedPromo(true);
-    setTimeout(() => setCopiedPromo(false), 3000);
-  };
+  const currentPsyStatus: VipPsychologistStatus = psy.status || 'included_not_booked';
 
   const psyStatusText = {
     included_not_booked: { label: language === 'ru' ? '1 бесплатная сессия доступна • Запишитесь онлайн' : '1 Free Session Available • Book now', color: '#0F766E', bg: '#E6F4F1' },
     contact_shared: { label: language === 'ru' ? 'Контакт передан • Ожидание согласования времени' : 'Contact Shared • Scheduling in progress', color: '#0369A1', bg: '#E0F2FE' },
     session_scheduled: { label: language === 'ru' ? `Сессия назначена: ${psy.sessionDate || 'в процессе'}` : `Session Scheduled: ${psy.sessionDate || 'TBD'}`, color: '#7C3AED', bg: '#F3E8FF' },
-    completed: { label: language === 'ru' ? 'Бесплатная сессия проведена • Доступна скидка на 2-ю' : 'Free Session Completed • 2nd session discount active', color: '#15803D', bg: '#DCFCE7' }
-  }[psy.status] || { label: '1 бесплатная сессия доступна', color: '#0F766E', bg: '#E6F4F1' };
+    completed: { label: language === 'ru' ? 'Бесплатная сессия проведена • Доступна скидка на следующую' : 'Free Session Completed • Next session discount active', color: '#15803D', bg: '#DCFCE7' }
+  }[currentPsyStatus] || { label: '1 бесплатная сессия доступна', color: '#0F766E', bg: '#E6F4F1' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
@@ -113,29 +106,23 @@ export const DashboardVipConciergeView: React.FC = () => {
             </div>
           </div>
 
-          {/* Promo Code Card for 2nd Session */}
+          {/* Discount badge for next session */}
           <div style={{
             background: '#FAF9F6',
-            border: '1px dashed #D97706',
+            border: '1px solid #D97706',
             borderRadius: 'var(--radius-md)',
             padding: '1rem 1.25rem',
             textAlign: 'center'
           }}>
             <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.25rem' }}>
-              {language === 'ru' ? 'Скидка на 2-ю сессию напрямую:' : '2nd Session Discount Code:'}
+              {language === 'ru' ? 'Следующая консультация:' : 'Next consultation:'}
             </div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#B45309', fontFamily: 'monospace', letterSpacing: '0.05em' }}>
-              {psy.secondSessionPromoCode || 'VIETRELOC-VIP20'}
+            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#B45309' }}>
+              {language === 'ru' ? 'Скидка 20%' : '20% Discount'}
             </div>
-            <button
-              type="button"
-              onClick={handleCopyPromo}
-              className="btn btn-secondary"
-              style={{ marginTop: '0.5rem', padding: '0.35rem 0.75rem', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
-            >
-              {copiedPromo ? <Check size={13} color="#0F766E" /> : <Copy size={13} />}
-              <span>{copiedPromo ? (language === 'ru' ? 'Скопировано!' : 'Copied!') : (language === 'ru' ? 'Скопировать' : 'Copy code')}</span>
-            </button>
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+              {language === 'ru' ? 'Учитывается автоматически' : 'Applied automatically'}
+            </div>
           </div>
 
         </div>
@@ -148,8 +135,8 @@ export const DashboardVipConciergeView: React.FC = () => {
           </div>
           <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.6 }}>
             {psy.notes?.[language] || (language === 'ru'
-              ? 'Индивидуальная онлайн-сессия (50 минут): бережная психологическая поддержка во время переезда, преодоление кризиса адаптации, работа со стрессом и сохранение гармонии в паре. 1-я сессия бесплатно по вашему VIP-тарифу, на 2-ю сессию действует скидка 20% по промокоду.'
-              : 'Individual online session (50 min): emotional support during relocation, cultural adaptation, stress management, and couple harmony. First session is included free with VIP package; 20% off on 2nd session.')}
+              ? 'Индивидуальная онлайн-сессия (50 минут): бережная психологическая поддержка во время переезда, преодоление кризиса адаптации, работа со стрессом и сохранение гармонии в паре. 1-я сессия бесплатно по вашему VIP-тарифу, на следующую действует скидка 20%.'
+              : 'Individual online session (50 min): emotional support during relocation, cultural adaptation, stress management, and couple harmony. First session is included free with VIP package; 20% discount on next session.')}
           </p>
         </div>
 
@@ -165,7 +152,7 @@ export const DashboardVipConciergeView: React.FC = () => {
             <span className="icon-3d-hover">
               <MessageCircle size={18} />
             </span>
-            <span>{language === 'ru' ? 'Записаться к Марии в Telegram (@mur_mur_mari)' : 'Book with Maria via Telegram (@mur_mur_mari)'}</span>
+            <span>{language === 'ru' ? 'Написать в Telegram' : 'Message on Telegram'}</span>
             <ExternalLink size={14} style={{ opacity: 0.8 }} />
           </a>
 
@@ -177,7 +164,7 @@ export const DashboardVipConciergeView: React.FC = () => {
             style={{ padding: '0.8rem 1.3rem', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}
           >
             <Phone size={16} />
-            <span>WhatsApp (+84 039 458 3217)</span>
+            <span>WhatsApp</span>
           </a>
         </div>
       </div>
@@ -228,7 +215,7 @@ export const DashboardVipConciergeView: React.FC = () => {
             <span className="icon-3d-hover">
               <Send size={18} />
             </span>
-            <span>{language === 'ru' ? 'Написать основателю в Telegram (@Likqwerty)' : 'Message Founder on Telegram (@Likqwerty)'}</span>
+            <span>{language === 'ru' ? 'Написать в Telegram' : 'Message on Telegram'}</span>
             <ExternalLink size={14} style={{ opacity: 0.8 }} />
           </a>
 
@@ -240,7 +227,7 @@ export const DashboardVipConciergeView: React.FC = () => {
             style={{ padding: '0.85rem 1.5rem', fontSize: '0.92rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', borderRadius: '9999px' }}
           >
             <Phone size={16} />
-            <span>WhatsApp (+84 039 458 3217)</span>
+            <span>WhatsApp</span>
           </a>
         </div>
       </div>

@@ -17,14 +17,14 @@ import {
 import { RevisionRequestModal } from './RevisionRequestModal';
 import { WaitingForPlanView } from './WaitingForPlanView';
 
-export const DashboardItineraryView: React.FC = () => {
+export const DashboardItineraryView: React.FC<{ printOnly?: boolean }> = ({ printOnly = false }) => {
   const { project, language } = useApp();
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(0);
   const [isRevisionModalOpen, setIsRevisionModalOpen] = useState<boolean>(false);
 
   const isPlanPublished = project.status === 'plan_ready' || project.status === 'in_progress' || project.status === 'completed';
 
-  if (!isPlanPublished) {
+  if (!isPlanPublished && !printOnly) {
     return <WaitingForPlanView />;
   }
 
@@ -82,7 +82,8 @@ export const DashboardItineraryView: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      <div className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+      {!printOnly && (
+        <div className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
         {/* Top Banner with Quick Actions */}
         <div className="glass-card" style={{
           padding: '1.5rem',
@@ -423,13 +424,16 @@ export const DashboardItineraryView: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+        </div>
+      )}
 
       {/* Revision Request Modal */}
-      <RevisionRequestModal
-        isOpen={isRevisionModalOpen}
-        onClose={() => setIsRevisionModalOpen(false)}
-      />
+      {!printOnly && (
+        <RevisionRequestModal
+          isOpen={isRevisionModalOpen}
+          onClose={() => setIsRevisionModalOpen(false)}
+        />
+      )}
 
       {/* Pristine A4 Print Layout - ONLY visible when printing */}
       <div className="a4-print-itinerary">
