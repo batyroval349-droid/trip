@@ -8,7 +8,8 @@ import type {
   VipConciergePerks,
   RealtorWorkStatus,
   LeaseAuditStatus,
-  VipPsychologistStatus
+  VipPsychologistStatus,
+  LeaseAuditRevisionItem
 } from '../types';
 import {
   DEFAULT_RELOCATION_ROADMAP_TASKS,
@@ -231,6 +232,16 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
     e.preventDefault();
     const currentChecks = leaseAudit.checks || defaultAuditChecks;
     const currentVerdict = leaseAudit.overallVerdict || { en: 'Audit completed.', ru: 'Аудит завершен.' };
+    const dateStr = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    const newHistoryEntry: LeaseAuditRevisionItem = {
+      id: `lease-rev-${Date.now()}`,
+      date: dateStr,
+      status: editAuditStatus,
+      notes: editOverallVerdictRu.trim(),
+      flawsAndRisks: [editDepositComment, editEvnComment, editTamTruComment, editEarlyTermComment].filter(Boolean)
+    };
+
     const updatedAudit: LeaseContractAudit = {
       ...leaseAudit,
       status: editAuditStatus,
@@ -245,10 +256,12 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
       overallVerdict: {
         en: currentVerdict.en,
         ru: editOverallVerdictRu.trim()
-      }
+      },
+      flawsAndRisks: [editDepositComment, editEvnComment, editTamTruComment, editEarlyTermComment].filter(Boolean),
+      revisionHistory: [...(leaseAudit.revisionHistory || []), newHistoryEntry]
     };
     updateLeaseContractAudit(selectedClient.id, updatedAudit);
-    setSavedNotice(language === 'ru' ? 'Аудит договора сохранен в черновик!' : 'Lease audit saved!');
+    setSavedNotice(language === 'ru' ? 'Аудит договора сохранен и добавлен в историю!' : 'Lease audit saved!');
     setTimeout(() => setSavedNotice(null), 3500);
   };
 

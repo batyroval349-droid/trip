@@ -1,15 +1,57 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { CheckCircle2, MessageSquare, Calendar } from 'lucide-react';
+import { CheckCircle2, MessageSquare, Calendar, Clock, Sparkles } from 'lucide-react';
 
 export const DashboardRoadmapView: React.FC = () => {
   const { project, toggleTaskCompletion, language, t } = useApp();
+
+  const isRelocationTier = project.tierId === 'tier3' || project.tierId === 'tier4';
+  const isRoadmapPublished = isRelocationTier
+    ? (project.isRelocationPlanPublished === true || (project.status === 'plan_ready' && !project.upgradedFromTier))
+    : true;
 
   const phases = [
     { id: 'before_arrival', label: t('roadmapPhase1Title') },
     { id: 'week_of_arrival', label: t('roadmapPhase2Title') },
     { id: 'first_month', label: t('roadmapPhase3Title') }
   ];
+
+  if (!isRoadmapPublished) {
+    return (
+      <div className="glass-card" style={{
+        padding: '2.5rem 1.75rem',
+        textAlign: 'center',
+        background: '#FFFFFF',
+        border: '1.5px dashed var(--accent-terracotta)',
+        borderRadius: 'var(--radius-lg)'
+      }}>
+        <div style={{
+          width: '52px',
+          height: '52px',
+          borderRadius: '50%',
+          background: 'rgba(194, 94, 32, 0.1)',
+          color: 'var(--accent-terracotta)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 1rem auto'
+        }}>
+          <Clock size={26} />
+        </div>
+        <div className="badge badge-terracotta" style={{ marginBottom: '0.75rem' }}>
+          <Sparkles size={13} /> {language === 'ru' ? 'Подождите, я провожу анализ и наполнение' : 'Analysis in Progress'}
+        </div>
+        <h2 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', margin: '0 0 0.5rem 0' }}>
+          {language === 'ru' ? 'Чек-лист документов и виз формируется' : 'Documents & Visas Roadmap in Preparation'}
+        </h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', maxWidth: '620px', margin: '0 auto', lineHeight: 1.6 }}>
+          {language === 'ru'
+            ? 'Основатель лично составляет персональный пошаговый чек-лист (визовые шаги, необходимые документы, регистрация tạm trú и этапы переезда) под ваш кейс.'
+            : 'The founder is curating your personalized document, visa, and relocation milestone checklist.'}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -19,10 +61,10 @@ export const DashboardRoadmapView: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div className="badge badge-emerald" style={{ marginBottom: '0.5rem' }}>
-              <Calendar size={14} /> {t('roadmapBadge')}
+              <Calendar size={14} /> {language === 'ru' ? 'Документы и визы' : t('roadmapBadge')}
             </div>
             <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)' }}>
-              {t('roadmapTitle')}
+              {language === 'ru' ? 'Документы, визы и чек-лист переезда' : t('roadmapTitle')}
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
               {t('roadmapSubhead')}

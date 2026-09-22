@@ -257,42 +257,10 @@ export const DEFAULT_PARTNER_REALTOR_NHATRANG: PartnerRealtorAssignment = {
 };
 
 export const DEFAULT_LEASE_AUDIT: LeaseContractAudit = {
-  status: 'approved_with_notes',
-  contractDraftTitle: 'Hợp Đồng Thuê Căn Hộ (Hiyori Garden Tower / Gold Coast)',
-  contractFileOrUrl: 'https://vietreloc.com/contracts/sample-audit.pdf',
-  draftReceivedAt: '2026-09-02T10:00:00Z',
-  auditedAt: '2026-09-02T14:30:00Z',
-  checks: {
-    depositRefundSafety: {
-      status: 'pass',
-      comment: 'Залог строго 1 месяц. Четко прописан возврат в день выезда в валюте внесения при уведомлении за 30 дней. Формулировка естественного износа защищена.'
-    },
-    evnElectricityTariff: {
-      status: 'pass',
-      tariffVND: 4200,
-      comment: 'Тариф зафиксирован на нормальном рыночном уровне (4200 ₫/кВт, норма для кондоминиумов — до 4500 ₫/кВт). Скрытых сезонных наценок и плавающих коэффициентов в договоре нет.'
-    },
-    waterAndInternetSpeed: {
-      status: 'pass',
-      comment: 'Оптоволоконный кабель 150 Мбит/с Viettel закреплен за квартирой и включен в аренду. Вода по счетчику 25 000 ₫/м³.'
-    },
-    policeRegistrationTamTru: {
-      status: 'pass',
-      comment: 'Пункт 4.3 обязывает арендодателя подать паспорт арендатора на портал миграционной службы (tạm trú) в течение 24 часов.'
-    },
-    earlyTerminationClause: {
-      status: 'warning',
-      comment: 'Рекомендуется добавить пункт о возврате остатка залога при изменении визовых правил или форс-мажоре со стороны государства.'
-    }
-  },
-  overallVerdict: {
-    ru: 'Договор проверен основателем. Условия прозрачны и соответствуют стандартам безопасной аренды. Тариф за электричество зафиксирован на адекватном рыночном уровне 4200 ₫/кВт. Можно подписывать с учетом 1 точечной правки по форс-мажору.',
-    en: 'The lease agreement has been audited by the founder. Terms are transparent and safe. Electric rate is locked at standard 4200 ₫/kWh. Approved for signing with 1 minor force-majeure clause addition.'
-  },
-  recommendedAmendments: [
-    'Bổ sung điều khoản: Trong trường hợp bất khả kháng hoặc thay đổi chính sách thị thực Việt Nam, bên thuê được quyền chấm dứt hợp đồng và nhận lại 100% tiền đặt cọc sau khi báo trước 30 ngày.',
-    'Chủ nhà cam kết hoàn thành đăng ký tạm trú trực tuyến cho khách thuê trong vòng 24 giờ sau khi nhận phòng.'
-  ]
+  status: 'waiting_for_client_draft',
+  contractDraftTitle: '',
+  flawsAndRisks: [],
+  revisionHistory: []
 };
 
 export const DEFAULT_VIP_PERKS: VipConciergePerks = {

@@ -1,12 +1,17 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { AlertCircle, RefreshCw, Sparkles } from 'lucide-react';
+import { AlertCircle, RefreshCw, Sparkles, Clock } from 'lucide-react';
 import { CurrencyConverter } from './CurrencyConverter';
 
 const USD_TO_VND_RATE = 25000;
 
 export const DashboardBudgetView: React.FC = () => {
-  const { project, updateUserBudget, t } = useApp();
+  const { project, updateUserBudget, language, t } = useApp();
+
+  const isRelocationTier = project.tierId === 'tier3' || project.tierId === 'tier4';
+  const isBudgetPublished = isRelocationTier
+    ? (project.isRelocationPlanPublished === true || (project.status === 'plan_ready' && !project.upgradedFromTier))
+    : true;
 
   const current = project.userCurrentBudget;
   const initial = project.recommendedStartingBudget;
@@ -43,20 +48,55 @@ export const DashboardBudgetView: React.FC = () => {
       {/* Quick Currency Converter */}
       <CurrencyConverter />
 
-      {/* Founder Recommended Starting Budget Card */}
-      <div className="glass-card glass-card-emerald">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
-          <div>
-            <div className="badge badge-emerald" style={{ marginBottom: '0.5rem' }}>
-              <Sparkles size={14} /> {t('budgetBaselineBadge')}
-            </div>
-            <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)' }}>
-              {t('budgetBaselineTitle')}
-            </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
-              {t('budgetBaselineSubhead')}
-            </p>
+      {!isBudgetPublished ? (
+        <div className="glass-card" style={{
+          padding: '2.5rem 1.75rem',
+          textAlign: 'center',
+          background: '#FFFFFF',
+          border: '1.5px dashed var(--accent-terracotta)',
+          borderRadius: 'var(--radius-lg)'
+        }}>
+          <div style={{
+            width: '52px',
+            height: '52px',
+            borderRadius: '50%',
+            background: 'rgba(194, 94, 32, 0.1)',
+            color: 'var(--accent-terracotta)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 1rem auto'
+          }}>
+            <Clock size={26} />
           </div>
+          <div className="badge badge-terracotta" style={{ marginBottom: '0.75rem' }}>
+            <Sparkles size={13} /> {language === 'ru' ? 'Подождите, я провожу анализ и наполнение' : 'Analysis in Progress'}
+          </div>
+          <h2 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', margin: '0 0 0.5rem 0' }}>
+            {language === 'ru' ? 'Персональный калькулятор бюджета формируется' : 'Budget modeler is being prepared'}
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', maxWidth: '620px', margin: '0 auto', lineHeight: 1.6 }}>
+            {language === 'ru'
+              ? 'Основатель рассчитывает структуру ежемесячных расходов (аренда жилья, питание, страховка, транспорт и коворкинг) под параметры вашей анкеты. Скоро здесь появится интерактивная модель расходов.'
+              : 'The founder is tailoring your monthly cost model and expense breakdown based on your questionnaire.'}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Founder Recommended Starting Budget Card */}
+          <div className="glass-card glass-card-emerald">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+              <div>
+                <div className="badge badge-emerald" style={{ marginBottom: '0.5rem' }}>
+                  <Sparkles size={14} /> {t('budgetBaselineBadge')}
+                </div>
+                <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)' }}>
+                  {t('budgetBaselineTitle')}
+                </h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
+                  {t('budgetBaselineSubhead')}
+                </p>
+              </div>
 
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '2.2rem', fontWeight: 700, color: 'var(--accent-emerald)', fontFamily: 'var(--font-serif)' }}>
@@ -253,6 +293,8 @@ export const DashboardBudgetView: React.FC = () => {
         </div>
 
       </div>
+        </>
+      )}
 
     </div>
   );

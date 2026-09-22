@@ -61,7 +61,8 @@ export const DashboardLeaseAuditView: React.FC = () => {
   const currentStatus = statusConfig[audit.status] || statusConfig.waiting_for_client_draft;
   const StatusIcon = currentStatus.icon;
 
-  const isWaiting = audit.status === 'waiting_for_client_draft';
+  const hasAuditedRecords = Boolean(audit.revisionHistory && audit.revisionHistory.length > 0);
+  const isWaiting = !hasAuditedRecords || audit.status === 'waiting_for_client_draft';
 
   // Flaws & risks list (combines explicit flawsAndRisks or extracts from checks)
   const flawsList: string[] = audit.flawsAndRisks && audit.flawsAndRisks.length > 0
@@ -93,22 +94,24 @@ export const DashboardLeaseAuditView: React.FC = () => {
           </p>
         </div>
 
-        {/* Status Badge */}
-        <div style={{
-          background: currentStatus.bg,
-          color: currentStatus.color,
-          padding: '0.65rem 1.25rem',
-          borderRadius: 'var(--radius-md)',
-          fontSize: '0.88rem',
-          fontWeight: 700,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          border: `1px solid ${currentStatus.color}40`
-        }}>
-          <StatusIcon size={16} />
-          <span>{language === 'ru' ? currentStatus.labelRu : currentStatus.labelEn}</span>
-        </div>
+        {/* Status Badge - only shown when an audit has been performed */}
+        {hasAuditedRecords && (
+          <div style={{
+            background: currentStatus.bg,
+            color: currentStatus.color,
+            padding: '0.65rem 1.25rem',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            border: `1px solid ${currentStatus.color}40`
+          }}>
+            <StatusIcon size={16} />
+            <span>{language === 'ru' ? currentStatus.labelRu : currentStatus.labelEn}</span>
+          </div>
+        )}
       </div>
 
       {/* Case 1: Waiting for Client Draft */}

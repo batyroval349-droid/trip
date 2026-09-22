@@ -8,12 +8,11 @@ import { DashboardRoadmapView } from './dashboard/DashboardRoadmapView';
 import { DashboardResourcesView } from './dashboard/DashboardResourcesView';
 import { LockedFeatureCard } from './dashboard/LockedFeatureCard';
 import { WaitingForPlanView } from './dashboard/WaitingForPlanView';
-import { PendingRecommendationNotice } from './dashboard/PendingRecommendationNotice';
 import { DashboardItineraryView } from './dashboard/DashboardItineraryView';
 import { DashboardTravelTransitView } from './dashboard/DashboardTravelTransitView';
 import { DashboardSimConnectivityView } from './dashboard/DashboardSimConnectivityView';
 import { DashboardEmergencySosView } from './dashboard/DashboardEmergencySosView';
-import { DashboardRealtorView } from './dashboard/DashboardRealtorView';
+import { DashboardHousingView } from './dashboard/DashboardHousingView';
 import { DashboardLeaseAuditView } from './dashboard/DashboardLeaseAuditView';
 import { DashboardVipConciergeView } from './dashboard/DashboardVipConciergeView';
 import {
@@ -29,11 +28,11 @@ import {
   Lock,
   Clock,
   Sparkles,
-  Users,
   ShieldCheck,
   Crown,
   Send,
-  Printer
+  Printer,
+  Home
 } from 'lucide-react';
 
 export const ClientDashboard: React.FC = () => {
@@ -43,8 +42,16 @@ export const ClientDashboard: React.FC = () => {
   const isTravelPlan = project.tierId === 'tier2';
   const hasTravelPlan = Boolean(project.hasTravelPlan || project.tierId === 'tier2' || (project.travelDays && project.travelDays.length > 0));
   
+  const isVipTier = project.tierId === 'tier4';
+  const isRelocationTier = project.tierId === 'tier3' || project.tierId === 'tier4';
+  const isRelocationPlanPublished = isRelocationTier
+    ? (project.isRelocationPlanPublished === true || (project.status === 'plan_ready' && !project.upgradedFromTier))
+    : true;
+
   // Bespoke plan recommendations are only available once founder publishes the plan
-  const isPlanPublished = project.status === 'plan_ready' || project.status === 'in_progress' || project.status === 'completed';
+  const isPlanPublished = isRelocationTier
+    ? isRelocationPlanPublished
+    : (project.status === 'plan_ready' || project.status === 'in_progress' || project.status === 'completed');
 
   // Automatically transition status from 'plan_ready' to 'in_progress' ("План активен и изучается") upon client viewing
   useEffect(() => {
@@ -207,23 +214,20 @@ export const ClientDashboard: React.FC = () => {
             ...(hasTravelPlan ? [
               {
                 id: 'itinerary',
-                label: language === 'ru' ? 'Маршрут (1–30 дней)' : 'Itinerary (1–30 Days)',
-                icon: Compass,
-                isPending: !isPlanPublished
+                label: language === 'ru' ? 'Маршрут' : 'Itinerary',
+                icon: Compass
               }
             ] : []),
-            { id: 'roadmap', label: language === 'ru' ? 'Маршрут переезда' : 'Relocation Roadmap', icon: Calendar, isPending: !isPlanPublished },
-            ...(isPlanPublished && project.partnerRealtor ? [
-              { id: 'realtor', label: language === 'ru' ? 'Партнер-риелтор' : 'Partner Realtor', icon: Users }
-            ] : []),
-            { id: 'lease_audit', label: language === 'ru' ? 'Аудит договора' : 'Lease Audit', icon: ShieldCheck, isPending: !isPlanPublished },
             { id: 'budget', label: t('dashTabBudget'), icon: DollarSign, isPending: !isPlanPublished },
+            { id: 'housing', label: language === 'ru' ? 'Жильё' : 'Housing', icon: Home, isPending: !isPlanPublished },
+            { id: 'lease_audit', label: language === 'ru' ? 'Аудит договора' : 'Lease Audit', icon: ShieldCheck, isPending: !isPlanPublished },
+            { id: 'roadmap', label: language === 'ru' ? 'Документы и визы' : 'Documents & Visas', icon: Calendar, isPending: !isPlanPublished },
             { id: 'city', label: language === 'ru' ? 'Город и районы' : 'City & Districts', icon: MapPin, isPending: !isPlanPublished },
             { id: 'resources', label: t('dashTabResources'), icon: BookOpen },
-            ...(project.tierId === 'tier4' || project.vipConciergePerks ? [
+            ...(isVipTier ? [
               {
                 id: 'vip_concierge',
-                label: language === 'ru' ? 'VIP Консьерж & Психолог' : 'VIP Concierge & Psychologist',
+                label: language === 'ru' ? 'VIP-сопровождение' : 'VIP Concierge',
                 icon: Crown,
                 isPending: !isPlanPublished,
                 isVipBadge: true
@@ -600,133 +604,111 @@ export const ClientDashboard: React.FC = () => {
 
             </div>
 
-            {/* Relocation Core Features Row: Realtor, Lease Audit, VIP Concierge */}
+            {/* Quick Navigation Links to Core Relocation Modules (Задача 4) */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '1.25rem'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '0.85rem',
+              marginTop: '1.5rem'
             }}>
-              {/* Partner Realtor Summary Card */}
-              <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-emerald)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                      <Users size={14} /> {language === 'ru' ? 'Партнер-риелтор' : 'Partner Realtor'}
-                    </div>
-                    <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
-                      {project.partnerRealtor?.telegramUsername || '@danang_reloc_partner'}
-                    </span>
-                  </div>
-                  <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
-                    {project.partnerRealtor?.realtorName || 'Nguyen Thanh Dat'} &bull; {project.partnerRealtor?.agencyOrTitle || 'Da Nang Realtor Network'}
-                  </h4>
-                  <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
-                    {language === 'ru'
-                      ? 'Прямой контакт проверенного риелтора. Жилье подбирается индивидуально и отправляется вам прямо в Telegram/WhatsApp с видеотурами.'
-                      : 'Direct contact with vetted local realtor. Apartments are matched to your criteria and sent directly to Telegram/WhatsApp.'}
-                  </p>
+              {/* Housing Link */}
+              <button
+                type="button"
+                onClick={() => setActiveTab('housing')}
+                className="glass-card"
+                style={{
+                  padding: '1rem 1.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  background: '#FFFFFF',
+                  textAlign: 'left'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-main)', fontWeight: 600, fontSize: '0.92rem' }}>
+                  <Home size={18} color="var(--accent-emerald)" />
+                  <span>{language === 'ru' ? 'Жильё и риелтор' : 'Housing & Realtor'}</span>
                 </div>
-                <button
-                  onClick={() => setActiveTab('realtor')}
-                  className="btn btn-secondary"
-                  style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                >
-                  {language === 'ru' ? 'Открыть контакт и бриф риелтора' : 'View Realtor & Brief'} <ArrowRight size={14} />
-                </button>
-              </div>
+                <ArrowRight size={16} color="var(--text-muted)" />
+              </button>
 
-              {/* Lease Audit Summary Card */}
-              <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-terracotta)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                      <ShieldCheck size={14} /> {language === 'ru' ? 'Аудит договора аренды' : 'Lease Due Diligence'}
-                    </div>
-                    <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
-                      EVN {project.leaseContractAudit?.checks?.evnElectricityTariff?.tariffVND || 4200} ₫/кВт
-                    </span>
-                  </div>
-                  <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
-                    {project.leaseContractAudit?.contractDraftTitle || (language === 'ru' ? 'Экспертиза безопасности залога' : 'Lease Safety Verification')}
-                  </h4>
-                  <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
-                    {language === 'ru'
-                      ? 'Основатель проверяет договор на скрытые наценки EVN, возврат залога, оптоволокно и регистрацию tạm trú в полиции.'
-                      : 'Founder audits your draft lease for EVN surcharges, deposit refund guarantee, fiber speed, and police registration.'}
-                  </p>
+              {/* Lease Audit Link */}
+              <button
+                type="button"
+                onClick={() => setActiveTab('lease_audit')}
+                className="glass-card"
+                style={{
+                  padding: '1rem 1.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  background: '#FFFFFF',
+                  textAlign: 'left'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-main)', fontWeight: 600, fontSize: '0.92rem' }}>
+                  <ShieldCheck size={18} color="var(--accent-terracotta)" />
+                  <span>{language === 'ru' ? 'Аудит договора' : 'Lease Audit'}</span>
                 </div>
-                <button
-                  onClick={() => setActiveTab('lease_audit')}
-                  className="btn btn-secondary"
-                  style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                >
-                  {language === 'ru' ? 'Смотреть вердикт и пункты договора' : 'View Audit Verdict & Clauses'} <ArrowRight size={14} />
-                </button>
-              </div>
+                <ArrowRight size={16} color="var(--text-muted)" />
+              </button>
 
-              {/* VIP Concierge Summary Card (for tier4) */}
-              {(project.tierId === 'tier4' || project.vipConciergePerks) && (
-                <div className="glass-card glass-card-terracotta" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: '1px solid #FCD34D' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#B45309', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                        <Crown size={14} /> VIP Concierge & Care
-                      </div>
-                      <span className="badge" style={{ background: '#FEF3C7', color: '#B45309', fontSize: '0.72rem', fontWeight: 700 }}>
-                        1 Free Session
-                      </span>
-                    </div>
-                    <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
-                      {language === 'ru' ? 'Психологическая поддержка и адаптация' : 'Psychologist Relocation Support'}
-                    </h4>
-                    <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
-                      {language === 'ru'
-                        ? '1 бесплатная сессия с сертифицированным психологом и сексологом (Егорова Мария, 4 года практики) + скидка 20% на 2-ю сессию.'
-                        : '1 free session with certified psychologist/sexologist (Maria Egorova, 4 yrs practice) + 20% discount on 2nd session.'}
-                    </p>
+              {/* VIP Concierge Link (tier4 only) */}
+              {isVipTier && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('vip_concierge')}
+                  className="glass-card"
+                  style={{
+                    padding: '1rem 1.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    border: '1px solid #FCD34D',
+                    borderRadius: 'var(--radius-md)',
+                    background: '#FFFDF0',
+                    textAlign: 'left'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: '#B45309', fontWeight: 600, fontSize: '0.92rem' }}>
+                    <Crown size={18} color="#B45309" />
+                    <span>{language === 'ru' ? 'VIP Консьерж & Психолог' : 'VIP Concierge & Psychologist'}</span>
                   </div>
-                  <button
-                    onClick={() => setActiveTab('vip_concierge')}
-                    className="btn btn-primary"
-                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                  >
-                    {language === 'ru' ? 'Записаться к психологу / VIP' : 'Book Session / VIP Concierge'} <ArrowRight size={14} />
-                  </button>
-                </div>
+                  <ArrowRight size={16} color="#B45309" />
+                </button>
               )}
 
-              {/* 30-Day Founder Telegram Accompaniment Card (VIP) */}
-              {(project.tierId === 'tier4' || project.vipConciergePerks) && (
-                <div className="cloud-support-bubble" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-emerald)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase' }}>
-                        <Send size={14} /> {language === 'ru' ? 'Личное сопровождение (1 месяц)' : '1-Month Accompaniment'}
-                      </div>
-                      <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
-                        {language === 'ru' ? 'Активно' : 'Active'}
-                      </span>
-                    </div>
-                    <h4 style={{ fontSize: '1.15rem', margin: '0 0 0.35rem 0', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--text-main)' }}>
-                      {language === 'ru' ? '30 дней с основателем в Telegram' : '30-Day Founder Telegram Chat'}
-                    </h4>
-                    <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45, margin: 0 }}>
-                      {language === 'ru'
-                        ? 'Прямой закрытый чат 1-на-1 с основателем. Быстрое решение любых бытовых, визовых и локационных вопросов в первый месяц.'
-                        : 'Direct 1-on-1 private chat with the founder throughout your first month in Vietnam.'}
-                    </p>
+              {/* 30-Day Accompaniment Link (tier4 only) */}
+              {isVipTier && (
+                <a
+                  href="https://t.me/Likqwerty"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-card"
+                  style={{
+                    padding: '1rem 1.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    textDecoration: 'none',
+                    border: '1px solid var(--border-emerald)',
+                    borderRadius: 'var(--radius-md)',
+                    background: '#F0FDF4'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: '#0F766E', fontWeight: 600, fontSize: '0.92rem' }}>
+                    <Send size={18} color="#0F766E" />
+                    <span>{language === 'ru' ? 'Личное сопровождение' : 'Personal Accompaniment'}</span>
                   </div>
-                  <a
-                    href="https://t.me/Likqwerty"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-primary"
-                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', textDecoration: 'none', borderRadius: '9999px' }}
-                  >
-                    <span className="icon-3d-hover"><Send size={14} /></span>
-                    <span>{language === 'ru' ? 'Написать в Telegram' : 'Message on Telegram'}</span>
-                  </a>
-                </div>
+                  <ArrowRight size={16} color="#0F766E" />
+                </a>
               )}
             </div>
 
@@ -744,8 +726,6 @@ export const ClientDashboard: React.FC = () => {
               upgradeAction={upgradeToRelocation}
               language={language}
             />
-          ) : !isPlanPublished ? (
-            <PendingRecommendationNotice sectionName={t('dashTabCity')} onGoBack={() => setActiveTab('overview')} />
           ) : (
             <DashboardCityView />
           )
@@ -760,8 +740,6 @@ export const ClientDashboard: React.FC = () => {
               upgradeAction={upgradeToRelocation}
               language={language}
             />
-          ) : !isPlanPublished ? (
-            <PendingRecommendationNotice sectionName={t('dashTabNeighborhoods')} onGoBack={() => setActiveTab('overview')} />
           ) : (
             <DashboardNeighborhoodsView />
           )
@@ -771,13 +749,11 @@ export const ClientDashboard: React.FC = () => {
             <LockedFeatureCard
               title={language === 'ru' ? 'Интерактивный калькулятор бюджета и сценариев' : 'Interactive Budget & Scenario Modeler'}
               desc={language === 'ru'
-                ? 'Интерактивное моделирование расходов на жизнь (аренда жилья, байк, питание, коворкинги, страховка и сценарии Solo / Пара) начинается с тарифа «Планирование релокации во Вьетнам» ($490) и «Консьерж» ($890).'
+                ? 'Интерактивое моделирование расходов на жизнь (аренда жилья, байк, питание, коворкинги, страховка и сценарии Solo / Пара) начинается с тарифа «Планирование релокации во Вьетнам» ($490) и «Консьерж» ($890).'
                 : 'Monthly cost modeling (housing, bike, food, coworking, insurance, and Solo / Couple scenarios) is included in "Vietnam Relocation Planning" ($490) and "Concierge" ($890).'}
               upgradeAction={upgradeToRelocation}
               language={language}
             />
-          ) : !isPlanPublished ? (
-            <PendingRecommendationNotice sectionName={t('dashTabBudget')} onGoBack={() => setActiveTab('overview')} />
           ) : (
             <DashboardBudgetView />
           )
@@ -792,32 +768,15 @@ export const ClientDashboard: React.FC = () => {
               upgradeAction={upgradeToRelocation}
               language={language}
             />
-          ) : !isPlanPublished ? (
-            <PendingRecommendationNotice sectionName={t('dashTabRoadmap')} onGoBack={() => setActiveTab('overview')} />
           ) : (
             <DashboardRoadmapView />
           )
         )}
-        {activeTab === 'realtor' && (
-          !isPlanPublished ? (
-            <PendingRecommendationNotice sectionName={language === 'ru' ? 'Партнер-риелтор' : 'Partner Realtor'} onGoBack={() => setActiveTab('overview')} />
-          ) : (
-            <DashboardRealtorView />
-          )
-        )}
         {activeTab === 'lease_audit' && (
-          !isPlanPublished ? (
-            <PendingRecommendationNotice sectionName={language === 'ru' ? 'Аудит договора аренды' : 'Lease Contract Audit'} onGoBack={() => setActiveTab('overview')} />
-          ) : (
-            <DashboardLeaseAuditView />
-          )
+          <DashboardLeaseAuditView />
         )}
         {activeTab === 'vip_concierge' && (
-          !isPlanPublished ? (
-            <PendingRecommendationNotice sectionName={language === 'ru' ? 'VIP Консьерж & Психолог' : 'VIP Concierge & Psychologist'} onGoBack={() => setActiveTab('overview')} />
-          ) : (
-            <DashboardVipConciergeView />
-          )
+          isVipTier ? <DashboardVipConciergeView /> : null
         )}
         {activeTab === 'housing' && (
           isTravelPlan ? (
@@ -830,24 +789,20 @@ export const ClientDashboard: React.FC = () => {
               language={language}
             />
           ) : (
-            <DashboardRealtorView />
+            <DashboardHousingView />
           )
         )}
         {activeTab === 'resources' && (
           <DashboardResourcesView />
         )}
         {activeTab === 'itinerary' && (
-          !isPlanPublished ? (
-            <PendingRecommendationNotice sectionName={language === 'ru' ? 'Авторский маршрут' : 'Travel Itinerary'} onGoBack={() => setActiveTab('overview')} />
-          ) : (
-            <DashboardItineraryView />
-          )
+          <DashboardItineraryView />
         )}
           </>
         )}
 
         {/* Persistent A4 Print Mount for Itinerary from any tab */}
-        {hasTravelPlan && isPlanPublished && (
+        {hasTravelPlan && (
           <div className="itinerary-print-mount">
             <DashboardItineraryView printOnly={true} />
           </div>

@@ -20,6 +20,7 @@ import type {
   RoadmapTask,
   PartnerRealtorAssignment,
   LeaseContractAudit,
+  LeaseAuditStatus,
   VipConciergePerks,
   TravelSimGuideItem,
   TravelEmergencyHospital
@@ -236,7 +237,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             roadmapTasks: matched.roadmapTasks || [],
             resources: [],
             verifiedHousing: (matched.verifiedHousing || []).filter(h => h.publishedToClient),
-            overallFounderNote: matched.overallFounderNote,
+            isRelocationPlanPublished: matched.isRelocationPlanPublished ?? (matched.status === 'plan_ready' && !matched.upgradedFromTier),
+            overallFounderNote: (matched.tierId === 'tier3' || matched.tierId === 'tier4') && (matched.overallFounderNote?.ru?.includes('маршрут путешествия формируется') || matched.overallFounderNote?.ru?.includes('1 бесплатная корректировка'))
+              ? {
+                  ru: `Добро пожаловать! Ваш тариф успешно повышен. Я провожу детальный анализ вашей анкеты и наполнение личного кабинета материалами для переезда.`,
+                  en: `Welcome! Your plan has been upgraded. I am analyzing your questionnaire and preparing your relocation package.`
+                }
+              : matched.overallFounderNote,
             tierId: matched.tierId,
             slaDeadline: matched.slaDeadline,
             paidAt: matched.paidAt,
@@ -358,6 +365,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const matched = adminClients.find(c => c.email.toLowerCase() === currentClient.email.toLowerCase());
     if (matched) {
       setProject((prev) => {
+        const isUpgraded = matched.upgradedFromTier || prev.upgradedFromTier;
+        const isReloc = matched.tierId === 'tier3' || matched.tierId === 'tier4';
+        const isPlanPub = matched.isRelocationPlanPublished ?? (matched.status === 'plan_ready' && !isUpgraded);
+
+        let founderNote = matched.overallFounderNote;
+        if (isReloc && (founderNote?.ru?.includes('маршрут путешествия формируется') || founderNote?.ru?.includes('1 бесплатная корректировка'))) {
+          founderNote = {
+            ru: `Добро пожаловать! Ваш тариф успешно повышен. Я провожу детальный анализ вашей анкеты и наполнение личного кабинета материалами для переезда.`,
+            en: `Welcome! Your plan has been upgraded. I am analyzing your questionnaire and preparing your relocation package.`
+          };
+        } else if (matched.tierId === 'tier2' && (matched.travelRevision?.status === 'applied' || matched.travelRevision?.requested) && founderNote?.ru?.includes('Включена 1 бесплатная корректировка')) {
+          founderNote = matched.travelRevision?.status === 'applied'
+            ? { ru: 'Ваш персональный маршрут обновлен основателем с учетом запрошенных правок. Приятного путешествия!', en: 'Your travel itinerary has been updated by the founder based on your requested revisions.' }
+            : { ru: 'Ваш запрос на корректировку маршрута принят и находится в работе у основателя.', en: 'Your route revision request has been received and is being processed by the founder.' };
+        }
+
         const updated: ClientProject = {
           ...prev,
           id: matched.id,
@@ -366,10 +389,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           serviceName: matched.serviceName,
           status: matched.status,
           tierId: matched.tierId,
+          isRelocationPlanPublished: isPlanPub,
           questionnaire: matched.questionnaire,
           recommendedCityId: matched.recommendedCityId,
           recommendedCityWhy: matched.recommendedCityWhy,
-          overallFounderNote: matched.overallFounderNote,
+          overallFounderNote: founderNote,
           userCurrentBudget: matched.userCurrentBudget,
           verifiedHousing: (matched.verifiedHousing || []).filter((h) => h.publishedToClient),
           roadmapTasks: matched.roadmapTasks || prev.roadmapTasks,
@@ -1237,6 +1261,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const nowIso = new Date().toISOString();
     const today = nowIso.split('T')[0];
 
+    const newFounderNote = {
+      ru: `Добро пожаловать! Ваш тариф успешно повышен до «${newServiceName.ru}». Я провожу детальный анализ вашей анкеты и наполнение личного кабинета материалами для переезда.`,
+      en: `Welcome! Your plan has been upgraded to ${newServiceName.en}. I am analyzing your questionnaire and preparing your relocation package.`
+    };
+
     setProject((prev) => {
       const hadTravel = prev.tierId === 'tier2' || prev.hasTravelPlan || Boolean(prev.travelDays && prev.travelDays.length > 0);
       const updated: ClientProject = {
@@ -1244,6 +1273,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         tierId: targetTierId,
         serviceName: newServiceName,
         paymentMethod: paymentMethod,
+        status: 'questionnaire_completed',
+        isRelocationPlanPublished: false,
+        overallFounderNote: newFounderNote,
         paidAt: nowIso,
         updatedAt: today,
         hasTravelPlan: hadTravel ? true : prev.hasTravelPlan,
@@ -1253,8 +1285,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         travelRevision: prev.travelRevision,
         travelSimGuide: prev.travelSimGuide,
         travelEmergencyHospitals: prev.travelEmergencyHospitals,
-        leaseContractAudit: prev.leaseContractAudit || {
-          status: 'waiting_for_client_draft',
+        leaseContractAudit: {
+          status: 'waiting_for_client_draft' as LeaseAuditStatus,
+          contractDraftTitle: '',
           flawsAndRisks: [],
           revisionHistory: []
         }
@@ -1274,6 +1307,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             tierId: targetTierId,
             serviceName: newServiceName,
             paymentMethod: paymentMethod,
+            status: 'questionnaire_completed' as ProjectStatus,
+            isRelocationPlanPublished: false,
+            overallFounderNote: newFounderNote,
             paidAt: nowIso,
             updatedAt: today,
             hasTravelPlan: hadTravel ? true : c.hasTravelPlan,
@@ -1283,8 +1319,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             travelRevision: c.travelRevision,
             travelSimGuide: c.travelSimGuide,
             travelEmergencyHospitals: c.travelEmergencyHospitals,
-            leaseContractAudit: c.leaseContractAudit || {
-              status: 'waiting_for_client_draft',
+            leaseContractAudit: {
+              status: 'waiting_for_client_draft' as LeaseAuditStatus,
+              contractDraftTitle: '',
               flawsAndRisks: [],
               revisionHistory: []
             }
@@ -1322,6 +1359,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             ...c,
             verifiedHousing: publishedHousing,
             status: 'plan_ready',
+            isRelocationPlanPublished: true,
             category: 'active',
             hasUnpublishedChanges: false,
             lastPublishedAt: new Date().toISOString(),
@@ -1352,6 +1390,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             clientName: rec.clientName,
             email: rec.email,
             status: 'plan_ready',
+            isRelocationPlanPublished: true,
             tierId: rec.tierId,
             serviceName: rec.serviceName,
             questionnaire: rec.questionnaire,
@@ -1433,6 +1472,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const requestTravelRevision = (text: string) => {
     const nowStr = new Date().toISOString();
     const targetEmail = (project.email || currentClient?.email || '').toLowerCase();
+    const revNote = {
+      ru: 'Ваш запрос на корректировку маршрута принят и находится в работе у основателя.',
+      en: 'Your route revision request has been received and is being processed by the founder.'
+    };
+
     setAdminClients((prev) => {
       const updated = prev.map((c) => {
         if (c.email.toLowerCase() === targetEmail) {
@@ -1448,6 +1492,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               maxCount: 1,
               status: 'pending' as const
             },
+            overallFounderNote: revNote,
             hasUnpublishedChanges: true,
             updatedAt: nowStr.split('T')[0]
           };
@@ -1473,6 +1518,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           maxCount: 1,
           status: 'pending' as const
         },
+        overallFounderNote: revNote,
         updatedAt: nowStr.split('T')[0]
       };
     });
@@ -1480,6 +1526,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const applyTravelRevision = (clientId: string) => {
     const nowStr = new Date().toISOString();
+    const appliedNote = {
+      ru: 'Ваш персональный маршрут обновлен основателем с учетом запрошенных правок. Приятного путешествия!',
+      en: 'Your travel itinerary has been updated by the founder based on your requested revisions.'
+    };
+
     setAdminClients((prev) => {
       const updated = prev.map((c) => {
         if (c.id === clientId) {
@@ -1491,6 +1542,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               requested: false,
               status: 'applied' as const
             },
+            overallFounderNote: appliedNote,
             hasUnpublishedChanges: true,
             updatedAt: nowStr.split('T')[0]
           };

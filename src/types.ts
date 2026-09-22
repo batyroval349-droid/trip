@@ -287,6 +287,7 @@ export interface LeaseAuditRevisionItem {
   status: LeaseAuditStatus;
   notes: string;
   flawsFound?: string[];
+  flawsAndRisks?: string[];
 }
 
 export interface LeaseContractAudit {
@@ -383,6 +384,7 @@ export interface ClientProject {
   travelSimGuide?: TravelSimGuideItem[];
   travelEmergencyHospitals?: TravelEmergencyHospital[];
   // Relocation Specific Plan Fields (tier3 & tier4)
+  isRelocationPlanPublished?: boolean;
   partnerRealtor?: PartnerRealtorAssignment;
   leaseContractAudit?: LeaseContractAudit;
   vipConciergePerks?: VipConciergePerks;
@@ -422,6 +424,7 @@ export interface AdminClientRecord {
   travelSimGuide?: TravelSimGuideItem[];
   travelEmergencyHospitals?: TravelEmergencyHospital[];
   // Relocation Specific Plan Fields (tier3 & tier4)
+  isRelocationPlanPublished?: boolean;
   partnerRealtor?: PartnerRealtorAssignment;
   leaseContractAudit?: LeaseContractAudit;
   vipConciergePerks?: VipConciergePerks;
