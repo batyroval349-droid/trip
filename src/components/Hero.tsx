@@ -28,29 +28,28 @@ export const Hero: React.FC = () => {
         
         {/* Left: Free-flowing editorial typography directly on page background — zero wrapper box, zero card */}
         <div className="hero-text-column">
-          <h1 className="hero-editorial-title">
+          <h1
+            className="hero-editorial-title"
+            aria-label={language === 'ru'
+              ? 'Ваш персональный проводник в путешествиях и релокации во Вьетнам'
+              : 'Your Personal Guide to Travel and Relocation in Vietnam'}
+          >
             {language === 'ru' ? (
               <>
-                <span className="hero-line hero-line-1">
+                <span className="hero-line hero-line-1" aria-hidden="true">
                   Ваш персональный проводник
                 </span>
-                <span className="hero-line hero-line-2">
-                  в <span className="hero-italic-highlight">путешествиях и релокации</span>
-                </span>
-                <span className="hero-line hero-line-3">
-                  во Вьетнам
+                <span className="hero-line hero-line-2" aria-hidden="true">
+                  в&nbsp;<span className="hero-italic-highlight">путешествиях и&nbsp;релокации</span> во&nbsp;Вьетнам
                 </span>
               </>
             ) : (
               <>
-                <span className="hero-line hero-line-1">
-                  Your Personal Guide
+                <span className="hero-line hero-line-1" aria-hidden="true">
+                  Your Personal Guide to&nbsp;Travel
                 </span>
-                <span className="hero-line hero-line-2">
-                  to <span className="hero-italic-highlight">Travel & Relocation</span>
-                </span>
-                <span className="hero-line hero-line-3">
-                  in Vietnam
+                <span className="hero-line hero-line-2" aria-hidden="true">
+                  &&nbsp;<span className="hero-italic-highlight">Relocation</span> in&nbsp;Vietnam
                 </span>
               </>
             )}
@@ -107,7 +106,7 @@ export const Hero: React.FC = () => {
         <div className="hero-image-column">
           <img
             src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1800&q=85"
-            alt="Vietnam Karst Landscape Trang An Ninh Binh"
+            alt={language === 'ru' ? 'Живописная панорама бухты Халонг и карстовых островов во Вьетнаме' : 'Scenic Karst Islands and Bay in Vietnam'}
             className="hero-image-img"
             loading="eager"
           />

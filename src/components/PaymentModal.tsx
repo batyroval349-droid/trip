@@ -10,7 +10,8 @@ import {
   Zap,
   Building2,
   Copy,
-  Check
+  Check,
+  Printer
 } from 'lucide-react';
 import { CardPaymentInputForm } from './CardPaymentInputForm';
 
@@ -24,6 +25,7 @@ export const PaymentModal: React.FC = () => {
     tiersConfig,
     completePaymentAndUnlock,
     setIsOfferModalOpen,
+    project,
     language
   } = useApp();
 
@@ -32,6 +34,14 @@ export const PaymentModal: React.FC = () => {
   const [agreedToOffer, setAgreedToOffer] = useState(false);
   const [txHash, setTxHash] = useState('');
   const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [receiptData, setReceiptData] = useState<{
+    orderId: string;
+    amountUSD: number;
+    tierName: string;
+    email: string;
+    date: string;
+    channelLabel: string;
+  } | null>(null);
 
   if (!isPaymentModalOpen) return null;
 
@@ -50,6 +60,24 @@ export const PaymentModal: React.FC = () => {
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
+      const orderId = 'VR-' + Math.floor(100000 + Math.random() * 900000);
+      const email = project.email || project.questionnaire?.email || 'клиент';
+      const channelLabels: Record<PaymentChannel, string> = {
+        card_ru: language === 'ru' ? 'Банковская карта РФ (МИР/СБП)' : 'Russian Card (MIR)',
+        card_intl: language === 'ru' ? 'Зарубежная карта (Visa / Mastercard)' : 'International Card',
+        crypto_usdt: 'USDT (TRC-20)',
+        viet_qr: 'Vietcombank VietQR'
+      };
+
+      setReceiptData({
+        orderId,
+        amountUSD: priceUSD,
+        tierName: currentTierInfo.name[language],
+        email,
+        date: new Date().toLocaleString(language === 'ru' ? 'ru-RU' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        channelLabel: channelLabels[channel]
+      });
+
       completePaymentAndUnlock(channel);
     }, 850);
   };
@@ -84,7 +112,10 @@ export const PaymentModal: React.FC = () => {
       }}>
         {/* Close Button */}
         <button
-          onClick={() => setIsPaymentModalOpen(false)}
+          onClick={() => {
+            setReceiptData(null);
+            setIsPaymentModalOpen(false);
+          }}
           aria-label="Close"
           style={{
             position: 'absolute',
@@ -101,18 +132,135 @@ export const PaymentModal: React.FC = () => {
           <X size={20} />
         </button>
 
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem', color: 'var(--accent-emerald)' }}>
-          <ShieldCheck size={26} />
-          <h2 style={{ fontSize: '1.45rem', fontFamily: 'var(--font-serif)', margin: 0, color: 'var(--text-main)' }}>
-            {language === 'ru' ? 'Оплата и активация кабинета' : 'Payment & Workspace Activation'}
-          </h2>
-        </div>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem', lineHeight: 1.45 }}>
-          {language === 'ru'
-            ? 'Выберите удобный способ оплаты для активации тарифа и доступа к личному кабинету.'
-            : 'Select your preferred payment method to activate your relocation workspace.'}
-        </p>
+        {receiptData ? (
+          <div>
+            {/* Success Header */}
+            <div style={{ textAlign: 'center', marginBottom: '1.4rem' }}>
+              <div style={{
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                background: 'rgba(15, 118, 110, 0.1)',
+                color: 'var(--accent-emerald)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 0.9rem auto'
+              }}>
+                <CheckCircle2 size={34} />
+              </div>
+              <h2 style={{ fontSize: '1.45rem', margin: '0 0 0.35rem 0', color: 'var(--text-main)', fontFamily: 'var(--font-serif)' }}>
+                {language === 'ru' ? 'Оплата успешно завершена!' : 'Payment Confirmed!'}
+              </h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 0 }}>
+                {language === 'ru'
+                  ? 'Личный кабинет активирован. Founder получил уведомление и начинает подготовку.'
+                  : 'Workspace activated. Founder has been notified and preparation is starting.'}
+              </p>
+            </div>
+
+            {/* Receipt Box */}
+            <div style={{
+              background: '#FFFFFF',
+              border: '1.5px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-md)',
+              padding: '1.25rem 1.35rem',
+              marginBottom: '1.15rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.6rem'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.55rem', fontSize: '0.84rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Номер квитанции:' : 'Receipt No:'}</span>
+                <strong style={{ fontFamily: 'monospace', color: 'var(--accent-emerald)', fontSize: '0.95rem' }}>#{receiptData.orderId}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Тариф:' : 'Plan:'}</span>
+                <strong>{receiptData.tierName}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Сумма оплаты:' : 'Amount Paid:'}</span>
+                <strong style={{ fontSize: '1.05rem', color: 'var(--accent-emerald)' }}>${receiptData.amountUSD} USD</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Способ оплаты:' : 'Payment Method:'}</span>
+                <span>{receiptData.channelLabel}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Дата и время:' : 'Date & Time:'}</span>
+                <span>{receiptData.date}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem', borderTop: '1px dashed var(--border-subtle)', paddingTop: '0.55rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Статус:' : 'Status:'}</span>
+                <span style={{ color: 'var(--accent-emerald)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Check size={14} /> {language === 'ru' ? 'Оплачено и активировано' : 'Paid & Active'}
+                </span>
+              </div>
+            </div>
+
+            {/* Electronic Receipt Notice */}
+            <div style={{
+              background: '#F0FDF4',
+              border: '1px solid #BBF7D0',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.85rem 1rem',
+              marginBottom: '1.25rem',
+              fontSize: '0.82rem',
+              color: '#166534',
+              lineHeight: 1.5,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '0.65rem'
+            }}>
+              <CheckCircle2 size={17} style={{ flexShrink: 0, color: '#16a34a', marginTop: '2px' }} />
+              <div>
+                <strong>{language === 'ru' ? 'Электронный чек отправлен:' : 'Electronic receipt sent:'}</strong>
+                <div style={{ marginTop: '2px' }}>
+                  {language === 'ru'
+                    ? `Официальный фискальный чек об успешной транзакции автоматически сформирован и отправлен на ваш email: ${receiptData.email}.`
+                    : `Official transaction receipt has been automatically sent by the acquiring gateway to your email: ${receiptData.email}.`}
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="btn btn-secondary"
+                style={{ flex: 1, justifyContent: 'center', fontSize: '0.88rem', padding: '0.75rem' }}
+              >
+                <Printer size={15} /> {language === 'ru' ? 'Распечатать чек' : 'Print Receipt'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setReceiptData(null);
+                  setIsPaymentModalOpen(false);
+                }}
+                className="btn btn-primary"
+                style={{ flex: 1.4, justifyContent: 'center', fontSize: '0.88rem', padding: '0.75rem' }}
+              >
+                <span>{language === 'ru' ? 'Войти в личный кабинет →' : 'Enter Workspace →'}</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem', color: 'var(--accent-emerald)' }}>
+              <ShieldCheck size={26} />
+              <h2 style={{ fontSize: '1.45rem', fontFamily: 'var(--font-serif)', margin: 0, color: 'var(--text-main)' }}>
+                {language === 'ru' ? 'Оплата и активация кабинета' : 'Payment & Workspace Activation'}
+              </h2>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem', lineHeight: 1.45 }}>
+              {language === 'ru'
+                ? 'Выберите удобный способ оплаты для активации тарифа и доступа к личному кабинету.'
+                : 'Select your preferred payment method to activate your relocation workspace.'}
+            </p>
 
         {/* Order Summary Box */}
         <div style={{
@@ -543,6 +691,8 @@ export const PaymentModal: React.FC = () => {
               </>
             )}
           </button>
+        )}
+          </>
         )}
       </div>
     </div>

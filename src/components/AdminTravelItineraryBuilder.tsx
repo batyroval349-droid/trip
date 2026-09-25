@@ -7,6 +7,7 @@ import type {
   TravelTransitLeg
 } from '../types';
 import { DEFAULT_TRAVEL_DAYS, DEFAULT_TRAVEL_TRANSIT_LEGS } from '../translations/defaultTravelData';
+import { DEFAULT_RELOCATION_14_DAYS } from '../translations/defaultRelocationTravelData';
 import {
   Plus,
   Trash2,
@@ -81,9 +82,12 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
   const [newLegTip, setNewLegTip] = useState('Рекомендуем Vietnam Airlines с включенным багажом.');
   const [newLegUrl, setNewLegUrl] = useState('https://www.vietnamairlines.com');
 
+  const isRelocationClient = selectedClient.tierId === 'tier3' || selectedClient.tierId === 'tier4';
+  const defaultFallbackDays = isRelocationClient ? DEFAULT_RELOCATION_14_DAYS : DEFAULT_TRAVEL_DAYS;
+
   const days: TravelDayItem[] = (selectedClient.travelDays && selectedClient.travelDays.length > 0)
     ? selectedClient.travelDays
-    : DEFAULT_TRAVEL_DAYS;
+    : defaultFallbackDays;
 
   const transitLegs: TravelTransitLeg[] = (selectedClient.travelTransitLegs && selectedClient.travelTransitLegs.length > 0)
     ? selectedClient.travelTransitLegs
@@ -342,10 +346,18 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
               padding: '0.2rem 0.6rem',
               borderRadius: '9999px'
             }}>
-              ТАРИФ: ПОЕЗДКА ($290)
+              {selectedClient.tierId === 'tier4'
+                ? (language === 'ru' ? 'ТАРИФ: VIP-СОПРОВОЖДЕНИЕ ($890)' : 'VIP CONCIERGE ($890)')
+                : selectedClient.tierId === 'tier3'
+                ? (language === 'ru' ? 'ТАРИФ: РЕЛОКАЦИЯ ($490)' : 'RELOCATION ($490)')
+                : (language === 'ru' ? 'ТАРИФ: ПОЕЗДКА ($290)' : 'TRAVEL PLAN ($290)')}
             </span>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-              Поддержка WhatsApp: <strong>14 дней</strong>
+              {selectedClient.tierId === 'tier4'
+                ? (language === 'ru' ? 'Поддержка Founder: 24/7 VIP' : 'Founder Support: 24/7 VIP')
+                : selectedClient.tierId === 'tier3'
+                ? (language === 'ru' ? 'Поддержка Telegram/WhatsApp: 30 дней' : 'Chat Support: 30 days')
+                : (language === 'ru' ? 'Поддержка WhatsApp: 14 дней' : 'WhatsApp Support: 14 days')}
             </span>
           </div>
 
@@ -373,14 +385,14 @@ export const AdminTravelItineraryBuilder: React.FC<AdminTravelItineraryBuilderPr
             publishClientUpdates(selectedClient.id);
             if (onPublishSuccess) onPublishSuccess();
           }}
-          className="btn btn-primary"
+          className="glass-button active"
           style={{
             padding: '0.65rem 1.4rem',
             fontSize: '0.9rem',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
-            boxShadow: '0 4px 12px rgba(15,118,110,0.25)'
+            background: 'var(--accent-emerald)'
           }}
         >
           <Send size={15} />

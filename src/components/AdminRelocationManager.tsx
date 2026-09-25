@@ -18,6 +18,10 @@ import {
   DEFAULT_LEASE_AUDIT,
   DEFAULT_VIP_PERKS
 } from '../translations/defaultRelocationData';
+import { CITIES_DATA, NEIGHBORHOODS_DATA, normalizeCityId } from '../translations/content';
+import { DEFAULT_RELOCATION_14_DAYS } from '../translations/defaultRelocationTravelData';
+import { AdminTravelItineraryBuilder } from './AdminTravelItineraryBuilder';
+import { ClientDashboardPreviewModal } from './ClientDashboardPreviewModal';
 import {
   Send,
   CheckCircle2,
@@ -34,13 +38,50 @@ import {
   Sparkles,
   Phone,
   MessageCircle,
-  HeartHandshake
+  HeartHandshake,
+  MapPin,
+  Route,
+  Eye,
+  ExternalLink
 } from 'lucide-react';
 
 interface AdminRelocationManagerProps {
   selectedClient: AdminClientRecord;
   onPublishSuccess?: () => void;
 }
+
+export const CITY_WHY_TEMPLATES: Record<string, { ru: string; en: string; labelRu: string; labelEn: string }> = {
+  danang: {
+    labelRu: 'Дананг IT',
+    labelEn: 'Da Nang IT',
+    ru: 'Дананг — идеальный выбор: чистые пляжи для серфинга и утренних пробежек, развитая кофейная культура, быстрый оптоволоконный интернет без сбоев (100–300 Мбит/с) и активное международное сообщество удаленщиков.',
+    en: 'Da Nang is ideal: surf beaches, vibrant coffee scene, 100-300 Mbps fiber internet, and active nomad community.'
+  },
+  nhatrang: {
+    labelRu: 'Нячанг Пляж',
+    labelEn: 'Nha Trang Beach',
+    ru: 'Нячанг идеально подходит под ваш профиль: круглогодичное теплое море, комфортные жилые комплексы на первой линии с панорамным видом, развитая русскоязычная медицина и сервис, а также очень доступные цены на долгосрочную аренду.',
+    en: 'Nha Trang is ideal: warm sea year-round, modern beachfront condos, and expat-friendly infrastructure.'
+  },
+  hoian: {
+    labelRu: 'Хойан Релакс',
+    labelEn: 'Hoi An Relax',
+    ru: 'Хойан предлагает спокойный, размеренный темп жизни в окружении рисовых полей и пляжа Ан Банг, экологичную атмосферу и уютные европейские кафе для сосредоточенной творческой работы.',
+    en: 'Hoi An offers tranquil living amidst rice fields and An Bang beach, with cozy cafes for creative remote work.'
+  },
+  saigon: {
+    labelRu: 'Хошимин Бизнес',
+    labelEn: 'HCMC Business',
+    ru: 'Хошимин (Сайгон) — центр деловой и экономической жизни Вьетнама: лучшие международные коворкинги, высококлассная медицина, динамичная гастрономия и максимум возможностей для бизнеса и нетворкинга.',
+    en: 'Ho Chi Minh City is Vietnam\'s dynamic business hub: top international coworking spaces, premier healthcare, and boundless networking opportunities.'
+  },
+  hanoi: {
+    labelRu: 'Ханой Столица',
+    labelEn: 'Hanoi Capital',
+    ru: 'Ханой — культурная столица Вьетнама с уникальной атмосферой вокруг Западного озера (Тай Хо), зелеными бульварами, богатой историей и сложившимся экспатским сообществом.',
+    en: 'Hanoi is the historic capital: charming atmosphere around West Lake (Tay Ho), rich culture, and established expat community.'
+  }
+};
 
 export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
   selectedClient,
@@ -51,14 +92,55 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
     updateLeaseContractAudit,
     updateVipConciergePerks,
     updateRelocationRoadmap,
+    updateClientRecord,
     publishClientUpdates,
     language
   } = useApp();
 
   const isVip = selectedClient.tierId === 'tier4';
-  const [activeTab, setActiveTab] = useState<'roadmap' | 'realtor' | 'lease_audit' | 'vip_concierge'>('roadmap');
+
+  type AdminReloTab = 'city' | 'roadmap' | 'travel_itinerary' | 'realtor' | 'lease_audit' | 'vip_concierge';
+  const [activeTab, setActiveTab] = useState<AdminReloTab>('city');
   const [copiedBrief, setCopiedBrief] = useState(false);
   const [savedNotice, setSavedNotice] = useState<string | null>(null);
+
+  // Form states for City Selection
+  const normInitCity = normalizeCityId(selectedClient.recommendedCityId || 'danang');
+  const [selectedCityId, setSelectedCityId] = useState<string>(normInitCity);
+  const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>(
+    (selectedClient as any).recommendedNeighborhoodIds && (selectedClient as any).recommendedNeighborhoodIds.length > 0
+      ? (selectedClient as any).recommendedNeighborhoodIds
+      : normInitCity === 'nhatrang'
+      ? ['nhatrang_north', 'nhatrang_an_vien']
+      : normInitCity === 'hoian'
+      ? ['hoian_cam_an', 'hoian_cam_chau']
+      : normInitCity === 'saigon'
+      ? ['thao_dien', 'hcm_binh_thanh']
+      : normInitCity === 'hanoi'
+      ? ['tay_ho', 'hanoi_cau_giay']
+      : ['an_thuong', 'hai_chau']
+  );
+  const [cityBudgets, setCityBudgets] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    CITIES_DATA.forEach(c => {
+      initial[c.id] = (selectedClient as any).customCityBudgets?.[c.id] || c.budgetRange[language] || c.budgetRange.ru;
+    });
+    return initial;
+  });
+  const [cityWhyRu, setCityWhyRu] = useState<string>(() => {
+    const clientWhyRu = selectedClient.recommendedCityWhy?.ru;
+    const isGenericWhy = !clientWhyRu || clientWhyRu.includes('Персональная рекомендация на основе ваших приоритетов') || clientWhyRu.includes('Индивидуальный маршрут путешествия');
+    if (!isGenericWhy) return clientWhyRu;
+    return (CITY_WHY_TEMPLATES[normInitCity] || CITY_WHY_TEMPLATES.danang).ru;
+  });
+  const [cityWhyEn, setCityWhyEn] = useState<string>(() => {
+    const clientWhyEn = selectedClient.recommendedCityWhy?.en;
+    const isGenericWhy = !clientWhyEn || clientWhyEn.includes('Personalized recommendation based on your questionnaire priorities') || clientWhyEn.includes('Tailored 1–30 days travel route');
+    if (!isGenericWhy) return clientWhyEn;
+    return (CITY_WHY_TEMPLATES[normInitCity] || CITY_WHY_TEMPLATES.danang).en;
+  });
+  const [autoAssignRealtor, setAutoAssignRealtor] = useState(true);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   // Active roadmap tasks
   const roadmapTasks: RoadmapTask[] = (selectedClient.roadmapTasks && selectedClient.roadmapTasks.length > 0)
@@ -67,7 +149,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
 
   // Active partner realtor
   const realtor: PartnerRealtorAssignment = selectedClient.partnerRealtor || (
-    selectedClient.recommendedCityId === 'nhatrang'
+    normInitCity === 'nhatrang'
       ? DEFAULT_PARTNER_REALTOR_NHATRANG
       : DEFAULT_PARTNER_REALTOR_DANANG
   );
@@ -84,12 +166,15 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
   const [newTaskTitleRu, setNewTaskTitleRu] = useState('');
   const [newTaskDescRu, setNewTaskDescRu] = useState('');
   const [newTaskCommentRu, setNewTaskCommentRu] = useState('');
+  const [newTaskLinkUrl, setNewTaskLinkUrl] = useState('');
+  const [newTaskLinkLabelRu, setNewTaskLinkLabelRu] = useState('');
 
   // Form states for editing realtor
   const [editRealtorName, setEditRealtorName] = useState(realtor.realtorName);
   const [editRealtorAgency, setEditRealtorAgency] = useState(realtor.agencyOrTitle);
   const [editRealtorTg, setEditRealtorTg] = useState(realtor.telegramUsername);
   const [editRealtorWa, setEditRealtorWa] = useState(realtor.whatsappNumber);
+  const [editRealtorInstagram, setEditRealtorInstagram] = useState(realtor.instagramUrl || '');
   const [editRealtorPhone, setEditRealtorPhone] = useState(realtor.phoneOrZalo);
   const [editRealtorSpec, setEditRealtorSpec] = useState(realtor.specialization);
   const [editRealtorStatus, setEditRealtorStatus] = useState<RealtorWorkStatus>(realtor.status);
@@ -130,6 +215,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
     setEditRealtorAgency(realtor.agencyOrTitle);
     setEditRealtorTg(realtor.telegramUsername);
     setEditRealtorWa(realtor.whatsappNumber);
+    setEditRealtorInstagram(realtor.instagramUrl || '');
     setEditRealtorPhone(realtor.phoneOrZalo);
     setEditRealtorSpec(realtor.specialization);
     setEditRealtorStatus(realtor.status);
@@ -160,50 +246,91 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
     setEditTgAccTotal(tgAcc.daysTotal);
     setEditTgAccRemaining(tgAcc.daysRemaining);
     setEditTgAccUsername(tgAcc.telegramUsername || 'Likqwerty');
+
+    const normClientCity = normalizeCityId(selectedClient.recommendedCityId || 'danang');
+    setSelectedCityId(normClientCity);
+    if ((selectedClient as any).recommendedNeighborhoodIds && (selectedClient as any).recommendedNeighborhoodIds.length > 0) {
+      setSelectedNeighborhoods((selectedClient as any).recommendedNeighborhoodIds);
+    } else {
+      setSelectedNeighborhoods(
+        normClientCity === 'nhatrang'
+          ? ['nhatrang_north', 'nhatrang_an_vien']
+          : normClientCity === 'hoian'
+          ? ['hoian_cam_an', 'hoian_cam_chau']
+          : normClientCity === 'saigon'
+          ? ['thao_dien', 'hcm_binh_thanh']
+          : normClientCity === 'hanoi'
+          ? ['tay_ho', 'hanoi_cau_giay']
+          : ['an_thuong', 'hai_chau']
+      );
+    }
+    const nextBudgets: Record<string, string> = {};
+    CITIES_DATA.forEach(c => {
+      nextBudgets[c.id] = (selectedClient as any).customCityBudgets?.[c.id] || c.budgetRange[language] || c.budgetRange.ru;
+    });
+    setCityBudgets(nextBudgets);
+
+    const defaultWhy = CITY_WHY_TEMPLATES[normClientCity] || CITY_WHY_TEMPLATES.danang;
+    const clientWhyRu = selectedClient.recommendedCityWhy?.ru;
+    const isGenericWhyRu = !clientWhyRu || clientWhyRu.includes('Персональная рекомендация на основе ваших приоритетов') || clientWhyRu.includes('Индивидуальный маршрут путешествия');
+    setCityWhyRu(isGenericWhyRu ? defaultWhy.ru : clientWhyRu);
+
+    const clientWhyEn = selectedClient.recommendedCityWhy?.en;
+    const isGenericWhyEn = !clientWhyEn || clientWhyEn.includes('Personalized recommendation based on your questionnaire priorities') || clientWhyEn.includes('Tailored 1–30 days travel route');
+    setCityWhyEn(isGenericWhyEn ? defaultWhy.en : clientWhyEn);
   }, [selectedClient.id]);
 
-  // Quality Gate Validation Checks for Relocation Concierge
-  const phasesCovered = {
-    before: roadmapTasks.some(t => t.phase === 'before_arrival'),
-    week: roadmapTasks.some(t => t.phase === 'week_of_arrival'),
-    month: roadmapTasks.some(t => t.phase === 'first_month')
+
+  // Handlers for City Selection
+  const handleSelectCityCard = (rawCityId: string) => {
+    const cityId = normalizeCityId(rawCityId);
+    setSelectedCityId(cityId);
+    const tpl = CITY_WHY_TEMPLATES[cityId];
+    if (tpl) {
+      setCityWhyRu(tpl.ru);
+      setCityWhyEn(tpl.en);
+    }
+    if (cityId === 'nhatrang') {
+      setSelectedNeighborhoods(['nhatrang_north', 'nhatrang_an_vien']);
+    } else if (cityId === 'danang') {
+      setSelectedNeighborhoods(['an_thuong', 'hai_chau']);
+    } else if (cityId === 'hoian') {
+      setSelectedNeighborhoods(['hoian_cam_an', 'hoian_cam_chau']);
+    } else if (cityId === 'saigon') {
+      setSelectedNeighborhoods(['thao_dien', 'hcm_binh_thanh']);
+    } else if (cityId === 'hanoi') {
+      setSelectedNeighborhoods(['tay_ho', 'hanoi_cau_giay']);
+    }
   };
-  const allPhasesPresent = phasesCovered.before && phasesCovered.week && phasesCovered.month;
 
-  const qualityChecks = [
-    {
-      id: 'intake_done',
-      title: language === 'ru' ? 'Анкета и цели переезда проанализированы' : 'Client questionnaire & goals analyzed',
-      passed: Boolean(selectedClient.recommendedCityId && selectedClient.userCurrentBudget),
-      hint: selectedClient.recommendedCityId === 'danang' ? 'Дананг' : selectedClient.recommendedCityId === 'nhatrang' ? 'Нячанг' : 'Город выбран'
-    },
-    {
-      id: 'roadmap_ready',
-      title: language === 'ru' ? 'Пошаговый маршрут переезда сформирован (3 фазы)' : 'Step-by-step roadmap ready (3 phases)',
-      passed: roadmapTasks.length >= 6 && allPhasesPresent,
-      hint: `${roadmapTasks.length} шагов`
-    },
-    {
-      id: 'realtor_assigned',
-      title: language === 'ru' ? 'Назначен проверенный риелтор с прямым Telegram' : 'Verified realtor assigned with Telegram',
-      passed: Boolean(realtor.realtorName && realtor.telegramUsername),
-      hint: realtor.realtorName
-    },
-    {
-      id: 'lease_audit_active',
-      title: language === 'ru' ? 'Модуль аудита договора аренды настроен' : 'Lease contract audit module active',
-      passed: Boolean(leaseAudit.checks && leaseAudit.overallVerdict?.ru),
-      hint: leaseAudit.status === 'approved_with_notes' ? 'Одобрено с правками' : 'Аудит активен'
-    },
-    ...(isVip ? [{
-      id: 'vip_concierge_active',
-      title: language === 'ru' ? 'Сессия с психологом-сексологом и консьерж активированы' : 'Psychologist session & VIP concierge configured',
-      passed: Boolean(vipPerks.psychologistSession.specialistName && vipPerks.psychologistSession.secondSessionPromoCode),
-      hint: 'Сессия + Промокод'
-    }] : [])
-  ];
+  const handleSaveCity = (e: React.FormEvent) => {
+    e.preventDefault();
+    const normCity = normalizeCityId(selectedCityId);
+    const updates: Partial<AdminClientRecord> = {
+      recommendedCityId: normCity,
+      recommendedCityWhy: {
+        ru: cityWhyRu.trim(),
+        en: cityWhyEn.trim() || cityWhyRu.trim()
+      },
+      recommendedNeighborhoodIds: selectedNeighborhoods,
+      customCityBudgets: cityBudgets,
+      recommendedCityBudgetRange: cityBudgets[normCity] || CITIES_DATA.find(c => c.id === normCity)?.budgetRange[language],
+      hasUnpublishedChanges: true,
+      updatedAt: new Date().toISOString().split('T')[0]
+    };
 
-  const allQualityChecksPassed = qualityChecks.every(c => c.passed);
+    if (autoAssignRealtor) {
+      if (normCity === 'nhatrang') {
+        updates.partnerRealtor = DEFAULT_PARTNER_REALTOR_NHATRANG;
+      } else if (normCity === 'danang' || normCity === 'hoian') {
+        updates.partnerRealtor = DEFAULT_PARTNER_REALTOR_DANANG;
+      }
+    }
+
+    updateClientRecord(selectedClient.id, updates);
+    setSavedNotice(language === 'ru' ? 'Рекомендованный город, районы и бюджеты успешно сохранены!' : 'City, districts & budgets saved!');
+    setTimeout(() => setSavedNotice(null), 3000);
+  };
 
   // Handlers
   const handleSaveRealtor = (e: React.FormEvent) => {
@@ -214,6 +341,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
       agencyOrTitle: editRealtorAgency.trim(),
       telegramUsername: editRealtorTg.replace('@', '').trim(),
       whatsappNumber: editRealtorWa.trim(),
+      instagramUrl: editRealtorInstagram.trim(),
       phoneOrZalo: editRealtorPhone.trim(),
       specialization: editRealtorSpec.trim(),
       status: editRealtorStatus,
@@ -221,7 +349,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
         en: realtor.founderNoteToClient.en,
         ru: editRealtorNoteRu.trim()
       },
-      directChatUrl: `https://t.me/${editRealtorTg.replace('@', '').trim()}`
+      directChatUrl: editRealtorInstagram.trim() || (editRealtorTg ? `https://t.me/${editRealtorTg.replace('@', '').trim()}` : realtor.directChatUrl)
     };
     updatePartnerRealtor(selectedClient.id, updatedRealtor);
     setSavedNotice(language === 'ru' ? 'Карточка риелтора сохранена в черновик!' : 'Realtor details saved!');
@@ -311,6 +439,11 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
         ru: newTaskCommentRu.trim(),
         en: newTaskCommentRu.trim()
       } : undefined,
+      linkUrl: newTaskLinkUrl.trim() || undefined,
+      linkLabel: newTaskLinkLabelRu.trim() ? {
+        ru: newTaskLinkLabelRu.trim(),
+        en: newTaskLinkLabelRu.trim()
+      } : undefined,
       completed: false
     };
 
@@ -319,6 +452,8 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
     setNewTaskTitleRu('');
     setNewTaskDescRu('');
     setNewTaskCommentRu('');
+    setNewTaskLinkUrl('');
+    setNewTaskLinkLabelRu('');
     setSavedNotice(language === 'ru' ? 'Новый шаг добавлен в маршрут!' : 'Milestone added to roadmap!');
     setTimeout(() => setSavedNotice(null), 3500);
   };
@@ -334,10 +469,11 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
   };
 
   const handleCopyRealtorBrief = () => {
+    const cityName = CITIES_DATA.find(c => c.id === normalizeCityId(selectedClient.recommendedCityId))?.name[language] || selectedClient.recommendedCityId;
     const brief = `Здравствуйте! Бриф на подбор жилья от VietReloc:
 Клиент: ${selectedClient.clientName}
 Тариф: ${selectedClient.serviceName[language]}
-Город: ${selectedClient.recommendedCityId === 'danang' ? 'Дананг' : 'Нячанг'}
+Город: ${cityName}
 Бюджет на жилье: $${selectedClient.userCurrentBudget.accommodation}/мес
 Даты заезда: ${selectedClient.questionnaire.travelDates || 'в течение 2-3 недель'}
 Срок аренды: ${selectedClient.questionnaire.duration || '6-12 месяцев'}
@@ -387,10 +523,8 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
               </span>
             )}
           </div>
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-main)' }}>
-            {allQualityChecksPassed
-              ? (language === 'ru' ? '✓ Relocation Quality Gate пройден: все стандарты сопровождения соблюдены.' : '✓ Relocation Quality Gate passed: All milestones ready.')
-              : (language === 'ru' ? `⚠ Relocation Quality Gate: пройдено ${qualityChecks.filter(c => c.passed).length} из ${qualityChecks.length} критериев.` : `⚠ Quality Gate: ${qualityChecks.filter(c => c.passed).length}/${qualityChecks.length} passed.`)}
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            <strong>{language === 'ru' ? 'Клиент:' : 'Client:'}</strong> {selectedClient.clientName} &bull; {selectedClient.email}
           </div>
         </div>
 
@@ -403,17 +537,39 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
 
           <button
             type="button"
+            onClick={() => setIsPreviewOpen(true)}
+            className="glass-button"
+            style={{
+              padding: '0.65rem 1.25rem',
+              fontSize: '0.9rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: '#FFFFFF',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-main)',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            <Eye size={16} color="var(--accent-terracotta)" />
+            <span>{language === 'ru' ? 'Предпросмотр ЛК' : 'Client Portal Preview'}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => {
               publishClientUpdates(selectedClient.id);
               if (onPublishSuccess) onPublishSuccess();
             }}
-            className="btn btn-primary"
+            className="glass-button active"
             style={{
               padding: '0.65rem 1.4rem',
               fontSize: '0.9rem',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.5rem'
+              gap: '0.5rem',
+              background: 'var(--accent-emerald)'
             }}
           >
             <Send size={15} />
@@ -422,42 +578,44 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
         </div>
       </div>
 
-      {/* Quality Gate Detailed Checklist Badge Ribbon */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '0.6rem'
-      }}>
-        {qualityChecks.map((chk) => (
-          <div
-            key={chk.id}
-            style={{
-              background: chk.passed ? '#FFFFFF' : '#FEF2F2',
-              border: chk.passed ? '1px solid #E5E7EB' : '1px solid #FECACA',
-              borderRadius: 'var(--radius-sm)',
-              padding: '0.6rem 0.85rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              fontSize: '0.78rem'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: chk.passed ? 'var(--text-main)' : '#991B1B' }}>
-              {chk.passed ? <CheckCircle2 size={14} color="#0F766E" /> : <AlertTriangle size={14} color="#DC2626" />}
-              <span style={{ fontWeight: 600 }}>{chk.title}</span>
-            </div>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{chk.hint}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* 4 Purposeful Relocation Tabs */}
+      {/* Relocation Tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--border-subtle)', paddingBottom: '0.5rem', flexWrap: 'wrap' }}>
         {[
-          { id: 'roadmap', label: language === 'ru' ? `Маршрут переезда (${roadmapTasks.length})` : `Roadmap (${roadmapTasks.length})`, icon: Compass },
-          { id: 'realtor', label: language === 'ru' ? `Партнер-риелтор (${realtor.realtorName})` : `Realtor (${realtor.realtorName})`, icon: Users },
-          { id: 'lease_audit', label: language === 'ru' ? 'Аудит договора аренды' : 'Lease Due Diligence', icon: ShieldCheck },
-          ...(isVip ? [{ id: 'vip_concierge', label: language === 'ru' ? 'VIP-Консьерж & Психолог' : 'VIP Concierge & Psy', icon: Crown, highlight: true }] : [])
+          {
+            id: 'city',
+            label: language === 'ru' ? 'Выбор города и районов' : 'City & Districts',
+            icon: MapPin,
+            badge: CITIES_DATA.find(c => c.id === normalizeCityId(selectedClient.recommendedCityId))?.name[language] || (language === 'ru' ? 'Выбрать' : 'Select')
+          },
+          {
+            id: 'roadmap',
+            label: language === 'ru' ? `Дорожная карта (${roadmapTasks.length} шагов)` : `Roadmap (${roadmapTasks.length} steps)`,
+            icon: Compass
+          },
+          {
+            id: 'travel_itinerary',
+            label: language === 'ru'
+              ? `Маршрут путешествия (${selectedClient.travelDays?.length || 14} дней)`
+              : `Travel Itinerary (${selectedClient.travelDays?.length || 14} Days)`,
+            icon: Route,
+            badge: language === 'ru' ? '14 дней' : '14 Days'
+          },
+          {
+            id: 'realtor',
+            label: language === 'ru' ? `Партнер-риелтор (${realtor.realtorName})` : `Realtor (${realtor.realtorName})`,
+            icon: Users
+          },
+          {
+            id: 'lease_audit',
+            label: language === 'ru' ? 'Аудит договора аренды' : 'Lease Due Diligence',
+            icon: ShieldCheck
+          },
+          ...(isVip ? [{
+            id: 'vip_concierge',
+            label: language === 'ru' ? 'VIP-Консьерж & Психолог' : 'VIP Concierge & Psy',
+            icon: Crown,
+            highlight: true
+          }] : [])
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -466,31 +624,446 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
+              className={`glass-button ${isActive ? 'active' : ''}`}
               style={{
                 padding: '0.65rem 1.25rem',
-                borderRadius: 'var(--radius-sm)',
-                background: isActive ? 'var(--accent-emerald)' : '#FFFFFF',
-                color: isActive ? '#FFFFFF' : 'var(--text-main)',
-                border: isActive ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                fontWeight: 700,
                 fontSize: '0.88rem',
-                cursor: 'pointer',
+                fontWeight: 700,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.45rem',
-                boxShadow: isActive ? '0 4px 12px rgba(15,118,110,0.18)' : 'none',
-                transition: 'all 0.2s ease'
+                color: isActive ? '#FFFFFF' : 'var(--text-main)'
               }}
             >
               <Icon size={16} />
               <span>{tab.label}</span>
-              {tab.highlight && !isActive && (
-                <span style={{ background: '#FEF3C7', color: '#B45309', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '9999px', fontWeight: 800 }}>VIP</span>
+              {(tab as any).badge && !isActive && (
+                <span style={{
+                  background: (tab as any).highlight ? '#FEF3C7' : 'rgba(15, 118, 110, 0.1)',
+                  color: (tab as any).highlight ? '#92400E' : '#0F766E',
+                  fontSize: '0.68rem',
+                  padding: '1px 6px',
+                  borderRadius: '9999px',
+                  fontWeight: 700
+                }}>
+                  {(tab as any).badge}
+                </span>
               )}
             </button>
           );
         })}
       </div>
+
+      {/* ========================================================================= */}
+      {/* TAB 0: RECOMMENDED CITY & NEIGHBORHOODS (ВЫБОР ГОРОДА И РАЙОНОВ) */}
+      {/* ========================================================================= */}
+      {activeTab === 'city' && (
+        <form onSubmit={handleSaveCity} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.25rem', fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <MapPin size={20} color="var(--accent-terracotta)" />
+                <span>{language === 'ru' ? 'Выбор рекомендуемого города и районов' : 'Curate Recommended City & Districts'}</span>
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', maxWidth: '720px' }}>
+                {language === 'ru'
+                  ? 'Вы вручную выбираете город для клиента на основе его анкеты. Выбранный город автоматически передаётся в клиентский кабинет, определяет погодный виджет, подбор подходящих районов и проверенного риелтора.'
+                  : 'Manually select the best city based on the client questionnaire. Dictates live weather, neighborhoods, and partner realtor.'}
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              className="glass-button active"
+              style={{
+                padding: '0.6rem 1.3rem',
+                fontSize: '0.88rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                background: 'var(--accent-emerald)'
+              }}
+            >
+              <Save size={15} />
+              <span>{language === 'ru' ? 'Сохранить город и районы' : 'Save City & Districts'}</span>
+            </button>
+          </div>
+
+          {/* Client Questionnaire Signals Sheet */}
+          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-main)' }}>
+                  {language === 'ru' ? '📋 ДАННЫЕ ИЗ АНКЕТЫ КЛИЕНТА ДЛЯ ВЫБОРА ГОРОДА И ЖИЛЬЯ:' : '📋 CLIENT QUESTIONNAIRE SIGNALS:'}
+                </span>
+                <span style={{ fontSize: '0.75rem', background: 'rgba(15, 118, 110, 0.1)', color: 'var(--accent-emerald)', padding: '2px 8px', borderRadius: '9999px', fontWeight: 700 }}>
+                  {selectedClient.clientName}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem', fontSize: '0.85rem' }}>
+              {/* 1. Локация & Состав */}
+              <div style={{ background: '#FFFFFF', padding: '0.75rem 0.9rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '3px' }}>
+                  {language === 'ru' ? 'Страна, состав и даты:' : 'Origin, party & dates:'}
+                </div>
+                <div style={{ color: 'var(--text-main)', fontWeight: 700 }}>
+                  {selectedClient.questionnaire.country || 'РФ / СНГ'} • {selectedClient.questionnaire.travelersCount || 1} чел.
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '2px' }}>
+                  {selectedClient.questionnaire.travelDates || 'Даты уточняются'} {selectedClient.questionnaire.duration ? `(${selectedClient.questionnaire.duration})` : ''}
+                </div>
+              </div>
+
+              {/* 2. Бюджет */}
+              <div style={{ background: '#FFFFFF', padding: '0.75rem 0.9rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '3px' }}>
+                  {language === 'ru' ? 'Бюджет в месяц:' : 'Monthly budget:'}
+                </div>
+                <div style={{ color: 'var(--accent-emerald)', fontWeight: 800, fontSize: '1.05rem' }}>
+                  ${selectedClient.questionnaire.monthlyBudgetUSD || (selectedClient.userCurrentBudget ? Object.values(selectedClient.userCurrentBudget).reduce((a, b) => a + b, 0) : 1500)} / мес
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '2px' }}>
+                  {language === 'ru' ? 'Заявленный бюджет на жизнь и жилье' : 'Total monthly living budget'}
+                </div>
+              </div>
+
+              {/* 3. Города в анкете */}
+              <div style={{ background: '#FFFFFF', padding: '0.75rem 0.9rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '3px' }}>
+                  {language === 'ru' ? 'Города в анкете:' : 'Preferred cities:'}
+                </div>
+                <div style={{ color: 'var(--text-main)', fontWeight: 700 }}>
+                  {selectedClient.questionnaire.preferredCities && selectedClient.questionnaire.preferredCities.length > 0
+                    ? selectedClient.questionnaire.preferredCities.map(c => {
+                        const cityObj = CITIES_DATA.find(cd => cd.id === c);
+                        return cityObj ? cityObj.name[language] : (c === 'danang' ? 'Дананг' : c === 'nhatrang' ? 'Нячанг' : c === 'hoian' ? 'Хойан' : c === 'saigon' ? 'Хошимин' : c === 'hanoi' ? 'Ханой' : c);
+                      }).join(', ')
+                    : (language === 'ru' ? 'На усмотрение Founder' : 'Founder discretion')}
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '2px' }}>
+                  {selectedClient.questionnaire.environmentPreference === 'beach' ? 'Побережье и пляж' :
+                   selectedClient.questionnaire.environmentPreference === 'city' ? 'Большой мегаполис' :
+                   selectedClient.questionnaire.environmentPreference === 'quiet' ? 'Тишина и природа' :
+                   selectedClient.questionnaire.environmentPreference === 'social' ? 'Активное сообщество' :
+                   'Сбалансированная среда'}
+                </div>
+              </div>
+
+              {/* 4. Работа & Формат */}
+              <div style={{ background: '#FFFFFF', padding: '0.75rem 0.9rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '3px' }}>
+                  {language === 'ru' ? 'Профессия и удаленка:' : 'Work & Profession:'}
+                </div>
+                <div style={{ color: 'var(--text-main)', fontWeight: 700 }}>
+                  {selectedClient.questionnaire.workSituation || (language === 'ru' ? 'Удаленная работа' : 'Remote')}
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '2px' }}>
+                  {selectedClient.questionnaire.remoteWorkNeeds || 'Wi-Fi 100+ Мбит/с'}
+                </div>
+              </div>
+            </div>
+
+            {/* Вторая строка: Пожелания к жилью, Приоритеты и Опасения */}
+            <div style={{ marginTop: '0.85rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem', fontSize: '0.83rem' }}>
+              {/* Пожелания к жилью */}
+              <div style={{ background: '#FEF3C7', padding: '0.75rem 0.95rem', borderRadius: '8px', border: '1px solid #FCD34D' }}>
+                <div style={{ color: '#92400E', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '3px' }}>
+                  🏠 {language === 'ru' ? 'Пожелания к жилью (из анкеты):' : 'Housing preferences:'}
+                </div>
+                <div style={{ color: '#78350F', fontWeight: 600, lineHeight: 1.45 }}>
+                  {selectedClient.questionnaire.accommodationType || (language === 'ru' ? 'Современное жилье с быстрым интернетом' : 'Modern accommodation')}
+                </div>
+              </div>
+
+              {/* Приоритеты */}
+              <div style={{ background: '#EFF6FF', padding: '0.75rem 0.95rem', borderRadius: '8px', border: '1px solid #BFDBFE' }}>
+                <div style={{ color: '#1E40AF', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '3px' }}>
+                  🎯 {language === 'ru' ? 'Главные приоритеты:' : 'Main priorities:'}
+                </div>
+                <div style={{ color: '#1E3A8A', fontWeight: 600, lineHeight: 1.45 }}>
+                  {selectedClient.questionnaire.priorities || (language === 'ru' ? 'Безопасность, море, стабильный интернет' : 'Safety, sea, stable internet')}
+                </div>
+              </div>
+
+              {/* Опасения и стоп-факторы */}
+              <div style={{ background: '#FFF1F2', padding: '0.75rem 0.95rem', borderRadius: '8px', border: '1px solid #FECDD3' }}>
+                <div style={{ color: '#9F1239', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '3px' }}>
+                  ⚠️ {language === 'ru' ? 'Опасения и стоп-факторы:' : 'Concerns & red flags:'}
+                </div>
+                <div style={{ color: '#881337', fontWeight: 600, lineHeight: 1.45 }}>
+                  {selectedClient.questionnaire.concerns || (language === 'ru' ? 'Шум строек, перебои с интернетом, невозврат депозита' : 'Noise, internet dropouts')}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Visual City Selector Grid */}
+          <div>
+            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-main)' }}>
+              {language === 'ru' ? 'Выберите рекомендованный город для этого клиента:' : 'Select Recommended City for this Client:'}
+            </label>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
+              {CITIES_DATA.map((city) => {
+                const isSelected = normalizeCityId(selectedCityId) === city.id;
+                return (
+                  <div
+                    key={city.id}
+                    onClick={() => handleSelectCityCard(city.id)}
+                    className="glass-card"
+                    style={{
+                      padding: '1.25rem',
+                      cursor: 'pointer',
+                      border: isSelected ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                      background: isSelected ? 'linear-gradient(180deg, #FFFFFF 0%, rgba(240, 253, 244, 0.7) 100%)' : '#FFFFFF',
+                      boxShadow: isSelected ? '0 6px 20px rgba(15, 118, 110, 0.15)' : 'none',
+                      transition: 'all 0.2s ease',
+                      position: 'relative',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    {isSelected && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '12px',
+                        right: '12px',
+                        background: 'var(--accent-emerald)',
+                        color: '#FFFFFF',
+                        borderRadius: '9999px',
+                        padding: '2px 8px',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '3px'
+                      }}>
+                        <Check size={12} /> {language === 'ru' ? 'Выбран' : 'Selected'}
+                      </div>
+                    )}
+
+                    <div>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                        {city.name[language]} ({city.name.en})
+                      </div>
+                      <p style={{ margin: '0 0 0.65rem 0', fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                        {city.tagline[language]}
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.76rem', borderTop: '1px solid #F1F5F9', paddingTop: '0.65rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{language === 'ru' ? 'Бюджет:' : 'Budget:'}</span>
+                        <input
+                          type="text"
+                          value={cityBudgets[city.id] ?? (city.budgetRange[language] || city.budgetRange.ru)}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setCityBudgets(prev => ({ ...prev, [city.id]: val }));
+                          }}
+                          placeholder="$1,000 – $1,800 / мес"
+                          title={language === 'ru' ? 'Кликните для редактирования бюджета этого города' : 'Click to edit budget'}
+                          style={{
+                            flex: 1,
+                            maxWidth: '175px',
+                            padding: '3px 8px',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            color: 'var(--accent-terracotta)',
+                            background: '#F8FAFC',
+                            border: '1px solid #CBD5E1',
+                            borderRadius: '6px',
+                            textAlign: 'right'
+                          }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Пляж:' : 'Beach:'}</span>
+                        <span style={{ color: city.beachAccess ? 'var(--accent-emerald)' : 'var(--text-muted)', fontWeight: 600 }}>
+                          {city.beachAccess ? city.beachAccess[language] : (language === 'ru' ? 'Нет прямого пляжа' : 'No direct beach')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Neighborhoods of Selected City */}
+          <div>
+            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
+              {language === 'ru' ? 'Рекомендованные районы в этом городе:' : 'Recommended Districts in Selected City:'}
+            </label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+              {NEIGHBORHOODS_DATA.filter(n => normalizeCityId(n.cityId) === normalizeCityId(selectedCityId)).map((neigh) => {
+                const isChecked = selectedNeighborhoods.includes(neigh.id);
+                return (
+                  <button
+                    key={neigh.id}
+                    type="button"
+                    onClick={() => {
+                      if (isChecked) {
+                        setSelectedNeighborhoods(prev => prev.filter(id => id !== neigh.id));
+                      } else {
+                        setSelectedNeighborhoods(prev => [...prev, neigh.id]);
+                      }
+                    }}
+                    className="glass-button"
+                    style={{
+                      padding: '0.45rem 0.95rem',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      borderRadius: 'var(--dash-radius-pill)',
+                      background: isChecked ? 'var(--accent-emerald)' : '#FFFFFF',
+                      color: isChecked ? '#FFFFFF' : 'var(--text-main)',
+                      borderColor: isChecked ? 'var(--accent-emerald)' : 'var(--border-subtle)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }}
+                  >
+                    {isChecked ? <Check size={13} /> : <Plus size={13} />}
+                    <span>{neigh.name}</span>
+                  </button>
+                );
+              })}
+              {NEIGHBORHOODS_DATA.filter(n => normalizeCityId(n.cityId) === normalizeCityId(selectedCityId)).length === 0 && (
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                  {language === 'ru' ? 'Для этого города доступны все центральные районы.' : 'All central districts available.'}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Rationale / Founder's Why Textarea */}
+          <div className="glass-card" style={{ padding: '1.5rem', background: '#FFFFFF' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  {language === 'ru' ? 'Персональное обоснование выбора для клиента:' : 'Personalized Rationale for Client:'}
+                </label>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  {language === 'ru'
+                    ? 'Этот текст отображается в кабинете клиента во вкладке «Рекомендованный город» с вашей аватаркой и подписью.'
+                    : 'Shown to client in "Recommended City" view with your signature.'}
+                </div>
+              </div>
+
+              {/* Quick Template Buttons */}
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                {Object.entries(CITY_WHY_TEMPLATES).map(([cid, tpl]) => {
+                  const isCurrent = normalizeCityId(selectedCityId) === cid;
+                  return (
+                    <button
+                      key={cid}
+                      type="button"
+                      onClick={() => {
+                        setCityWhyRu(tpl.ru);
+                        setCityWhyEn(tpl.en);
+                      }}
+                      className="dash-action-pill"
+                      style={{
+                        fontSize: '0.74rem',
+                        fontWeight: isCurrent ? 700 : 500,
+                        border: isCurrent ? '1.5px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
+                        background: isCurrent ? 'rgba(15, 118, 110, 0.08)' : '#FFFFFF',
+                        color: isCurrent ? 'var(--accent-emerald)' : 'var(--text-main)'
+                      }}
+                    >
+                      ⚡ {language === 'ru' ? tpl.labelRu : tpl.labelEn}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <textarea
+              rows={4}
+              value={cityWhyRu}
+              onChange={(e) => setCityWhyRu(e.target.value)}
+              placeholder="Напишите, почему именно этот город идеально подходит клиенту..."
+              style={{
+                width: '100%',
+                padding: '0.85rem 1rem',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-subtle)',
+                fontSize: '0.9rem',
+                lineHeight: 1.5,
+                fontFamily: 'inherit',
+                boxSizing: 'border-box'
+              }}
+            />
+
+            <div style={{ marginTop: '0.75rem' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                {language === 'ru' ? 'Версия на английском (English version):' : 'English translation:'}
+              </label>
+              <textarea
+                rows={2}
+                value={cityWhyEn}
+                onChange={(e) => setCityWhyEn(e.target.value)}
+                placeholder="English rationale for international clients..."
+                style={{
+                  width: '100%',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-subtle)',
+                  fontSize: '0.84rem',
+                  lineHeight: 1.4,
+                  fontFamily: 'inherit',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Auto Assign Realtor Checkbox */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <input
+              type="checkbox"
+              id="autoAssignRealtor"
+              checked={autoAssignRealtor}
+              onChange={(e) => setAutoAssignRealtor(e.target.checked)}
+              style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+            />
+            <label htmlFor="autoAssignRealtor" style={{ fontSize: '0.85rem', color: 'var(--text-main)', cursor: 'pointer' }}>
+              {language === 'ru'
+                ? `Автоматически закрепить риелтора по этому городу (${selectedCityId === 'nhatrang' ? 'Trần Minh — Нячанг' : 'Linh Nguyen — Дананг / Хойан'})`
+                : `Auto-assign matching local partner realtor (${selectedCityId === 'nhatrang' ? 'Trần Minh — Nha Trang' : 'Linh Nguyen — Da Nang / Hoi An'})`}
+            </label>
+          </div>
+
+          {/* Bottom Save Button */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.8rem' }}>
+            <button
+              type="submit"
+              className="glass-button active"
+              style={{
+                padding: '0.75rem 1.6rem',
+                fontSize: '0.92rem',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                background: 'var(--accent-emerald)'
+              }}
+            >
+              <Save size={16} />
+              <span>{language === 'ru' ? 'Сохранить выбор города и обоснование' : 'Save City & Rationale'}</span>
+            </button>
+          </div>
+
+        </form>
+      )}
+
 
       {/* ========================================================================= */}
       {/* TAB 1: RELOCATION MASTER ROADMAP (МАРШРУТ ПЕРЕЕЗДА) */}
@@ -512,8 +1085,8 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
             <button
               type="button"
               onClick={() => setIsAddTaskModalOpen(true)}
-              className="btn btn-primary"
-              style={{ padding: '0.55rem 1.1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              className="glass-button active"
+              style={{ padding: '0.55rem 1.1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'var(--accent-emerald)' }}
             >
               <Plus size={15} />
               <span>{language === 'ru' ? 'Добавить шаг в маршрут' : 'Add Milestone'}</span>
@@ -580,9 +1153,52 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
                             fontSize: '0.8rem',
                             color: '#92400E'
                           }}>
-                            <strong>{language === 'ru' ? '💡 Совет основателя:' : '💡 Founder Tip:'}</strong> {task.founderComment[language] || task.founderComment.ru}
+                            <strong>{language === 'ru' ? '💡 Совет Founder:' : '💡 Founder Tip:'}</strong> {task.founderComment[language] || task.founderComment.ru}
                           </div>
                         )}
+
+                        {/* External Guide / Action Link (e.g. Visa Guide & Checklist) */}
+                        {(() => {
+                          const isVisaTask = task.id === 'reloc-task-1' || 
+                            task.id === 't-mikhail-1' || 
+                            task.title.ru?.toLowerCase().includes('виз') || 
+                            task.title.en?.toLowerCase().includes('visa');
+                          const link = task.linkUrl || (isVisaTask ? 'https://incomparable-tulumba-32318f.netlify.app' : undefined);
+                          const label = task.linkLabel?.[language] || task.linkLabel?.ru || (isVisaTask
+                            ? (language === 'ru' ? 'Гид-чеклист по визе (открыть сайт)' : 'e-Visa Guide & Checklist')
+                            : undefined);
+                          if (!link) return null;
+                          return (
+                            <div style={{ marginTop: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                              <a
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.45rem',
+                                  padding: '0.45rem 0.9rem',
+                                  fontSize: '0.82rem',
+                                  fontWeight: 600,
+                                  color: '#0F766E',
+                                  background: '#F0FDF4',
+                                  border: '1px solid #86EFAC',
+                                  borderRadius: '6px',
+                                  textDecoration: 'none',
+                                  boxShadow: '0 1px 3px rgba(15, 118, 110, 0.1)',
+                                  transition: 'all 0.15s ease'
+                                }}
+                              >
+                                <ExternalLink size={13} />
+                                <span>{label}</span>
+                              </a>
+                              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                                {language === 'ru' ? '✓ Ссылка доступна и вам, и клиенту в его личном кабинете' : '✓ Visible to founder & client in dashboard'}
+                              </span>
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       <button
@@ -600,6 +1216,38 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB: TRAVEL ITINERARY FOR RELOCATION (МАРШРУТ ПЕРЕЕЗДА НА 14 ДНЕЙ) */}
+      {/* ========================================================================= */}
+      {activeTab === 'travel_itinerary' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '12px' }}>
+            <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.15rem', fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Route size={18} color="var(--accent-emerald)" />
+              <span>{language === 'ru' ? 'Персональный ознакомительный маршрут переезда (14 дней)' : '14-Day Relocation Immersion & Settling-in Route'}</span>
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              {language === 'ru'
+                ? 'Этот 14-дневный маршрут помогает клиенту комфортно адаптироваться в первые две недели. Вы можете редактировать любые дни, менять таймслоты, ссылки на Google Карты или добавлять новые.'
+                : 'This 14-day itinerary guides the client through their first two weeks. You can edit any day, adjust slots, Google Maps links, or add new ones.'}
+            </p>
+          </div>
+          <AdminTravelItineraryBuilder
+            selectedClient={{
+              ...selectedClient,
+              hasTravelPlan: true,
+              travelDays: (selectedClient.travelDays && selectedClient.travelDays.length > 0)
+                ? selectedClient.travelDays
+                : DEFAULT_RELOCATION_14_DAYS
+            }}
+            onPublishSuccess={() => {
+              publishClientUpdates(selectedClient.id);
+              if (onPublishSuccess) onPublishSuccess();
+            }}
+          />
         </div>
       )}
 
@@ -657,9 +1305,21 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
                   type="text"
                   value={editRealtorWa}
                   onChange={(e) => setEditRealtorWa(e.target.value)}
+                  placeholder="+84..."
                   style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
                 />
               </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Ссылка на Instagram:</label>
+              <input
+                type="text"
+                value={editRealtorInstagram}
+                onChange={(e) => setEditRealtorInstagram(e.target.value)}
+                placeholder="https://www.instagram.com/chaulovely101?..."
+                style={{ width: '100%', padding: '0.55rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
+              />
             </div>
 
             <div>
@@ -688,7 +1348,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Инструкция и заметка основателя для клиента:</label>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Инструкция и заметка Founder для клиента:</label>
               <textarea
                 rows={3}
                 value={editRealtorNoteRu}
@@ -697,7 +1357,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
               />
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+            <button type="submit" className="glass-button active" style={{ marginTop: '0.5rem', padding: '0.65rem 1.4rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'var(--accent-terracotta)' }}>
               <Save size={16} />
               <span>{language === 'ru' ? 'Сохранить карточку риелтора' : 'Save Realtor Card'}</span>
             </button>
@@ -736,23 +1396,36 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
               </div>
 
               <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-                <a
-                  href={`https://t.me/${editRealtorTg.replace('@', '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary"
-                  style={{ padding: '0.55rem 1rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-                >
-                  <MessageCircle size={15} />
-                  <span>Написать в Telegram (@{editRealtorTg.replace('@', '')})</span>
-                </a>
+                {editRealtorInstagram && (
+                  <a
+                    href={editRealtorInstagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="glass-button active"
+                    style={{ padding: '0.55rem 1rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'linear-gradient(45deg, #f09433, #dc2743, #bc1888)', color: '#FFFFFF' }}
+                  >
+                    <span>Instagram (@chaulovely101)</span>
+                  </a>
+                )}
+                {editRealtorTg && (
+                  <a
+                    href={`https://t.me/${editRealtorTg.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="glass-button active"
+                    style={{ padding: '0.55rem 1rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#0284C7' }}
+                  >
+                    <MessageCircle size={15} />
+                    <span>Telegram (@{editRealtorTg.replace('@', '')})</span>
+                  </a>
+                )}
                 {editRealtorWa && (
                   <a
                     href={`https://wa.me/${editRealtorWa.replace(/[^0-9]/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-secondary"
-                    style={{ padding: '0.55rem 1rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                    className="glass-button"
+                    style={{ padding: '0.55rem 1rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}
                   >
                     <Phone size={15} />
                     <span>WhatsApp</span>
@@ -772,8 +1445,8 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
                 <button
                   type="button"
                   onClick={handleCopyRealtorBrief}
-                  className="btn btn-secondary"
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                  className="glass-button"
+                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-main)' }}
                 >
                   {copiedBrief ? <Check size={14} color="#0F766E" /> : <Copy size={14} />}
                   <span>{copiedBrief ? (language === 'ru' ? 'Скопировано!' : 'Copied!') : (language === 'ru' ? 'Скопировать' : 'Copy')}</span>
@@ -788,7 +1461,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
 
               <div style={{ background: '#FAF9F6', border: '1px solid var(--border-subtle)', borderRadius: '4px', padding: '0.75rem', fontSize: '0.78rem', fontFamily: 'monospace', lineHeight: 1.5, maxHeight: '160px', overflowY: 'auto' }}>
                 Клиент: {selectedClient.clientName}<br/>
-                Город: {selectedClient.recommendedCityId === 'danang' ? 'Дананг' : 'Нячанг'}<br/>
+                Город: {CITIES_DATA.find(c => c.id === normalizeCityId(selectedClient.recommendedCityId))?.name[language] || selectedClient.recommendedCityId}<br/>
                 Бюджет на жилье: ${selectedClient.userCurrentBudget.accommodation}/мес<br/>
                 Даты: {selectedClient.questionnaire.travelDates || 'в ближайшее время'}<br/>
                 Формат: {selectedClient.questionnaire.accommodationType || '1BR/2BR у моря'}<br/>
@@ -823,7 +1496,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
                 style={{ padding: '0.5rem 0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', fontWeight: 700, fontSize: '0.85rem' }}
               >
                 <option value="waiting_for_client_draft">Ожидание драфта от клиента/риелтора</option>
-                <option value="under_review">Основатель проводит экспертизу</option>
+                <option value="under_review">Founder проводит экспертизу</option>
                 <option value="approved_with_notes">Одобрено с точечными комментариями</option>
                 <option value="revisions_required">Требуются обязательные правки</option>
                 <option value="high_risk">Высокий риск потери залога / завышения</option>
@@ -919,7 +1592,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
           {/* Overall Verdict */}
           <div>
             <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-main)' }}>
-              Официальное заключение основателя (вердикт для клиента):
+              Официальное заключение Founder (вердикт для клиента):
             </label>
             <textarea
               rows={3}
@@ -930,7 +1603,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 1.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button type="submit" className="glass-button active" style={{ padding: '0.65rem 1.6rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--accent-emerald)' }}>
               <Save size={16} />
               <span>{language === 'ru' ? 'Сохранить аудит договора' : 'Save Lease Audit'}</span>
             </button>
@@ -951,7 +1624,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
                 {language === 'ru' ? 'Управление VIP-услугами ($890)' : 'VIP Concierge & Wellness Management'}
               </h3>
               <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                {language === 'ru' ? 'Сессия с психологом-сексологом (Мария Егорова) и 30 дней сопровождения с основателем в Telegram (@Likqwerty)' : 'Psychologist session (Maria Egorova) and 30-day founder Telegram accompaniment (@Likqwerty)'}
+                {language === 'ru' ? 'Сессия с психологом-сексологом (Мария Егорова) и 30 дней сопровождения с Founder в Telegram (@Likqwerty)' : 'Psychologist session (Maria Egorova) and 30-day founder Telegram accompaniment (@Likqwerty)'}
               </div>
             </div>
           </div>
@@ -961,7 +1634,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <img
-                  src={vipPerks.psychologistSession.specialistPhotoUrl}
+                  src={vipPerks.psychologistSession.specialistPhotoUrl || '/psychologist-photo.png'}
                   alt={vipPerks.psychologistSession.specialistName}
                   style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #D97706' }}
                 />
@@ -1026,7 +1699,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
               <Send size={18} color="var(--accent-emerald)" />
               <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>
-                {language === 'ru' ? 'Персональное сопровождение с основателем (30 дней)' : 'Founder 30-Day Telegram Accompaniment'}
+                {language === 'ru' ? 'Персональное сопровождение с Founder (30 дней)' : 'Founder 30-Day Telegram Accompaniment'}
               </h4>
             </div>
 
@@ -1045,7 +1718,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Telegram основателя:</label>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Telegram Founder:</label>
                 <input
                   type="text"
                   value={editTgAccUsername}
@@ -1082,7 +1755,7 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 1.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button type="submit" className="glass-button active" style={{ padding: '0.65rem 1.6rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--accent-emerald)' }}>
               <Save size={16} />
               <span>{language === 'ru' ? 'Сохранить VIP-параметры' : 'Save VIP Settings'}</span>
             </button>
@@ -1104,51 +1777,63 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000,
-          padding: '1rem'
+          padding: '1.5rem'
         }}>
-          <form onSubmit={handleAddTask} className="glass-card" style={{ maxWidth: '520px', width: '100%', padding: '1.75rem', background: '#FFFFFF', borderRadius: 'var(--radius-md)' }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontFamily: 'var(--font-serif)', fontSize: '1.25rem' }}>
-              {language === 'ru' ? 'Добавить шаг в маршрут переезда' : 'Add Milestone'}
+          <form
+            onSubmit={handleAddTask}
+            className="glass-card"
+            style={{
+              background: '#FFFFFF',
+              maxWidth: '560px',
+              width: '100%',
+              padding: '2rem',
+              borderRadius: 'var(--radius-md)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+            }}
+          >
+            <h3 style={{ margin: '0 0 1.25rem 0', fontSize: '1.25rem', fontFamily: 'var(--font-serif)' }}>
+              {language === 'ru' ? 'Добавить шаг в маршрут релокации' : 'Add Roadmap Milestone'}
             </h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.3rem' }}>Фаза маршрута:</label>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Фаза переезда:</label>
                 <select
                   value={newTaskPhase}
                   onChange={(e) => setNewTaskPhase(e.target.value as any)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', background: '#FFFFFF' }}
                 >
-                  <option value="before_arrival">Фаза 1: До прилёта (визы, билеты, отель)</option>
-                  <option value="week_of_arrival">Фаза 2: Первые 7 дней (связь, показы, договор)</option>
-                  <option value="first_month">Фаза 3: Обустройство (tạm trú, байк, банки)</option>
+                  <option value="before_arrival">Фаза 1: До прилёта (визы, КПП, билеты)</option>
+                  <option value="week_of_arrival">Фаза 2: Первые 7 дней (жилье, показы, договор)</option>
+                  <option value="first_month">Фаза 3: Первый месяц (регистрация tạm trú, байк, быт)</option>
                 </select>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.3rem' }}>Название шага:</label>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Название шага (RU):</label>
                 <input
                   type="text"
                   required
                   value={newTaskTitleRu}
                   onChange={(e) => setNewTaskTitleRu(e.target.value)}
-                  placeholder="Например: Проверка договора и получение ключей"
+                  placeholder="Например: Проверить показания счетчика электроэнергии"
                   style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.3rem' }}>Описание (инструкция для клиента):</label>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Описание (инструкция для клиента):</label>
                 <textarea
                   rows={2}
                   value={newTaskDescRu}
                   onChange={(e) => setNewTaskDescRu(e.target.value)}
+                  placeholder="Сфотографируйте счетчик вместе с собственником при передаче ключей..."
                   style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontFamily: 'inherit' }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.3rem' }}>💡 Совет основателя (лайфхак):</label>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Совет Founder (опционально):</label>
                 <input
                   type="text"
                   value={newTaskCommentRu}
@@ -1158,19 +1843,41 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
                 />
               </div>
 
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Ссылка на сайт / чек-лист (опционально):</label>
+                <input
+                  type="url"
+                  value={newTaskLinkUrl}
+                  onChange={(e) => setNewTaskLinkUrl(e.target.value)}
+                  placeholder="https://incomparable-tulumba-32318f.netlify.app"
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.3rem' }}>Текст ссылки (опционально):</label>
+                <input
+                  type="text"
+                  value={newTaskLinkLabelRu}
+                  onChange={(e) => setNewTaskLinkLabelRu(e.target.value)}
+                  placeholder="Открыть гид-чеклист по визе"
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}
+                />
+              </div>
+
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginTop: '0.5rem' }}>
                 <button
                   type="button"
                   onClick={() => setIsAddTaskModalOpen(false)}
-                  className="btn btn-secondary"
-                  style={{ padding: '0.55rem 1rem' }}
+                  className="glass-button"
+                  style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: 'var(--text-main)' }}
                 >
                   Отмена
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary"
-                  style={{ padding: '0.55rem 1.25rem' }}
+                  className="glass-button active"
+                  style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: 'var(--accent-emerald)' }}
                 >
                   Добавить шаг
                 </button>
@@ -1179,6 +1886,14 @@ export const AdminRelocationManager: React.FC<AdminRelocationManagerProps> = ({
           </form>
         </div>
       )}
+
+      {/* Client Dashboard Live Preview Modal */}
+      <ClientDashboardPreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        client={selectedClient}
+        onPublishSuccess={onPublishSuccess}
+      />
 
     </div>
   );

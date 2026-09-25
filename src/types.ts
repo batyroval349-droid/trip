@@ -54,7 +54,7 @@ export interface ClientAccount {
   name: string;
   password?: string;
   messenger?: string;
-  tier: 'consultation_50' | 'travel_290' | 'relocation_490' | 'concierge_890';
+  tier: 'consultation_25' | 'consultation_50' | 'travel_290' | 'relocation_490' | 'concierge_890';
   booking?: ExpressConsultationBooking;
   registeredAt: string;
 }
@@ -63,6 +63,8 @@ export interface ClientQuestionnaire {
   name: string;
   email: string;
   password?: string;
+  messenger?: string;
+  phone?: string;
   country: string;
   travelDates: string;
   duration: string;
@@ -126,6 +128,8 @@ export interface RoadmapTask {
   description?: { en: string; ru: string };
   completed: boolean;
   founderComment?: { en: string; ru: string };
+  linkUrl?: string;
+  linkLabel?: { en: string; ru: string };
 }
 
 export interface ResourceItem {
@@ -261,6 +265,7 @@ export interface PartnerRealtorAssignment {
   phoneOrZalo: string;
   telegramUsername: string;
   whatsappNumber: string;
+  instagramUrl?: string;
   citiesCovered: string[];
   languages: string[];
   specialization: string;
@@ -389,6 +394,8 @@ export interface ClientProject {
   leaseContractAudit?: LeaseContractAudit;
   vipConciergePerks?: VipConciergePerks;
   founderTelegramAccompaniment?: FounderTelegramAccompaniment;
+  customCityBudgets?: Record<string, string>;
+  recommendedCityBudgetRange?: string;
 }
 
 export interface AdminClientRecord {
@@ -404,6 +411,9 @@ export interface AdminClientRecord {
   questionnaire: ClientQuestionnaire;
   recommendedCityId: string;
   recommendedCityWhy: { en: string; ru: string };
+  recommendedNeighborhoodIds?: string[];
+  customCityBudgets?: Record<string, string>;
+  recommendedCityBudgetRange?: string;
   overallFounderNote: { en: string; ru: string };
   userCurrentBudget: BudgetBreakdown;
   verifiedHousing: VerifiedHousingItem[];

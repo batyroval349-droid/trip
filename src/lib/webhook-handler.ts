@@ -86,7 +86,7 @@ export async function sendTelegramFounderAlert(params: {
 👤 <b>Клиент:</b> ${params.clientName} (${params.clientEmail})
 ⏱ <b>SLA первого аудита:</b> 48 часов (до ${params.slaDeadline})
 ━━━━━━━━━━━━━━━━━━
-🔗 <i>Откройте панель основателя для проверки анкеты и назначения проверенного жилья.</i>
+🔗 <i>Откройте панель Founder для проверки анкеты и назначения проверенного жилья.</i>
   `.trim();
 
   try {

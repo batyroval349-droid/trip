@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { CITIES_DATA } from '../../translations/content';
+import { CITIES_DATA, normalizeCityId } from '../../translations/content';
 import { Sparkles, Check, Info, Clock } from 'lucide-react';
 
 export const DashboardCityView: React.FC = () => {
@@ -11,7 +11,7 @@ export const DashboardCityView: React.FC = () => {
     ? (project.isRelocationPlanPublished === true || (project.status === 'plan_ready' && !project.upgradedFromTier))
     : true;
 
-  const recommendedCity = CITIES_DATA.find((c) => c.id === project.recommendedCityId) || CITIES_DATA[0];
+  const recommendedCity = CITIES_DATA.find((c) => c.id === normalizeCityId(project.recommendedCityId)) || CITIES_DATA[0];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -46,7 +46,7 @@ export const DashboardCityView: React.FC = () => {
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', maxWidth: '620px', margin: '0 auto', lineHeight: 1.6 }}>
             {language === 'ru'
-              ? 'Основатель изучает вашу анкету, формат работы и приоритеты по инфраструктуре и климату. Скоро здесь появится ваш персональный рекомендованный город с подробным обоснованием. А пока вы можете изучить сравнительную матрицу городов Вьетнама ниже.'
+              ? 'Founder изучает вашу анкету, формат работы и приоритеты по инфраструктуре и климату. Скоро здесь появится ваш персональный рекомендованный город с подробным обоснованием. А пока вы можете изучить сравнительную матрицу городов Вьетнама ниже.'
               : 'The founder is analyzing your questionnaire and lifestyle preferences to recommend the best city. In the meantime, explore the comparative city matrix below.'}
           </p>
         </div>
@@ -86,7 +86,7 @@ export const DashboardCityView: React.FC = () => {
 
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.88rem' }}>
                 <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-subtle)', padding: '0.4rem 0.85rem', borderRadius: 'var(--radius-sm)' }}>
-                  <strong>{t('cityBudgetLabel')}:</strong> {recommendedCity.budgetRange[language]}
+                  <strong>{t('cityBudgetLabel')}:</strong> {project.recommendedCityBudgetRange || project.customCityBudgets?.[recommendedCity.id] || recommendedCity.budgetRange[language]}
                 </div>
                 <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-subtle)', padding: '0.4rem 0.85rem', borderRadius: 'var(--radius-sm)' }}>
                   <strong>{t('cityBeachLabel')}:</strong> {recommendedCity.beachAccess[language]}
@@ -142,7 +142,8 @@ export const DashboardCityView: React.FC = () => {
             </thead>
             <tbody>
               {CITIES_DATA.map((city) => {
-                const isSelected = city.id === project.recommendedCityId;
+                const isSelected = city.id === normalizeCityId(project.recommendedCityId);
+                const displayBudget = project.customCityBudgets?.[city.id] || (isSelected && project.recommendedCityBudgetRange ? project.recommendedCityBudgetRange : city.budgetRange[language]);
                 return (
                   <tr
                     key={city.id}
@@ -158,7 +159,7 @@ export const DashboardCityView: React.FC = () => {
                       </div>
                     </td>
                     <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{city.lifestyle[language]}</td>
-                    <td style={{ padding: '1rem', fontWeight: 600, color: 'var(--accent-terracotta)' }}>{city.budgetRange[language]}</td>
+                    <td style={{ padding: '1rem', fontWeight: 600, color: 'var(--accent-terracotta)' }}>{displayBudget}</td>
                     <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{city.remoteWorkSetup[language]}</td>
                     <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{city.beachAccess[language]}</td>
                     <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{city.socialLife[language]}</td>

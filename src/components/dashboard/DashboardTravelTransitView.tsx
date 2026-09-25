@@ -139,7 +139,7 @@ export const DashboardTravelTransitView: React.FC = () => {
               color: 'var(--text-main)',
               lineHeight: 1.5
             }}>
-              <strong>{language === 'ru' ? 'Рекомендация основателя:' : 'Founder\'s Advice:'}</strong> {leg.bookingTip}
+              <strong>{language === 'ru' ? 'Рекомендация Founder:' : 'Founder\'s Advice:'}</strong> {leg.bookingTip}
             </div>
           </div>
         ))}

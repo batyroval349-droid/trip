@@ -196,7 +196,7 @@ export const PublicOfferModal: React.FC = () => {
                       3.1. Тариф «Стратегическая консультация 60 минут» ($50 USD)
                     </div>
                     <p style={{ margin: '0.35rem 0 0.5rem 0', fontSize: '0.85rem' }}>
-                      Включает: 60-минутную персональную видеовстречу (Zoom / Google Meet) с основателем, анализ целесообразности поездки или переезда под задачи Заказчика, обзор подходящих городов и сезонов, а также письменное резюме рекомендаций после звонка.
+                      Включает: 60-минутную персональную видеовстречу (Zoom / Google Meet) с Founder, анализ целесообразности поездки или переезда под задачи Заказчика, обзор подходящих городов и сезонов, а также письменное резюме рекомендаций после звонка.
                     </p>
                     <div style={{ color: 'var(--accent-terracotta)', fontWeight: 600, fontSize: '0.82rem' }}>
                       &bull; Сдача-приемка: Услуга считается оказанной в полном объеме с момента фактического завершения видеовстречи. В случае неявки Заказчика без предупреждения минимум за 12 часов услуга считается оказанной. Перенос возможен при обращении не позднее чем за 12 часов.
@@ -499,7 +499,7 @@ export const PublicOfferModal: React.FC = () => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
             <Send size={14} style={{ color: 'var(--accent-emerald)' }} />
-            <span>{activeTab === 'ru' ? 'Связь с основателем по юридическим вопросам:' : 'Founder legal contact:'} <strong>@Likqwerty</strong></span>
+            <span>{activeTab === 'ru' ? 'Связь с Founder по юридическим вопросам:' : 'Founder legal contact:'} <strong>@Likqwerty</strong></span>
           </div>
 
           <button

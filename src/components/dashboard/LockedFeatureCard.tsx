@@ -84,7 +84,7 @@ export const LockedFeatureCard: React.FC<LockedFeatureCardProps> = ({
               <Check size={14} style={{ color: 'var(--accent-emerald)' }} /> {language === 'ru' ? 'Компактный конвертер валют' : 'Compact currency converter'}
             </li>
             <li style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-              <Check size={14} style={{ color: 'var(--accent-emerald)' }} /> {language === 'ru' ? 'Прямая связь в WhatsApp с основателем' : 'Direct WhatsApp founder support'}
+              <Check size={14} style={{ color: 'var(--accent-emerald)' }} /> {language === 'ru' ? 'Прямая связь в WhatsApp с Founder' : 'Direct WhatsApp founder support'}
             </li>
           </ul>
         </div>
@@ -118,7 +118,7 @@ export const LockedFeatureCard: React.FC<LockedFeatureCardProps> = ({
               <Sparkles size={14} style={{ color: 'var(--accent-emerald)' }} /> {language === 'ru' ? 'База проверенных ресурсов и гайд по жилью' : 'Verified Resources & Housing Guide'}
             </li>
             <li style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', fontWeight: 600 }}>
-              <Sparkles size={14} style={{ color: 'var(--accent-emerald)' }} /> {language === 'ru' ? 'Персональные заметки и сопровождение основателя' : 'Founder Notes & Continuous Advisory'}
+              <Sparkles size={14} style={{ color: 'var(--accent-emerald)' }} /> {language === 'ru' ? 'Персональные заметки и сопровождение Founder' : 'Founder Notes & Continuous Advisory'}
             </li>
           </ul>
         </div>

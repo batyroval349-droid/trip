@@ -69,16 +69,16 @@ export const Footer: React.FC = () => {
               {t('footerNavTitle')}
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.88rem' }}>
-              <li><button onClick={() => setViewMode('marketing')} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer' }}>{t('navHome')}</button></li>
-              <li><button onClick={() => setViewMode('questionnaire')} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer' }}>{t('navQuestionnaire')}</button></li>
+              <li><button onClick={() => setViewMode('marketing')} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{t('navHome')}</button></li>
+              <li><button onClick={() => setViewMode('questionnaire')} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{t('navQuestionnaire')}</button></li>
               {isClientUnlocked && (
-                <li><button onClick={() => setViewMode('dashboard')} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer' }}>{t('navDashboard')}</button></li>
+                <li><button onClick={() => setViewMode('dashboard')} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{t('navDashboard')}</button></li>
               )}
               <li><button onClick={() => setIsOfferModalOpen(true)} style={{ background: 'none', border: 'none', color: '#A3B8B5', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{language === 'ru' ? 'Публичная оферта' : 'Terms of Service'}</button></li>
               {isFounderLoggedIn ? (
-                <li><button onClick={() => setViewMode('admin')} style={{ background: 'none', border: 'none', color: 'var(--accent-emerald)', cursor: 'pointer' }}>{t('navAdmin')}</button></li>
+                <li><button onClick={() => setViewMode('admin')} style={{ background: 'none', border: 'none', color: 'var(--accent-emerald)', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{t('navAdmin')}</button></li>
               ) : (
-                <li><button onClick={() => setIsFounderModalOpen(true)} style={{ background: 'none', border: 'none', color: '#6A7D7B', cursor: 'pointer', fontSize: '0.82rem' }}>{t('founderFooterLink')}</button></li>
+                <li><button onClick={() => setIsFounderModalOpen(true)} style={{ background: 'none', border: 'none', color: '#6A7D7B', cursor: 'pointer', fontSize: '0.82rem', textAlign: 'left', padding: 0 }}>{t('founderFooterLink')}</button></li>
               )}
             </ul>
           </div>

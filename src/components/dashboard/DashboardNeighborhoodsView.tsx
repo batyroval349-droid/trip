@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { NEIGHBORHOODS_DATA } from '../../translations/content';
+import { NEIGHBORHOODS_DATA, normalizeCityId } from '../../translations/content';
 import { Sparkles, Sliders, CheckCircle2, MessageSquare } from 'lucide-react';
 
 export const DashboardNeighborhoodsView: React.FC = () => {
@@ -12,8 +12,12 @@ export const DashboardNeighborhoodsView: React.FC = () => {
   const [socialMin, setSocialMin] = useState<number>(1);
   const [remoteWorkMin, setRemoteWorkMin] = useState<number>(1);
 
+  const clientRecIds = (project.recommendedNeighborhoodIds && project.recommendedNeighborhoodIds.length > 0)
+    ? project.recommendedNeighborhoodIds
+    : NEIGHBORHOODS_DATA.filter((n) => normalizeCityId(n.cityId) === normalizeCityId(project.recommendedCityId)).slice(0, 2).map((n) => n.id);
+
   const recommendedNeighborhoods = NEIGHBORHOODS_DATA.filter((n) =>
-    project.recommendedNeighborhoodIds.includes(n.id)
+    clientRecIds.includes(n.id)
   );
 
   const filteredNeighborhoods = NEIGHBORHOODS_DATA.filter(

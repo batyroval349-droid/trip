@@ -22,6 +22,11 @@ export const DEFAULT_RELOCATION_ROADMAP_TASKS: RoadmapTask[] = [
     founderComment: {
       ru: 'Не пользуйтесь сайтами-посредниками с комиссией $50+. Госпошлина составляет строго $25 за однократную или $50 за мульти-визу.',
       en: 'Avoid agency markups. Official state fee is strictly $25 for single entry or $50 for multiple entry.'
+    },
+    linkUrl: 'https://incomparable-tulumba-32318f.netlify.app',
+    linkLabel: {
+      ru: 'Интерактивный гид-чеклист по визе (проверить анкету и КПП)',
+      en: 'Interactive Vietnam e-Visa Guide & Checklist'
     }
   },
   {
@@ -115,11 +120,11 @@ export const DEFAULT_RELOCATION_ROADMAP_TASKS: RoadmapTask[] = [
     id: 'reloc-task-7',
     phase: 'week_of_arrival',
     title: {
-      ru: 'Дистанционный аудит договора аренды основателем',
+      ru: 'Дистанционный аудит договора аренды Founder',
       en: 'Lease agreement legal audit by founder'
     },
     description: {
-      ru: 'Отправка проекта договора основателю в личный кабинет перед подписанием и передачей залога.',
+      ru: 'Отправка проекта договора Founder в личный кабинет перед подписанием и передачей залога.',
       en: 'Upload draft contract to founder workspace for EVN tariff, deposit return, and police registration review.'
     },
     completed: false,
@@ -203,11 +208,11 @@ export const DEFAULT_RELOCATION_ROADMAP_TASKS: RoadmapTask[] = [
     id: 'reloc-task-13',
     phase: 'first_month',
     title: {
-      ru: 'Персональное сопровождение на 30 дней с основателем в Telegram',
+      ru: 'Персональное сопровождение на 30 дней с Founder в Telegram',
       en: '30-Day Personal Accompaniment with Founder in Telegram'
     },
     description: {
-      ru: 'Прямой контакт 1-на-1 с основателем (@Likqwerty) в Telegram для оперативного решения бытовых, визовых и локальных вопросов в первый месяц.',
+      ru: 'Прямой контакт 1-на-1 с Founder (@Likqwerty) в Telegram для оперативного решения бытовых, визовых и локальных вопросов в первый месяц.',
       en: 'Direct 1-on-1 contact with the founder (@Likqwerty) in Telegram for lifestyle, visa, and local guidance in month 1.'
     },
     completed: true,
@@ -219,22 +224,23 @@ export const DEFAULT_RELOCATION_ROADMAP_TASKS: RoadmapTask[] = [
 ];
 
 export const DEFAULT_PARTNER_REALTOR_DANANG: PartnerRealtorAssignment = {
-  id: 'realtor-danang-linh',
-  realtorName: 'Linh Nguyen',
-  agencyOrTitle: 'Danang Sea Realty • Проверенный партнер VietReloc',
-  photoUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80',
-  phoneOrZalo: '+84 905 123 456',
-  telegramUsername: 'linh_danang_realty',
-  whatsappNumber: '+84 905 123 456',
+  id: 'realtor-danang-emily',
+  realtorName: 'Эмили (Emily)',
+  agencyOrTitle: 'Danang & Coastal Realty • Проверенный партнер VietReloc',
+  photoUrl: '/realtor-emily.jpg',
+  phoneOrZalo: '',
+  telegramUsername: '',
+  whatsappNumber: '',
+  instagramUrl: 'https://www.instagram.com/chaulovely101?stkn=MXA1aGUwbWxvcmZsZQ==',
   citiesCovered: ['Дананг', 'Хойан'],
   languages: ['RU', 'EN', 'VI'],
   specialization: 'Современные кондоминиумы и апартаменты у моря (Сон Тра, Ми Ан, Ан Тхыонг). Бюджет $350 – $1400/мес.',
-  status: 'chat_created',
+  status: 'assigned',
   founderNoteToClient: {
-    ru: 'Линь — наш ключевой партнер в Дананге. Отлично говорит по-русски, лично отсеивает варианты с шумными стройками и всегда фиксирует прозрачные условия аренды и адекватный тариф за свет (до 4000–4500 ₫/кВт). Напишите ей в Telegram с кодовым словом «VietReloc».',
-    en: 'Linh is our trusted partner in Da Nang. Fluent in English and Russian, screens out noisy construction sites and secures transparent lease terms with normal electric rates (up to 4000-4500 ₫/kWh).'
+    ru: 'Эмили — наш проверенный партнер по недвижимости в Дананге и прибрежных районах. Отлично ориентируется в районах для экспатов, помогает отобрать надежные варианты без скрытых комиссий и организует живые просмотры. Вы можете связаться с ней напрямую через Instagram @chaulovely101 с кодовым словом «VietReloc» (номер WhatsApp подключается).',
+    en: 'Emily is our vetted real estate partner in Da Nang. She specializes in expat condominiums, screens out noisy construction sites, and coordinates viewings. Connect directly via Instagram @chaulovely101 mentioning "VietReloc".'
   },
-  directChatUrl: 'https://t.me/linh_danang_realty'
+  directChatUrl: 'https://www.instagram.com/chaulovely101?stkn=MXA1aGUwbWxvcmZsZQ=='
 };
 
 export const DEFAULT_PARTNER_REALTOR_NHATRANG: PartnerRealtorAssignment = {
@@ -268,7 +274,7 @@ export const DEFAULT_VIP_PERKS: VipConciergePerks = {
     status: 'included_not_booked',
     specialistName: 'Егорова Мария',
     specialistTitle: 'Дипломированный психолог, клинический специалист, сексолог (4 года практики)',
-    specialistPhotoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+    specialistPhotoUrl: '/psychologist-photo.png',
     telegramContact: '@mur_mur_mari',
     whatsappContact: '+84 039 458 3217',
     secondSessionPromoCode: 'VIETRELOC-VIP20',
@@ -284,7 +290,7 @@ export const DEFAULT_VIP_PERKS: VipConciergePerks = {
     telegramUsername: 'Likqwerty',
     startDate: '2026-10-15',
     notes: {
-      ru: 'Персональный закрытый диалог с основателем VietReloc 1-на-1 в Telegram (@Likqwerty). Быстрые ответы и содействие на протяжении первого месяца.',
+      ru: 'Персональный закрытый диалог с Founder VietReloc 1-на-1 в Telegram (@Likqwerty). Быстрые ответы и содействие на протяжении первого месяца.',
       en: 'Personal 1-on-1 Telegram concierge line with the founder (@Likqwerty). Direct assistance throughout the first 30 days.'
     }
   },

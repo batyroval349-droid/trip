@@ -1,6 +1,5 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { HousingGuidanceHub } from '../HousingGuidanceHub';
 import {
   ShieldCheck,
   Zap,
@@ -27,13 +26,36 @@ export const DashboardHousingView: React.FC = () => {
               <ShieldCheck size={14} /> {language === 'ru' ? 'Персональный шорт-лист жилья' : 'Bespoke Vetted Shortlist'}
             </div>
             <h2 style={{ fontSize: '1.9rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', margin: '0.2rem 0' }}>
-              {language === 'ru' ? 'Проверенные варианты жилья от основателя' : 'Audited Accommodation Options'}
+              {language === 'ru' ? 'Проверенные варианты жилья от Founder' : 'Audited Accommodation Options'}
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', margin: 0 }}>
               {language === 'ru'
                 ? 'Каждый объект прошел проверку по 5 стандартам Due Diligence: прямой счетчик EVN, отсутствие строек за окном, замер скорости оптоволокна и безопасный залог.'
                 : 'Every property is vetted against 5 Due Diligence standards: direct EVN meter, quiet perimeter, verified fiber speed, and safe deposit.'}
             </p>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              background: '#F0FDF4',
+              border: '1px solid #BBF7D0',
+              padding: '0.45rem 0.85rem',
+              borderRadius: 'var(--radius-sm)',
+              marginTop: '0.65rem',
+              fontSize: '0.82rem',
+              color: '#166534'
+            }}>
+              <img
+                src="/realtor-emily.jpg"
+                alt="Эмили"
+                style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
+              />
+              <span>
+                {language === 'ru'
+                  ? 'Очные показы и подбор вариантов на месте проводит наш партнер-риелтор Эмили (@chaulovely101)'
+                  : 'On-site inspections and viewings coordinated with partner realtor Emily (@chaulovely101)'}
+              </span>
+            </div>
           </div>
 
           {verifiedList.length > 0 && (
@@ -69,13 +91,13 @@ export const DashboardHousingView: React.FC = () => {
 
             <h3 style={{ fontSize: '1.45rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
               {language === 'ru'
-                ? 'Основатель готовит и проверяет первые варианты жилья'
+                ? 'Founder готовит и проверяет первые варианты жилья'
                 : 'The Founder is Auditing Your Accommodation Options'}
             </h3>
 
             <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', maxWidth: '620px', margin: '0 auto 1.5rem auto', lineHeight: 1.6 }}>
               {language === 'ru'
-                ? `По вашей анкете (бюджет $${project.questionnaire.monthlyBudgetUSD}/мес, формат: ${project.questionnaire.accommodationType || 'апартаменты'}) основатель сейчас проводит выездную проверку уровня шума, замеряет скорость Wi-Fi и проверяет свидетельства собственности (sổ đỏ). Первые 2–3 проверенных варианта появятся здесь в течение 48 часов.`
+                ? `По вашей анкете (бюджет $${project.questionnaire.monthlyBudgetUSD}/мес, формат: ${project.questionnaire.accommodationType || 'апартаменты'}) Founder сейчас проводит выездную проверку уровня шума, замеряет скорость Wi-Fi и проверяет свидетельства собственности (sổ đỏ). Первые 2–3 проверенных варианта появятся здесь в течение 48 часов.`
                 : `Based on your preferences (budget $${project.questionnaire.monthlyBudgetUSD}/mo), the founder is inspecting noise levels, speedtesting fiber Wi-Fi, and auditing ownership deeds. 2–3 vetted options will appear here within 48h.`}
             </p>
 
@@ -116,7 +138,7 @@ export const DashboardHousingView: React.FC = () => {
                   <div style={{ position: 'absolute', top: '0.85rem', left: '0.85rem', display: 'flex', gap: '0.4rem' }}>
                     {house.isTopPick && (
                       <span className="badge badge-terracotta" style={{ fontSize: '0.72rem', fontWeight: 700, boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
-                        ★ Выбор основателя (Top Pick)
+                        ★ Выбор Founder (Top Pick)
                       </span>
                     )}
                     <span className="badge badge-emerald" style={{ fontSize: '0.72rem', fontWeight: 700 }}>
@@ -211,11 +233,6 @@ export const DashboardHousingView: React.FC = () => {
             ))}
           </div>
         )}
-      </div>
-
-      {/* 2. Educational Due Diligence & Financial Shield Section */}
-      <div style={{ borderTop: '2px solid var(--border-subtle)', paddingTop: '2rem' }}>
-        <HousingGuidanceHub />
       </div>
 
     </div>

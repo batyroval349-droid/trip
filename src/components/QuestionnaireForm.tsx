@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import type { ClientQuestionnaire } from '../types';
+import { normalizeCityId } from '../translations/content';
 import { FileText, ShieldCheck, ArrowLeft, CreditCard } from 'lucide-react';
 
 export const QuestionnaireForm: React.FC = () => {
@@ -40,11 +41,12 @@ export const QuestionnaireForm: React.FC = () => {
   };
 
   const handleCityToggle = (city: string) => {
+    const canonicalId = normalizeCityId(city);
     setFormData((prev) => {
-      const exists = prev.preferredCities.includes(city);
+      const exists = prev.preferredCities.some((c) => normalizeCityId(c) === canonicalId);
       const updated = exists
-        ? prev.preferredCities.filter((c) => c !== city)
-        : [...prev.preferredCities, city];
+        ? prev.preferredCities.filter((c) => normalizeCityId(c) !== canonicalId)
+        : [...prev.preferredCities.filter((c) => normalizeCityId(c) !== canonicalId), canonicalId];
       return { ...prev, preferredCities: updated };
     });
   };
@@ -161,6 +163,18 @@ export const QuestionnaireForm: React.FC = () => {
                 </div>
 
                 <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>{t('qMessenger')} *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={language === 'ru' ? '@username или +7 999 123-45-67' : '@username or +1 234 567-8900'}
+                    value={formData.messenger || ''}
+                    onChange={(e) => handleChange('messenger', e.target.value)}
+                    style={fieldStyle}
+                  />
+                </div>
+
+                <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>{t('qPassword')} *</label>
                   <input
                     type="password"
@@ -256,13 +270,13 @@ export const QuestionnaireForm: React.FC = () => {
                 <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>{t('qCities')}</label>
                 <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                   {[
-                    { id: 'Da Nang', label: language === 'ru' ? 'Дананг' : 'Da Nang' },
-                    { id: 'Nha Trang', label: language === 'ru' ? 'Нячанг' : 'Nha Trang' },
-                    { id: 'Hoi An', label: language === 'ru' ? 'Хойан' : 'Hoi An' },
-                    { id: 'Ho Chi Minh City', label: language === 'ru' ? 'Хошимин (Сайгон)' : 'Ho Chi Minh City' },
-                    { id: 'Hanoi', label: language === 'ru' ? 'Ханой' : 'Hanoi' }
+                    { id: 'danang', label: language === 'ru' ? 'Дананг' : 'Da Nang' },
+                    { id: 'nhatrang', label: language === 'ru' ? 'Нячанг' : 'Nha Trang' },
+                    { id: 'hoian', label: language === 'ru' ? 'Хойан' : 'Hoi An' },
+                    { id: 'saigon', label: language === 'ru' ? 'Хошимин (Сайгон)' : 'Ho Chi Minh City' },
+                    { id: 'hanoi', label: language === 'ru' ? 'Ханой' : 'Hanoi' }
                   ].map((city) => {
-                    const isSelected = formData.preferredCities.includes(city.id);
+                    const isSelected = formData.preferredCities.some(c => normalizeCityId(c) === city.id);
                     return (
                       <button
                         type="button"
@@ -345,7 +359,7 @@ export const QuestionnaireForm: React.FC = () => {
               <ShieldCheck size={18} style={{ color: 'var(--accent-emerald)', flexShrink: 0 }} />
               <span>
                 {language === 'ru'
-                  ? 'Ваша анкета направляется напрямую основателю для персонального удаленного исследования. Никаких автоматических ИИ-ботов.'
+                  ? 'Ваша анкета направляется напрямую Founder для персонального удаленного исследования. Никаких автоматических ИИ-ботов.'
                   : 'By submitting, your preferences are routed directly to the founder for bespoke remote research. No automated AI templates or chatbots used.'}
               </span>
             </div>

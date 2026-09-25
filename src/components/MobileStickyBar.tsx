@@ -75,7 +75,7 @@ export const MobileStickyBar: React.FC = () => {
         <span>{language === 'ru' ? 'Вопрос в Telegram' : 'Ask Telegram'}</span>
       </a>
 
-      {/* 2. Express Consultation $50 */}
+      {/* 2. Express Consultation $25 */}
       <button
         onClick={() => setViewMode('express_booking')}
         style={{
@@ -97,7 +97,7 @@ export const MobileStickyBar: React.FC = () => {
         }}
       >
         <Sparkles size={14} style={{ color: '#FCD34D' }} />
-        <span>{language === 'ru' ? 'Консультация ($50)' : 'Book Call ($50)'}</span>
+        <span>{language === 'ru' ? 'Консультация ($25)' : 'Book Call ($25)'}</span>
       </button>
     </div>
   );

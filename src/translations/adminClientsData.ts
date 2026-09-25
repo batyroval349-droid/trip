@@ -6,6 +6,7 @@ import {
   DEFAULT_TRAVEL_SIM_GUIDE,
   DEFAULT_TRAVEL_HOSPITALS
 } from './defaultTravelData';
+import { DEFAULT_RELOCATION_14_DAYS } from './defaultRelocationTravelData';
 import {
   DEFAULT_RELOCATION_ROADMAP_TASKS,
   DEFAULT_PARTNER_REALTOR_DANANG,
@@ -73,7 +74,9 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
         phase: 'before_arrival',
         title: { en: 'Apply for 90-day Vietnam e-Visa', ru: 'Оформить e-Visa во Вьетнам на 90 дней' },
         description: { en: 'Submit through official immigration portal.', ru: 'Подать через официальный портал иммиграции.' },
-        completed: false
+        completed: false,
+        linkUrl: 'https://incomparable-tulumba-32318f.netlify.app',
+        linkLabel: { ru: 'Интерактивный гид-чеклист по визе (открыть)', en: 'Interactive e-Visa Guide & Checklist' }
       }
     ],
     travelDays: DEFAULT_TRAVEL_DAYS,
@@ -206,6 +209,11 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
     },
     paidAt: '2026-08-28 14:32:00 UTC',
     paymentMethod: 'card_ru',
+    hasTravelPlan: true,
+    travelDays: DEFAULT_RELOCATION_14_DAYS,
+    travelTransitLegs: DEFAULT_TRAVEL_TRANSIT_LEGS,
+    travelSimGuide: DEFAULT_TRAVEL_SIM_GUIDE,
+    travelEmergencyHospitals: DEFAULT_TRAVEL_HOSPITALS,
     hasUnpublishedChanges: false,
     lastPublishedAt: '2026-09-02 11:15:00 UTC',
     verifiedHousing: [
@@ -228,8 +236,8 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
           }
         },
         realtorContact: {
-          name: 'Linh Nguyen (Verified Partner)',
-          phoneOrZalo: '+84 905 123 456 (Zalo)',
+          name: 'Эмили (Verified Partner)',
+          phoneOrZalo: 'Instagram @chaulovely101',
           verifiedPartner: true
         },
         noiseAudit: {
@@ -351,7 +359,7 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
       longTermGoals: 'Полноценный переезд на год с возможностью продления',
       priorities: 'Комфортное премиум-жилье, качественная медицина, европейские продукты',
       concerns: 'Визовые правила после 90 дней, поиск надежного риелтора без комиссии',
-      additionalInfo: 'Требуется полное сопровождение основателя 1-на-1'
+      additionalInfo: 'Требуется полное сопровождение Founder 1-на-1'
     },
     recommendedCityId: 'nhatrang',
     recommendedCityWhy: {
@@ -371,6 +379,11 @@ export const INITIAL_ADMIN_CLIENTS: AdminClientRecord[] = [
     },
     paidAt: '2026-08-25 09:12:00 UTC',
     paymentMethod: 'crypto_usdt',
+    hasTravelPlan: true,
+    travelDays: DEFAULT_RELOCATION_14_DAYS,
+    travelTransitLegs: DEFAULT_TRAVEL_TRANSIT_LEGS,
+    travelSimGuide: DEFAULT_TRAVEL_SIM_GUIDE,
+    travelEmergencyHospitals: DEFAULT_TRAVEL_HOSPITALS,
     hasUnpublishedChanges: true,
     lastPublishedAt: '2026-08-29 16:00:00 UTC',
     verifiedHousing: [

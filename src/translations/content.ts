@@ -7,6 +7,17 @@ import {
   DEFAULT_TRAVEL_HOSPITALS
 } from './defaultTravelData';
 
+export const normalizeCityId = (rawId?: string): string => {
+  if (!rawId) return 'danang';
+  const clean = String(rawId).toLowerCase().trim().replace(/[\s\-_()]/g, '');
+  if (clean.includes('nha') || clean.includes('trang') || clean.includes('нячанг')) return 'nhatrang';
+  if (clean.includes('hoi') || clean.includes('хойан') || (clean.includes('an') && !clean.includes('dan'))) return 'hoian';
+  if (clean.includes('saigon') || clean.includes('hcm') || clean.includes('hochiminh') || clean.includes('хошимин') || clean.includes('сайгон')) return 'saigon';
+  if (clean.includes('hanoi') || clean.includes('ханой')) return 'hanoi';
+  if (clean.includes('danang') || clean.includes('дананг') || clean.includes('dan')) return 'danang';
+  return clean || 'danang';
+};
+
 export const CITIES_DATA: CityData[] = [
   {
     id: 'danang',
@@ -126,66 +137,263 @@ export const CITIES_DATA: CityData[] = [
 ];
 
 export const NEIGHBORHOODS_DATA: Neighborhood[] = [
+  // ==========================================
+  // ДАНАНГ (DA NANG)
+  // ==========================================
   {
     id: 'an_thuong',
     cityId: 'danang',
-    name: 'An Thuong (My An)',
+    name: 'An Thuong / My An (Ан Тхыонг и Май Ан)',
     tagline: {
-      en: 'The primary digital nomad & expat beach neighborhood in Da Nang.',
-      ru: 'Главный пляжный район для цифровых кочевников и экспатов в Дананге.'
+      en: 'Primary expat and digital nomad beach enclave in Da Nang.',
+      ru: 'Экспатский эпицентр Дананга — кофейни, коворкинги и 5 минут до пляжа Ми Кхе.'
     },
     description: {
-      en: 'Highly walkable grid of streets filled with Western & local cafes, coworking spaces, gym facilities, and beach access within 3 minutes.',
-      ru: 'Удобный для пеших прогулок район с европейскими и вьетнамскими кафе, коворкингами, спортзалами и пляжем в 3 минутах.'
+      en: 'Walkable grid of streets filled with specialty cafes (43 Factory, The Roots), coworking spaces (Surf Space, Enouvo), yoga studios, and surf beach within 3-5 minutes.',
+      ru: 'Самый популярный район среди номадов и зимовщиков. Удобные пешеходные улицы, коворкинги (Surf Space, Enouvo), спешелти-кофе (43 Factory, The Roots), веганские кафе, йога и серфинг.'
     },
     scores: { budget: 3, beach: 5, quiet: 2, social: 5, remoteWork: 5 },
     highlights: {
-      en: ['3-minute walk to My Khe Beach', 'Dense network of remote-work cafes', 'Walkable international community'],
-      ru: ['3 минуты до пляжа Ми Кхе', 'Огромный выбор кофеен для работы', 'Развитое международное комьюнити']
+      en: ['3-5 min walk to My Khe Beach', 'Coworking hubs: Surf Space & Enouvo', 'Dense international nomad community'],
+      ru: ['3–5 минут пешком до пляжа Ми Кхе', 'Коворкинги Surf Space и Enouvo Space', 'Плотное международное комьюнити номадов']
     },
     founderNote: {
-      en: 'An Thuong is my top recommended starting location if you want instant social connections, easy daily routines, and walkability to the beach without needing a scooter immediately.',
-      ru: 'Ан Тхыонг — моя главная рекомендация для старта, если вам важны быстрые знакомства, пляж в пешей доступности и удобство без необходимости сразу брать байк.'
+      en: 'An Thuong is the absolute best landing spot for the first 1-3 months: instant social network, walkable lifestyle, no scooter required.',
+      ru: 'Ан Тхыонг — лучшая стартовая точка на первые 1–3 месяца: быстрые знакомства, пешая доступность пляжа и развитая экспатская среда без обязательного байка.'
+    }
+  },
+  {
+    id: 'my_khe',
+    cityId: 'danang',
+    name: 'My Khe Beachfront (Пляж Ми Кхе — 1-я линия)',
+    tagline: {
+      en: 'Modern oceanfront high-rises on Vo Nguyen Giap coastal promenade.',
+      ru: 'Высотные современные кондоминиумы на набережной Во Нгуен Зяп с видом на океан.'
+    },
+    description: {
+      en: 'Towers like Altara Suites, Muong Thanh, Wyndham Soleil with rooftop infinity pools, gym facilities, surf clubs, and morning runs along the shoreline.',
+      ru: 'Современные жилые башни Altara Suites, Muong Thanh, Wyndham Soleil с панорамными бассейнами на крыше, фитнесом, серф-станциями и утренними пробежками у кромки воды.'
+    },
+    scores: { budget: 4, beach: 5, quiet: 3, social: 4, remoteWork: 4 },
+    highlights: {
+      en: ['Direct beachfront living & surf spots', 'Rooftop pools with panoramic sea views', 'Vo Nguyen Giap seaside promenade'],
+      ru: ['Первая линия моря и серфинг', 'Панорамные виды на океан и бассейны на крыше', 'Променад Во Нгуен Зяп']
+    },
+    founderNote: {
+      en: 'Choose beachfront high-rises if you want sea views and morning ocean dips, keeping in mind seasonal winter storm winds in Nov-Dec.',
+      ru: 'Отличный выбор ради панорамных рассветов над морем и утреннего купания. Учитывайте влажность и ветер в ноябре-декабре.'
+    }
+  },
+  {
+    id: 'hai_chau',
+    cityId: 'danang',
+    name: 'Hai Chau (Хай Чау — Городской нетуристический центр)',
+    tagline: {
+      en: 'Authentic urban downtown along the Han River: no tourist markup.',
+      ru: 'Административный и деловой центр Дананга у реки Хан: нетуристический комфорт.'
+    },
+    description: {
+      en: 'West bank of Han River, Bach Dang promenade, Dragon Bridge, Cho Con market, upscale coffee shops, and international supermarkets. Rents are 30-40% lower than beachfront.',
+      ru: 'Западный берег реки Хан, набережная Бать Данг, мост Дракона, рынок Chợ Cồn, кофейни, коворкинги, европейские супермаркеты. Развитая инфраструктура и аренда на 30–40% доступнее пляжных зон.'
+    },
+    scores: { budget: 2, beach: 2, quiet: 4, social: 4, remoteWork: 5 },
+    highlights: {
+      en: ['Han River promenade & Dragon Bridge', '30-40% lower rent compared to beach areas', 'Cho Con market and authentic lifestyle'],
+      ru: ['Нетуристический комфорт и набережная реки Хан', 'Аренда на 30–40% доступнее пляжной полосы', 'Рынок Chợ Cồn, кофейни и супермаркеты']
+    },
+    founderNote: {
+      en: 'Hai Chau is my top recommendation for long-term expat living (6+ months). 10 min by scooter across the bridge to the beach, but real local prices and peaceful nights.',
+      ru: 'Хай Чау — лучший выбор для долгосрочной жизни от полугода: переезд через мост к пляжу занимает 10 минут, но здесь нет туристической суеты и шума строек.'
     }
   },
   {
     id: 'son_tra',
     cityId: 'danang',
-    name: 'Son Tra (Man Thai / Phuoc My)',
+    name: 'Son Tra (Сон Тра — Ман Тхай и полуостров)',
     tagline: {
-      en: 'Scenic, quieter coastal area closer to Son Tra Peninsula nature reserve.',
-      ru: 'Живописный, более тихий прибрежный район рядом с заповедником Сон Тра.'
+      en: 'Serene coastal living near Son Tra Nature Reserve & Lady Buddha.',
+      ru: 'Спокойный зеленый район у подножия заповедника Сон Тра и Lady Buddha.'
     },
     description: {
-      en: 'Offers brand-new apartment buildings with ocean views, quieter nights, fresh seafood markets, and quick access to Monkey Mountain.',
-      ru: 'Новые апартаменты с видом на океан, тихие вечера, рынки свежих морепродуктов и близость к Обезьяньей горе.'
+      en: 'Clean air, mountain views, fresh seafood markets, quiet apartment complexes, and the Horizon Russian-curriculum international school (grades 1-11).',
+      ru: 'Тихий чистый берег, свежие морепродукты прямо от рыбаков, чистый горный воздух, русская школа «Горизонт» (1–11 классы с аттестатом РФ), виллы и спокойные жилые комплексы.'
     },
-    scores: { budget: 2, beach: 4, quiet: 4, social: 3, remoteWork: 4 },
+    scores: { budget: 2, beach: 4, quiet: 5, social: 3, remoteWork: 4 },
     highlights: {
-      en: ['Modern high-rise apartments', 'Quieter atmosphere & mountain breeze', 'Great value for ocean views'],
-      ru: ['Современные высотные апартаменты', 'Тихая атмосфера и горный бриз', 'Отличное соотношение цены и вида на море']
+      en: ['Clean mountain breeze & nature reserve', 'Horizon Russian school nearby', 'Fresh fisherman seafood markets'],
+      ru: ['Чистый горный воздух и тишина', 'Русская школа «Горизонт» с аттестатом РФ', 'Свежие морепродукты и малолюдный пляж']
     },
     founderNote: {
-      en: 'Son Tra is ideal if you value tranquility, scenic views, and slightly lower apartment rates while staying 5 minutes away from An Thuong.',
-      ru: 'Сон Тра идеально подходит, если вы цените тишину, виды на океан и более доступную аренду в 5 минутах от тусовочного центра.'
+      en: 'Son Tra is ideal for families and focused remote workers seeking calm coastal routines while staying 5 minutes north of An Thuong.',
+      ru: 'Идеален для семей с детьми и удаленщиков, которым нужна тишина, чистый воздух и близость к природе.'
     }
   },
   {
-    id: 'an_bang',
-    cityId: 'hoian',
-    name: 'An Bang Beach Village',
+    id: 'fpt_city',
+    cityId: 'danang',
+    name: 'FPT City (ФТП Сити — IT-кластер на юге)',
     tagline: {
-      en: 'Laid-back beach village vibe with boutique homestays and oceanfront cafes.',
-      ru: 'Расслабленный пляжный посёлок с бутик-гестхаусами и кафе у самой воды.'
+      en: 'Modern planned tech neighborhood: parks, fiber-optic internet, budget condos.',
+      ru: 'Новый технологичный эко-район на юге Дананга: IT-парк, чистота и доступное жилье.'
+    },
+    description: {
+      en: 'Planned green district around FPT University and software campuses. Modern condos (FPT Plaza 1, 2, 3), wide empty streets, tree parks, reliable fiber Wi-Fi. 2BR from $250-400.',
+      ru: 'Современный технологичный кластер вокруг университета FPT и софтверных кампусов. ЖК FPT Plaza 1, 2, 3, широкие улицы, парки, стабильная оптика. Современные 2BR по $250–400/мес.'
+    },
+    scores: { budget: 1, beach: 3, quiet: 5, social: 3, remoteWork: 5 },
+    highlights: {
+      en: ['Modern FPT Plaza condos from $250/mo', 'Green parks, zero traffic congestion', '5 mins by scooter to Non Nuoc Beach'],
+      ru: ['Новые современные ЖК FPT Plaza по доступным ценам', 'Идеальная тишина, экология и парки', '5 минут на байке до пляжа Non Nuoc']
+    },
+    founderNote: {
+      en: 'FPT City offers the best modern value-for-money if you work remotely, have private transport, and prefer manicured park streets over party noise.',
+      ru: 'ФТП Сити предлагает максимальное качество жилья за минимальный бюджет, если у вас есть байк и важна спокойная рабочая атмосфера.'
+    }
+  },
+  {
+    id: 'ngu_hanh_son',
+    cityId: 'danang',
+    name: 'Ngu Hanh Son (Мраморные горы и курортный юг)',
+    tagline: {
+      en: 'Resort corridor towards Hoi An: gated villa communities and golf clubs.',
+      ru: 'Курортная зона между Данангом и Хойаном: виллы, резорты и чистые пляжи.'
+    },
+    description: {
+      en: 'Non Nuoc beach corridor with 5-star beachfront resorts, Ocean Villas private compound, golf clubs, and serene coastal tranquility halfway to Hoi An.',
+      ru: 'Зона Мраморных гор (Non Nước) с пятизвездочными отелями, закрытыми комплексами вилл (Ocean Villas, Hyatt), гольф-клубами и чистым просторным пляжем.'
+    },
+    scores: { budget: 4, beach: 5, quiet: 4, social: 2, remoteWork: 4 },
+    highlights: {
+      en: ['Luxury gated villa compounds', 'Uncrowded white sand Non Nuoc beach', '15 mins drive to Hoi An Ancient Town'],
+      ru: ['Премиальные виллы и закрытые резорты', 'Малолюдный чистый пляж Non Nuoc', '15 минут до Хойана']
+    }
+  },
+
+  // ==========================================
+  // НЯЧАНГ (NHA TRANG)
+  // ==========================================
+  {
+    id: 'nhatrang_center',
+    cityId: 'nhatrang',
+    name: 'Center & European Quarter (Центр и Европейский квартал)',
+    tagline: {
+      en: 'Vibrant tourist core: Tran Phu promenade, Lotus Tower, Vinmec hospital.',
+      ru: 'Туристическое сердце Нячанга: набережная Чан Фу, рестораны, башня Лотос.'
+    },
+    description: {
+      en: 'First 3 lines from the beach (Loc Tho). Gold Coast & Nha Trang Center malls, hundreds of dining spots, nightlife on Biet Thu, international hospital Vinmec.',
+      ru: 'Набережная Чан Фу и первые 3 линии от моря (Lộc Thọ). ТЦ Gold Coast и Nha Trang Center, кафе всех кухонь мира, башня Лотос, госпиталь Vinmec. Всё в шаговой доступности.'
+    },
+    scores: { budget: 4, beach: 5, quiet: 2, social: 5, remoteWork: 4 },
+    highlights: {
+      en: ['Direct access to Tran Phu beach park', 'Vinmec International Hospital nearby', 'Complete walkable shopping & dining'],
+      ru: ['Набережная Чан Фу и пляж через дорогу', 'Госпиталь Vinmec International', 'Торговые центры и рестораны со всего мира']
+    },
+    founderNote: {
+      en: 'Best for short stays and active city life. If you want quieter nights, select apartments set back on 3rd line or in northern towers.',
+      ru: 'Идеален для первого визита и динамичной жизни. Для спокойного сна лучше выбирать 2-3 линии от набережной.'
+    }
+  },
+  {
+    id: 'nhatrang_north',
+    cityId: 'nhatrang',
+    name: 'North Nha Trang (Северный Нячанг — Vĩnh Hải / Фам Ван Донг)',
+    tagline: {
+      en: 'Primary expat community hub: Muong Thanh Oceanus, calm winter sea, Vinh Hai market.',
+      ru: 'Главный экспатский кластер: ЖК Muong Thanh Oceanus, мыс Хон Чонг и спокойное море.'
+    },
+    description: {
+      en: 'North of Cai River. Protected bay ensures calm swimmable water during winter months. Muong Thanh Oceanus towers, Russian kindergartens and services, Vinh Hai market with local prices.',
+      ru: 'Зона за рекой Кай и башнями Понагар. Спокойное море зимой без сильных волн, русскоязычные сервисы и детсады, ЖК Muong Thanh Oceanus, рынок Винь Хай. Аренда на 20–30% дешевле центра.'
+    },
+    scores: { budget: 2, beach: 5, quiet: 4, social: 5, remoteWork: 4 },
+    highlights: {
+      en: ['Calm seas without winter swell', 'Muong Thanh Oceanus beachfront towers', 'Established Russian expat community & kindergartens'],
+      ru: ['Море без волн в зимний сезон', 'ЖК Muong Thanh Oceanus на первой линии', 'Русская диаспора, детские сады, кафе']
+    },
+    founderNote: {
+      en: '80% of long-term expats in Nha Trang live here. Oceanus towers offer sea-view 2BRs for $350-500/mo.',
+      ru: 'Большинство постоянных экспатов выбирают север: спокойное море, русскоязычная среда и просторные квартиры с видом на море за $350–500/мес.'
+    }
+  },
+  {
+    id: 'nhatrang_an_vien',
+    cityId: 'nhatrang',
+    name: 'An Vien (Ан Вьен — Закрытый поселок вилл)',
+    tagline: {
+      en: 'Exclusive gated community with private breakwater beach Paragon.',
+      ru: 'Охраняемый элитный поселок вилл с частным пляжем Парагон без волн.'
+    },
+    description: {
+      en: 'Located at the southern tip near Vinpearl Cable Car. Gated 24/7 security, private standalone villas, green tree-lined lanes, and Paragon Beach with rock breakwater ensuring completely wave-free swimming.',
+      ru: 'Расположен на юге у канатной дороги Vinpearl. Закрытая охраняемая территория, частные виллы, волнорез на пляже Парагон, идеально спокойная вода для безопасного детского купания.'
+    },
+    scores: { budget: 5, beach: 4, quiet: 5, social: 2, remoteWork: 4 },
+    highlights: {
+      en: ['Private Paragon beach with zero waves', 'Gated 24/7 security & quiet private villas', 'Safe pedestrian environment for children'],
+      ru: ['Частный пляж Парагон с закрытой лагуной без волн', 'Охраняемая зеленая территория поселка вилл', 'Безопасность и тишина для семей с детьми']
+    },
+    founderNote: {
+      en: 'The top choice for families with toddlers and clients seeking private villas with gardens and pool access.',
+      ru: 'Лучший выбор для семей с маленькими детьми и клиентов, ищущих отдельную виллу с садом в тишине и безопасности.'
+    }
+  },
+  {
+    id: 'nhatrang_south',
+    cityId: 'nhatrang',
+    name: 'South & Lotte Mart (Юг — Phước Long / Лотте Март)',
+    tagline: {
+      en: 'Family residential district: Lotte Mart mall, new condos, 5 mins to beach.',
+      ru: 'Семейный жилой район у ТЦ Lotte Mart: современные высотки и школы.'
+    },
+    description: {
+      en: 'Modern high-rises (HUD Building, Imperium Town), Korean supermarkets, schools, fitness centers, 5-7 minutes by scooter to the seaside.',
+      ru: 'Новые жилые комплексы (HUD Building, Imperium Town), сетевые супермаркеты, фитнес-центры, школы. 5–7 минут на байке до пляжа. Нет туристического шума.'
+    },
+    scores: { budget: 3, beach: 3, quiet: 4, social: 3, remoteWork: 4 },
+    highlights: {
+      en: ['Lotte Mart shopping center nearby', 'Modern apartment complexes at local rates', '7 mins by scooter to center & beach'],
+      ru: ['ТЦ Lotte Mart и развитая семейная инфраструктура', 'Новые жилые комплексы без туристической наценки', '7 минут до центра и пляжа']
+    }
+  },
+  {
+    id: 'nhatrang_west',
+    cityId: 'nhatrang',
+    name: 'West / Vinh Diem Trung (Запад — Go! / Big C)',
+    tagline: {
+      en: 'Green neighborhood around Go! Hypermarket: budget modern apartments.',
+      ru: 'Зеленый спальный микрорайон у гипермаркета Go!: современное и доступное жилье.'
+    },
+    description: {
+      en: 'Residential cluster (CT4, CT7) surrounding Go! Hypermarket. Paved parks, lakes, wide streets, very budget-friendly modern leases ($250-400 for 2BR). 12 mins to beach.',
+      ru: 'Комплексы CT4, CT7 вокруг гипермаркета Go! (бывший Big C). Парки, водоемы, развитые магазины. Очень доступная аренда ($250–400 за 2BR). 12 минут до моря.'
+    },
+    scores: { budget: 1, beach: 2, quiet: 4, social: 3, remoteWork: 4 },
+    highlights: {
+      en: ['Go! Hypermarket with affordable groceries', 'Budget-friendly modern 2BR leases', 'Quiet residential parks and ponds'],
+      ru: ['Гипермаркет Go! и доступные продукты', 'Бюджетная аренда современных квартир', 'Зеленые дворы и спокойная атмосфера']
+    }
+  },
+
+  // ==========================================
+  // ХОЙАН (HOI AN)
+  // ==========================================
+  {
+    id: 'hoian_cam_an',
+    cityId: 'hoian',
+    name: 'An Bang Beach Village (Пляж Ан Банг / Cẩm An)',
+    tagline: {
+      en: 'Boho coastal village with seaside cafes, surf spots, and boutique villas.',
+      ru: 'Расслабленный пляжный поселок с бутик-гестхаусами и кафе у самой воды.'
     },
     description: {
       en: 'Narrow village lanes lined with tropical villas, sunset bars, and organic eateries, located 15 minutes north of Hoi An Ancient Town.',
-      ru: 'Узкие деревенские улочки с тропическими виллами, закатными барами и кафе органической кухни в 15 минутах от старого города.'
+      ru: 'Узкие деревенские улочки с тропическими виллами, закатными барами, йога-студиями и кафе органической кухни в 15 минутах от старого города.'
     },
-    scores: { budget: 3, beach: 5, quiet: 4, social: 3, remoteWork: 3 },
+    scores: { budget: 3, beach: 5, quiet: 4, social: 4, remoteWork: 4 },
     highlights: {
-      en: ['Direct beachfront living', 'Sunset beach bars & sound of waves', 'Close-knit expat village feel'],
-      ru: ['Проживание прямо у пляжа', 'Закатные бары у воды', 'Уютная атмосфера экспатской деревни']
+      en: ['Direct beachfront living & surf breaks', 'Sunset beach lounges & organic cafes', 'Close-knit expat village feel'],
+      ru: ['Проживание прямо у пляжа Ан Банг', 'Закатные бары и уютные кофейни', 'Уютная атмосфера экспатской деревни']
     },
     founderNote: {
       en: 'An Bang is magical for creative work phases. Make sure to choose accommodation with dedicated indoor workspace for humid afternoons.',
@@ -193,47 +401,265 @@ export const NEIGHBORHOODS_DATA: Neighborhood[] = [
     }
   },
   {
-    id: 'thao_dien',
-    cityId: 'saigon',
-    name: 'Thao Dien (District 2, Saigon)',
+    id: 'hoian_cam_chau',
+    cityId: 'hoian',
+    name: 'Cam Chau (Кам Чау — Рисовые поля)',
     tagline: {
-      en: 'The premier international green enclave of Ho Chi Minh City along the Saigon River.',
-      ru: 'Премиальный зеленый международный район Хошимина вдоль реки Сайгон.'
+      en: 'Picturesque countryside between Ancient Town and beach: villas amidst rice paddies.',
+      ru: 'Идиллическая природа между старым городом и пляжем: виллы среди рисовых полей.'
     },
     description: {
-      en: 'Luxurious leafy enclave filled with international bakeries, specialty coffee, craft breweries, art galleries, and high-end serviced apartments.',
-      ru: 'Престижный зеленый район с международными пекарнями, спешелти-кофе, крафтовыми пивоварнями и апартаментами.'
+      en: 'Most beloved expat residential area in Hoi An. Cycling paths along emerald rice fields, specialty cafes, peaceful tropical villas with private pools. 7 min to town, 7 min to beach.',
+      ru: 'Самый популярный район для долгосрочной жизни в Хойане. Велосипедные дорожки среди полей, тишина, стильные кафе, 7 минут до Старого города и 7 минут до моря.'
     },
-    scores: { budget: 5, beach: 1, quiet: 3, social: 5, remoteWork: 5 },
+    scores: { budget: 2, beach: 3, quiet: 5, social: 3, remoteWork: 5 },
     highlights: {
-      en: ['World-class dining & coworking', 'Green, pedestrian-friendly pockets', 'Vibrant global tech community'],
-      ru: ['Рестораны и коворкинги мирового уровня', 'Зелёные пешеходные улицы', 'Активное международное IT-сообщество']
+      en: ['Panoramic views of emerald rice paddies', 'Perfect middle ground: 7 mins to beach & town', 'Spacious pool villas at affordable rates'],
+      ru: ['Виды на бескрайние рисовые поля', 'Идеальный баланс: ровно посередине между морем и центром', 'Аренда вилл с бассейнами']
     },
     founderNote: {
-      en: 'Thao Dien offers the absolute highest standard of international living in Vietnam, though budget expectations need to align with premium rates.',
-      ru: 'Тао Диен предлагает высочайший уровень комфорта в Вьетнаме, однако бюджет на жильё здесь выше среднего по стране.'
+      en: 'My personal favorite area in Hoi An: bicycles, serene bird songs in the morning, and total peace for remote concentration.',
+      ru: 'Мой любимый район в Хойане: утренние велопрогулки, тишина для концентрации и красивые виллы по приятным ценам.'
     }
   },
   {
-    id: 'tay_ho',
-    cityId: 'hanoi',
-    name: 'Tay Ho (West Lake, Hanoi)',
+    id: 'hoian_old_town',
+    cityId: 'hoian',
+    name: 'Old Town & Cam Pho (Старый город / Кам Фо)',
     tagline: {
-      en: 'Scenic lakeside expat district renowned for coffee culture, art hubs, and dining.',
-      ru: 'Живописный район вокруг Западного озера, известный своей кофейной культурой и искусством.'
+      en: 'UNESCO historic core: yellow merchant houses and glowing lantern streets.',
+      ru: 'Исторический центр ЮНЕСКО: желтые колониальные дома и шелковые фонари.'
     },
     description: {
-      en: 'Surrounds Hanoi’s largest lake, offering lakefront cafes, rooftop views, cycling routes, and historic pagodas mixed with modern living.',
-      ru: 'Расположен вокруг крупнейшего озера Ханоя: кафе у воды, виды с крыш, веломаршруты и пагоды рядом с современными домами.'
+      en: 'Pedestrian UNESCO heritage streets, Thu Bon river promenade, Japanese covered bridge, historic tea houses and tailor shops.',
+      ru: 'Пешеходная зона ЮНЕСКО, река Тху Бон, мост Японский, лучшие кофейни, ремесленные лавки и уличная еда. Идеально для первых недель и культурного погружения.'
     },
-    scores: { budget: 3, beach: 1, quiet: 3, social: 4, remoteWork: 4 },
+    scores: { budget: 3, beach: 2, quiet: 2, social: 4, remoteWork: 3 },
     highlights: {
-      en: ['Lakeside walks & cycling', 'Rich artisanal & cultural coffee scene', 'Established international community'],
-      ru: ['Прогулки и велопрогулки у озера', 'Богатая культура кофеен', 'Сложившееся международное комьюнити']
+      en: ['UNESCO World Heritage atmosphere', 'Hundreds of artisan cafes & restaurants', 'Enchanting evening lanterns on the river'],
+      ru: ['Атмосфера старинного города ЮНЕСКО', 'Сотни аутентичных ресторанов и кофеен', 'Пешеходные улочки с фонариками']
+    }
+  },
+  {
+    id: 'hoian_cam_thanh',
+    cityId: 'hoian',
+    name: 'Cam Thanh (Кам Тхань — Кокосовые каналы)',
+    tagline: {
+      en: 'Tropical water coconut palm groves: authentic eco-villas and river breezes.',
+      ru: 'Тропический эко-район у кокосовой рощи: речной бриз и уединение.'
+    },
+    description: {
+      en: 'Eco-resorts and private villas nestled along natural palm waterways. Basket boat paddling, organic herb gardens, and soothing tranquility.',
+      ru: 'Аутентичные виллы вдоль пальмовых каналов, катание на круглых лодках-корзинах, чистый воздух и полная тишина для глубокой концентрации.'
+    },
+    scores: { budget: 2, beach: 3, quiet: 5, social: 2, remoteWork: 4 },
+    highlights: {
+      en: ['Water coconut channels and green groves', 'Pure river breeze and zero city noise', 'Affordable garden villas'],
+      ru: ['Водные каналы и кокосовые пальмы', 'Свежий речной бриз и отсутствие городского шума', 'Доступные эко-виллы']
+    }
+  },
+
+  // ==========================================
+  // ХАНОЙ (HANOI)
+  // ==========================================
+  {
+    id: 'tay_ho',
+    cityId: 'hanoi',
+    name: 'Tay Ho / West Lake (Тэй Хо — Западное озеро)',
+    tagline: {
+      en: 'Primary international expat district around Hanoi’s largest lake.',
+      ru: 'Главный экспатский район столицы на набережной Западного озера (17 км).'
+    },
+    description: {
+      en: 'Surrounds West Lake (Xuan Dieu, To Ngoc Van). International schools (UNIS, Concordia), embassies, lakeside brunch spots, craft breweries, art hubs, and serviced apartments.',
+      ru: 'Улицы Xuân Diệu и Tô Ngọc Vân. Международные школы (UNIS, Concordia), посольства, коворкинги, европейские пекарни, студии и виллы у воды. Чистый озерный воздух.'
+    },
+    scores: { budget: 4, beach: 1, quiet: 4, social: 5, remoteWork: 5 },
+    highlights: {
+      en: ['17 km lakefront path for jogging & cycling', 'Top international schools & diplomatic enclave', 'Artisanal cafes and global dining'],
+      ru: ['17-километровая набережная для пробежек и велоспорта', 'Европейские школы UNIS и дипломатический статус', 'Спешелти-кофейни и коворкинги мирового уровня']
     },
     founderNote: {
-      en: 'Tay Ho is the clear choice for Hanoi relocations due to cleaner air near the lake and abundant remote-work cafes.',
-      ru: 'Тай Хо — лучший выбор в Ханое благодаря более чистому воздуху у озера и огромному выбору кофеен для работы.'
+      en: 'Tay Ho is the clear #1 choice for relocations to Hanoi: cleaner air off the lake, excellent cafes, and the entire English-speaking community lives here.',
+      ru: 'Тэй Хо — безусловный номер один для переезда в Ханой: свежий воздух у озера, европейский сервис и готовая экспатская среда.'
+    }
+  },
+  {
+    id: 'hanoi_hoan_kiem',
+    cityId: 'hanoi',
+    name: 'Hoan Kiem (Хоан Кием — Старый квартал)',
+    tagline: {
+      en: 'Historic heart: 36 guild streets, colonial architecture, Hoan Kiem Lake.',
+      ru: 'Историческое сердце Ханоя: 36 ремесленных улиц и озеро Возвращенного Меча.'
+    },
+    description: {
+      en: 'Colonial mansions, egg coffee cafes, weekend pedestrian night market, street food stalls, and the mythical Turtle Tower on the lake.',
+      ru: 'Колониальные особняки, легендарный эггкофе, уличная еда, ночной рынок. Энергия азиатской столицы, всё в пешей доступности.'
+    },
+    scores: { budget: 3, beach: 1, quiet: 1, social: 5, remoteWork: 3 },
+    highlights: {
+      en: ['Iconic Hoan Kiem Lake & Old Quarter', 'Vibrant cultural and culinary energy', 'Walkability to historic landmarks'],
+      ru: ['Легендарный Старый квартал и озеро Хоанкием', 'Культурная и гастрономическая жизнь', 'Пешеходная доступность ко всем музеям']
+    }
+  },
+  {
+    id: 'hanoi_ba_dinh',
+    cityId: 'hanoi',
+    name: 'Ba Dinh (Ба Динь — Правительственный квартал)',
+    tagline: {
+      en: 'Embassies, wide tree-lined boulevards, public parks, supreme safety.',
+      ru: 'Район посольств и министерств: порядок, широкие зеленые бульвары и чистота.'
+    },
+    description: {
+      en: 'Presidential Palace, Ho Chi Minh Mausoleum, botanical gardens, foreign embassies. Cleanest and most secure district in the capital.',
+      ru: 'Мавзолей Хо Ши Мина, цитадель Тханг Лонг, посольские резиденции, парки. Самый безопасный, чистый и респектабельный район столицы.'
+    },
+    scores: { budget: 4, beach: 1, quiet: 5, social: 3, remoteWork: 4 },
+    highlights: {
+      en: ['Diplomatic status, immaculate security', 'Spacious green boulevards and parks', 'Borders both Old Town and West Lake'],
+      ru: ['Правительственный статус, образцовый порядок', 'Просторные зеленые парки и бульвары', 'Близость как к центру, так и к озеру']
+    }
+  },
+  {
+    id: 'hanoi_cau_giay',
+    cityId: 'hanoi',
+    name: 'Cau Giay (Кау Зяй — Технологический IT-хаб)',
+    tagline: {
+      en: 'Modern high-rises, IT corporate offices (FPT, Viettel), Metro Line 3.',
+      ru: 'Технологический центр Ханоя: офисы IT-корпораций, новые ЖК Vinhomes и метро.'
+    },
+    description: {
+      en: 'Hanoi’s silicon quarter with sleek Vinhomes towers, technology headquarters, international universities, and newly opened Metro Line 3 access.',
+      ru: 'Деловой район с современной высотной застройкой, офисами технологических гигантов (FPT, Viettel), веткой метро Line 3. Отличный выбор для IT-специалистов.'
+    },
+    scores: { budget: 3, beach: 1, quiet: 3, social: 4, remoteWork: 5 },
+    highlights: {
+      en: ['Modern Vinhomes residential towers', 'Direct access to Metro Line 3 stations', 'Corporate tech ecosystem hub'],
+      ru: ['Современные ЖК Vinhomes с охраной и паркингом', 'Шаговая доступность к метро Line 3', 'Эпицентр технологического бизнеса']
+    }
+  },
+  {
+    id: 'hanoi_hai_ba_trung',
+    cityId: 'hanoi',
+    name: 'Hai Ba Trung / Times City (Хай Ба Чынг)',
+    tagline: {
+      en: 'Megacity living: Times City complex, Vincom Mega Mall, Vinmec hospital.',
+      ru: 'Крупный жилой мегакомплекс Times City с парками, аквариумом и ТЦ Vincom.'
+    },
+    description: {
+      en: 'Self-contained mini-city with Vincom Mega Mall, Vinschool campuses, Vinmec hospital, musical fountains, and modern high-rise rentals.',
+      ru: 'Современный «город в городе» с подземным торговым центром Vincom Mega Mall, школами Vinschool, госпиталем Vinmec и поющими фонтанами.'
+    },
+    scores: { budget: 3, beach: 1, quiet: 4, social: 4, remoteWork: 4 },
+    highlights: {
+      en: ['Self-contained Times City infrastructure', 'Vinmec hospital & top international amenities', '15 mins drive to Old Quarter'],
+      ru: ['Мегакомплекс Times City с развитой инфраструктурой', 'Госпиталь Vinmec и школы Vinschool', '15 минут до центра Хоанкием']
+    }
+  },
+
+  // ==========================================
+  // ХОШИМИН / САЙГОН (HO CHI MINH CITY)
+  // ==========================================
+  {
+    id: 'thao_dien',
+    cityId: 'saigon',
+    name: 'Thao Dien (Тао Дьен / District 2 — Европейский анклав)',
+    tagline: {
+      en: 'Premier international enclave on the Saigon River bend: BIS school, Metro Line 1.',
+      ru: 'Премиальный европейский оазис на излучине реки Сайгон: виллы и школы BIS.'
+    },
+    description: {
+      en: 'Most prestigious expat sanctuary in Vietnam. Craft bakeries, specialty coffee, international schools (BIS, ISHCMC), overhead Metro Line 1 (17 min to D1), riverside pool villas.',
+      ru: 'Самый престижный экспатский район Вьетнама: пекарни, спешелти-кофе, бутики, станции надземного метро Line 1 (17 минут до центра). Виллы с бассейнами.'
+    },
+    scores: { budget: 5, beach: 1, quiet: 4, social: 5, remoteWork: 5 },
+    highlights: {
+      en: ['Thao Dien Metro Line 1 station (17 min to D1)', 'British International School (BIS) campus', 'Riverside dining and green village atmosphere'],
+      ru: ['Станция метро Thảo Điền Line 1 (17 мин до D1)', 'Международные школы BIS и ISHCMC', 'Европейские рестораны и зеленая набережная']
+    },
+    founderNote: {
+      en: 'The golden standard of international living in Vietnam for tech founders, senior remote workers, and expat families.',
+      ru: 'Золотой стандарт европейского комфорта в Сайгоне для фаундеров, IT-руководителей и семей.'
+    }
+  },
+  {
+    id: 'hcm_binh_thanh',
+    cityId: 'saigon',
+    name: 'Binh Thanh / Landmark 81 (Бинь Тхань)',
+    tagline: {
+      en: 'Landmark 81 skyscraper, massive Vinhomes river park, 5 mins to center.',
+      ru: 'Небоскреб Landmark 81, огромный парк Vinhomes Central Park и 5 минут до центра.'
+    },
+    description: {
+      en: 'Vietnam’s tallest skyscraper (461m) with central park, Tan Cang Metro station, modern residential towers, 40% cheaper rent than District 1.',
+      ru: 'Самый высокий небоскреб Вьетнама (461 м) и парк на берегу реки. Современные высотки, станция метро, развитая инфраструктура, аренда на 40% доступнее D1.'
+    },
+    scores: { budget: 3, beach: 1, quiet: 3, social: 4, remoteWork: 5 },
+    highlights: {
+      en: ['Landmark 81 and 14-hectare riverside park', 'Tan Cang Metro Line 1 station', '5-10 mins scooter ride to District 1'],
+      ru: ['Небоскреб Landmark 81 и парк Vinhomes Central Park', 'Станция метро Tân Cảng под боком', '5–10 минут на байке до District 1']
+    },
+    founderNote: {
+      en: 'Great sweet spot between price and prestige: you live in a modern high-rise next to the river park, but pay sensible rent.',
+      ru: 'Отличный баланс цены и комфорта: современный ЖК у парка, метро и 5 минут до центра за разумные деньги.'
+    }
+  },
+  {
+    id: 'hcm_d1',
+    cityId: 'saigon',
+    name: 'District 1 (Район 1 — Деловой и туристический центр)',
+    tagline: {
+      en: 'High-energy financial downtown: Ben Thanh, Bitexco, Opera House, Metro Line 1.',
+      ru: 'Сердце южного мегаполиса: рынок Бен Тхань, небоскребы, набережная и метро.'
+    },
+    description: {
+      en: 'Epicenter of commerce, rooftop lounges, five-star hotels, Ben Thanh central metro terminus, and bustling nightlife on Bui Vien.',
+      ru: 'Улицы Đồng Khởi, Bùi Viện, набережная реки Сайгон, станция метро Bến Thành Line 1. Высотный ритм жизни, пятизвездочные отели и рестораны.'
+    },
+    scores: { budget: 5, beach: 1, quiet: 1, social: 5, remoteWork: 5 },
+    highlights: {
+      en: ['Ben Thanh central underground metro terminal', 'Bitexco Tower & Saigon riverfront promenade', 'Financial institutions and 24/7 dining'],
+      ru: ['Центральная станция метро Bến Thành Line 1', 'Башня Bitexco и набережная реки Сайгон', 'Главные достопримечательности и деловые центры']
+    }
+  },
+  {
+    id: 'hcm_d7_phu_my_hung',
+    cityId: 'saigon',
+    name: 'District 7 / Phu My Hung (Фу Ми Хынг — Азиатский Сингапур)',
+    tagline: {
+      en: 'Planned green garden city: wide boulevards, Crescent Mall, FV Hospital.',
+      ru: 'Город-сад с широкими проспектами, корейским кластером и госпиталем FV.'
+    },
+    description: {
+      en: 'Clean, planned suburb designed like Singapore. Low traffic, lakes, international schools (SSIS), Franco-Vietnamese FV Hospital, Korean dining enclave.',
+      ru: 'Малоэтажный и зеленый элитный район на юге города: парки, озера, торговый центр Crescent Mall, международные школы, клиника FV Hospital.'
+    },
+    scores: { budget: 4, beach: 1, quiet: 5, social: 4, remoteWork: 4 },
+    highlights: {
+      en: ['Wide clean pedestrian avenues and lakes', 'Franco-Vietnamese FV International Hospital', 'Crescent Mall and family lifestyle'],
+      ru: ['Широкие чистые улицы и парковые зоны', 'Франко-вьетнамский госпиталь FV Hospital', 'Озеро Полумесяца и ТЦ Crescent Mall']
+    },
+    founderNote: {
+      en: 'The cleanest and most child-friendly neighborhood in Ho Chi Minh City for families prioritizing schools and fresh air.',
+      ru: 'Самый чистый и спокойный район Хошимина для семей с детьми, ценящих свежий воздух и безопасность.'
+    }
+  },
+  {
+    id: 'hcm_d3',
+    cityId: 'saigon',
+    name: 'District 3 (Район 3 — Колониальный тихий центр)',
+    tagline: {
+      en: 'Shady tamarind avenues, French colonial villas, Tan Dinh pink church.',
+      ru: 'Французские колониальные особняки, розовый храм Тан Динь и уютные кофейни.'
+    },
+    description: {
+      en: 'Directly borders District 1 without the tourist hustle. Shady colonial streets, Tan Dinh authentic market, indie fashion boutiques, and local cafe culture at 20-30% lower rent.',
+      ru: 'Примыкает к Району 1, но без туристического карнавала. Тенистые аллеи, рынок Тан Динь, бутики, цены на аренду на 20–30% приятнее первого района.'
+    },
+    scores: { budget: 3, beach: 1, quiet: 4, social: 4, remoteWork: 5 },
+    highlights: {
+      en: ['Tan Dinh pink church & authentic food market', 'Tamarind-lined colonial villa streets', 'Immediate walking access to District 1'],
+      ru: ['Розовый собор Tân Định и аутентичный рынок', 'Тенистые улицы со старинными виллами', 'Пешая доступность к Району 1']
     }
   }
 ];
@@ -637,9 +1063,9 @@ export const UI_STRINGS = {
     heroTagline: 'Structure your relocation or long travel stay with remote human expertise.',
     heroHeadline: 'Relocate or Travel to Vietnam',
     heroSubhead: 'Get personalized city recommendations, remote accommodation guidance, interactive cost modeling, and step-by-step roadmaps inside your private workspace.',
-    heroCtaPrimary: 'Book Consultation (60 Min • $50) →',
+    heroCtaPrimary: 'Book Consultation (60 Min • $25) →',
     heroCtaSecondary: 'Explore Client Workspace Demo',
-    promoOfferBanner: '60-Minute Strategic Video Call in Zoom / Google Meet • $50',
+    promoOfferBanner: '60-Minute Strategic Video Call in Zoom / Google Meet • $25',
     pricingRemoteNotice: '100% Remote Advisory Notice: All plans are delivered digitally into your client workspace. No physical meetups or real estate brokerage.',
     
     // Why Choose Us
@@ -654,11 +1080,11 @@ export const UI_STRINGS = {
     why4Title: 'Direct Founder Communication',
     why4Desc: 'Stay directly connected via WhatsApp or Telegram with the founder throughout your preparation and arrival phases.',
 
-    // Pricing Tiers ($50 express tier 1)
+    // Pricing Tiers ($25 express tier 1)
     pricingTitle: 'Choose your relocation package',
     pricingSubhead: 'Bespoke planning created personally by the founder, delivered straight into your client dashboard.',
     tier1Title: 'Consultation: Should I Move to Vietnam?',
-    tier1Price: '$50',
+    tier1Price: '$25',
     tier1Badge: 'Strategy Call',
     tier1Desc: '60-minute strategic consultation: evaluate whether moving to Vietnam fits your goals, city selection, answers to key questions.',
     tier1Feat1: '60 minutes 1-on-1 personal video call',
@@ -765,13 +1191,14 @@ export const UI_STRINGS = {
     shieldPackageCost: 'Investment in Relocation Plan: $490',
     shieldNetSavings: 'Net cash saved: $710 to $1,760 + stress eliminated',
     shieldCTA: 'Lock in Relocation ($490) →',
-    shieldCallPrompt: 'Or start with a 60-min Strategy Call ($50) — fully credited towards the plan within 7 days',
+    shieldCallPrompt: 'Or start with a 60-min Strategy Call ($25) — fully credited towards the plan within 7 days',
 
     // Questionnaire
     qTitle: 'Client Relocation Intake Questionnaire',
     qSubhead: 'Tell us about your goals, timeline, work setup, and preferences so the founder can craft your personalized plan.',
     qName: 'Your Full Name',
     qEmail: 'Email Address',
+    qMessenger: 'Telegram / WhatsApp Handle or Phone',
     qPassword: 'Password for Client Workspace',
     qCountry: 'Current Country / Residency',
     qDates: 'Target Travel / Relocation Date',
@@ -995,8 +1422,8 @@ export const UI_STRINGS = {
     founderLoggedInBadge: 'Founder Online',
     clientWorkspaceUnlockedBadge: 'Client Access Active',
 
-    // Express Booking ($50)
-    expressFormTitle: 'Book 60-Minute Strategic Consultation ($50)',
+    // Express Booking ($25)
+    expressFormTitle: 'Book 60-Minute Strategic Consultation ($25)',
     expressFormSubhead: 'Personal 1-on-1 video consultation with the founder. Register your client account to choose your time slot and access your workspace.',
     expressNameLabel: 'Full Name',
     expressMessengerLabel: 'WhatsApp or Telegram handle',
@@ -1007,7 +1434,7 @@ export const UI_STRINGS = {
     expressDateLabel: 'Select Consultation Date',
     expressTimeLabel: 'Select Time Slot',
     expressPlatformNote: 'The video call will take place on Zoom or Google Meet. Meeting link and confirmation will be sent to your email, messenger, and saved in your personal client workspace.',
-    expressSubmitBtn: 'Register & Book Consultation ($50)',
+    expressSubmitBtn: 'Register & Book Consultation ($25)',
     expressConsultationBookedTitle: 'Your 60-Minute Consultation is Booked!',
     expressMeetingPlatformLabel: 'Video Call Platform',
     expressScheduledFor: 'Scheduled For',
@@ -1035,7 +1462,7 @@ export const UI_STRINGS = {
     navFAQ: 'Частые вопросы',
     navQuestionnaire: 'Заполнить анкету',
     navDashboard: 'Личный кабинет',
-    navAdmin: 'Панель основателя',
+    navAdmin: 'Панель Founder',
     navConsultation: 'Консультация',
     navLogin: 'Войти',
     navWhatsApp: 'Написать в WhatsApp',
@@ -1045,28 +1472,28 @@ export const UI_STRINGS = {
     heroTagline: 'Организуйте ваш переезд или путешествие с поддержкой реального эксперта.',
     heroHeadline: 'Переезд или путешествие во Вьетнам',
     heroSubhead: 'Получите персональные рекомендации по городам и районам, гайд по удаленному поиску жилья, интерактивный бюджет и пошаговый план прямо в вашем личном кабинете.',
-    heroCtaPrimary: 'Записаться на консультацию (60 мин • $50) →',
+    heroCtaPrimary: 'Записаться на консультацию (60 мин • $25) →',
     heroCtaSecondary: 'Посмотреть личный кабинет',
-    promoOfferBanner: '60-минутная экспресс-встреча в Zoom / Google Meet • $50',
+    promoOfferBanner: '60-минутная экспресс-встреча в Zoom / Google Meet • $25',
     pricingRemoteNotice: '100% Удалённый консалтинг: Все материалы и планы публикуются онлайн в вашем личном кабинете. Без физических встреч и риелторских услуг.',
 
     // Why Choose Us
     whyTitle: 'Чем наш сервис лучше обычных гайдов?',
-    whySubhead: 'Мы заменяем недели хаотичного поиска структурированной экспертизой основателя и интерактивным кабинетом.',
-    why1Title: 'Персональная экспертиза основателя',
-    why1Desc: 'Никаких шаблонных ИИ-текстов. Каждое сравнение городов, бюджетный сценарий и район подбираются основателем лично под вашу ситуацию.',
+    whySubhead: 'Мы заменяем недели хаотичного поиска структурированной экспертизой Founder и интерактивным кабинетом.',
+    why1Title: 'Персональная экспертиза Founder',
+    why1Desc: 'Никаких шаблонных ИИ-текстов. Каждое сравнение городов, бюджетный сценарий и район подбираются Founder лично под вашу ситуацию.',
     why2Title: 'Интерактивный личный кабинет',
     why2Desc: 'Вы получаете удобный кабинет с динамическими слайдерами бюджета, пошаговым чек-листом релокации и заметками эксперта.',
     why3Title: '100% Удаленная эффективность',
     why3Desc: 'Мы даем гайд по онлайн-поиску жилья, вопросам владельцам, красным флагам в договорах и настройке интернета до вашего вылета.',
-    why4Title: 'Прямая связь с основателем',
-    why4Desc: 'Вы общаетесь напрямую с основателем в WhatsApp или Telegram на протяжении всей подготовки и адаптации.',
+    why4Title: 'Прямая связь с Founder',
+    why4Desc: 'Вы общаетесь напрямую с Founder в WhatsApp или Telegram на протяжении всей подготовки и адаптации.',
 
     // Pricing Tiers (Sentence Case Title + Package Names Translated + 'Выбрать' Button)
     pricingTitle: 'Выберите тариф планирования',
-    pricingSubhead: 'Персональная работа основателя, оформленная в удобном интерактивном кабинете.',
+    pricingSubhead: 'Персональная работа Founder, оформленная в удобном интерактивном кабинете.',
     tier1Title: 'Консультация «Стоит ли переезжать во Вьетнам»',
-    tier1Price: '$50',
+    tier1Price: '$25',
     tier1Badge: 'Стратегический звонок',
     tier1Desc: '60-минутная стратегическая консультация: оценка целесообразности переезда под ваши цели, выбор городов, ответы на главные вопросы.',
     tier1Feat1: '60 минут личной видео-встречи',
@@ -1118,9 +1545,9 @@ export const UI_STRINGS = {
     previewTab1: 'Дорожная карта',
     previewTab2: 'Слайдеры бюджета',
     previewTab3: 'Подбор районов',
-    previewTab4: 'Заметки основателя',
+    previewTab4: 'Заметки Founder',
     previewRoadmapTitle: 'Интерактивная дорожная карта переезда',
-    previewRoadmapSubhead: 'Пошаговый чек-лист под дату вашего приезда с комментариями и советами основателя.',
+    previewRoadmapSubhead: 'Пошаговый чек-лист под дату вашего приезда с комментариями и советами Founder.',
     previewBtnOpen: 'Открыть демонстрацию личного кабинета',
 
     // Process & Safety Shield Section (Replacing Housing Guidance)
@@ -1131,7 +1558,7 @@ export const UI_STRINGS = {
     processSubhead: 'Самостоятельный поиск жилья в Азии часто обходится на $700–$1,500 дороже из-за невозвратных депозитов, накруток на свет и аренды в сезон дождей. Мы сделали процесс прозрачным, а каждую вложенную сумму — окупаемой.',
     processStep1Badge: 'День 1',
     processStep1Title: 'Глубокий аудит и выбор сезона',
-    processStep1Desc: 'Основатель лично разбирает ваши цели, бюджет, формат удаленки и состав семьи. Отсекаем несезонные регионы (сезон тайфунов в Дананге или сырой холод на севере) и выбираем точный город и район.',
+    processStep1Desc: 'Founder лично разбирает ваши цели, бюджет, формат удаленки и состав семьи. Отсекаем несезонные регионы (сезон тайфунов в Дананге или сырой холод на севере) и выбираем точный город и район.',
     processStep1Result: 'Доступ в личный кабинет с персональной дорожной картой и анализом районов.',
     processStep1Risk: 'Исключает: ошибку с сезоном дождей и потерей билетов',
     processStep2Badge: 'День 2–3',
@@ -1147,7 +1574,7 @@ export const UI_STRINGS = {
     processStep4Badge: 'День прилёта',
     processStep4Title: 'Памятка по заезду, полезные контакты и 30 дней поддержки',
     processStep4Desc: 'Передаем простую памятку по приёмке жилья (фотофиксация счетчиков и мебели для защиты залога), готовый шаблон сообщения хозяину для оформления регистрации в полиции (tạm trú), делимся проверенными контактами аренды байков без залога паспорта и остаемся на связи в личном чате первые 30 дней.',
-    processStep4Result: 'Памятка по защите залога, шаблон для регистрации, контакты проверенных сервисов и поддержка основателя в чате.',
+    processStep4Result: 'Памятка по защите залога, шаблон для регистрации, контакты проверенных сервисов и поддержка Founder в чате.',
     processStep4Risk: 'Исключает: претензии хозяина за чужие поломки при выезде, непонимание с регистрацией и бытовой стресс первого месяца',
     shieldBadge: 'Протокол Due Diligence и стандарты безопасности',
     shieldTitle: 'Сколько стоит самостоятельный переезд: цена ошибок vs Сопровождение',
@@ -1173,13 +1600,14 @@ export const UI_STRINGS = {
     shieldPackageCost: 'Стоимость тарифа «Планирование релокации»: $490',
     shieldNetSavings: 'Чистая финансовая экономия: от $710 до $1,760 + сохраненные нервы',
     shieldCTA: 'Зафиксировать сопровождение ($490) →',
-    shieldCallPrompt: 'Или начните со стратегического созвона на 60 мин ($50) — зачтем сумму в стоимость пакета',
+    shieldCallPrompt: 'Или начните со стратегического созвона на 60 мин ($25) — зачтем сумму в стоимость пакета',
 
     // Questionnaire
     qTitle: 'Анкета клиента для планирования переезда',
-    qSubhead: 'Расскажите о ваших целях, сроках, формате работы и пожеланиях, чтобы основатель сформировал ваш план.',
+    qSubhead: 'Расскажите о ваших целях, сроках, формате работы и пожеланиях, чтобы Founder сформировал ваш план.',
     qName: 'Ваше имя и фамилия',
     qEmail: 'Электронная почта',
+    qMessenger: 'Telegram / WhatsApp для оперативной связи',
     qPassword: 'Придумайте пароль для входа в кабинет',
     qCountry: 'Страна проживания / гражданство',
     qDates: 'Планируемая дата приезда',
@@ -1197,7 +1625,7 @@ export const UI_STRINGS = {
     qGoals: 'Долгосрочные цели поездки',
     qPriorities: 'Главные приоритеты',
     qConcerns: 'Вопросы и беспокойства',
-    qAdditional: 'Дополнительная информация для основателя',
+    qAdditional: 'Дополнительная информация для Founder',
     qSubmit: 'Отправить анкету и открыть кабинет',
 
     // Dashboard UI Overview Widgets
@@ -1211,8 +1639,8 @@ export const UI_STRINGS = {
     dashTabRoadmap: 'Дорожная карта',
     dashTabHousing: 'Гайд по поиску жилья',
     dashTabResources: 'Полезные ресурсы',
-    dashFounderNoteHeader: 'Заметка основателя',
-    dashContactFounder: 'Связаться с основателем',
+    dashFounderNoteHeader: 'Заметка Founder',
+    dashContactFounder: 'Связаться с Founder',
     dashWorkspaceBadge: 'Личный кабинет релокации',
     dashTargetArrival: 'Планируемый приезд',
     dashWhatsAppFounder: 'WhatsApp',
@@ -1236,18 +1664,18 @@ export const UI_STRINGS = {
     widgetRoadmapBtn: 'Открыть карту',
 
     // Dashboard City View
-    cityTopMatchBadge: 'Главная рекомендация основателя для вас',
+    cityTopMatchBadge: 'Главная рекомендация Founder для вас',
     cityBudgetLabel: 'Бюджет',
     cityBeachLabel: 'Пляж',
 
     // Dashboard Budget View
-    budgetBaselineBadge: 'Базовый ориентир основателя',
+    budgetBaselineBadge: 'Базовый ориентир Founder',
     budgetBaselineTitle: 'Рекомендованный стартовый бюджет',
     budgetBaselineSubhead: 'Рассчитан на основе вашей анкеты для удалённой жизни в Дананге и Хойане.',
     budgetPerMonth: 'мес',
     budgetExploreTitle: 'Сравнение сценариев бюджета',
     budgetExploreSubhead: 'Меняйте слайдеры, чтобы увидеть, как изменятся расходы при аренде виллы или выборе коворкинга.',
-    budgetResetBtn: 'Сбросить к оценке основателя',
+    budgetResetBtn: 'Сбросить к оценке Founder',
     budgetCurrentTotal: 'Текущий расчетный итог в месяц',
     budgetVndEquivalent: 'Эквивалент во вьетнамских донгах',
     budgetSliderAccTitle: 'Жильё (аренда и коммунальные)',
@@ -1265,7 +1693,7 @@ export const UI_STRINGS = {
     budgetSliderEntDesc: 'Абонемент в спортзал/йогу, поездки на выходные, сёрфинг',
 
     // Dashboard Roadmap View
-    roadmapBadge: 'Персональный план основателя',
+    roadmapBadge: 'Персональный план Founder',
     roadmapTitle: 'Дорожная карта релокации',
     roadmapSubhead: 'Отслеживайте шаги подготовки. Отмечайте чек-боксы по мере выполнения задач.',
     roadmapCompletedCounter: 'Задач выполнено',
@@ -1278,9 +1706,9 @@ export const UI_STRINGS = {
     // Dashboard Resources View
     resourcesBadge: 'Проверенные ресурсы и ссылки',
     resourcesTitle: 'Полезные ресурсы и ссылки',
-    resourcesSubhead: 'Рекомендованные основателем приложения, порталы и сервисы для удалёнщиков во Вьетнаме.',
+    resourcesSubhead: 'Рекомендованные Founder приложения, порталы и сервисы для удалёнщиков во Вьетнаме.',
     resourcesVisit: 'Открыть',
-    resourcesFounderTip: 'Совет основателя',
+    resourcesFounderTip: 'Совет Founder',
     resourcesCatAcc: 'Поиск жилья и аренда',
     resourcesCatTrans: 'Транспорт и такси',
     resourcesCatInternet: 'Связь и скоростной интернет',
@@ -1289,7 +1717,7 @@ export const UI_STRINGS = {
     // City Comparison Matrix Labels
     cityWhyLabel: 'ПОЧЕМУ ЭТО ПОДХОДИТ ПОД ВАШУ АНКЕТУ:',
     cityMatrixTitle: 'Сравнительная матрица городов Вьетнама',
-    cityMatrixSubhead: 'Проверенные критерии, сформированные основателем под вашу поездку.',
+    cityMatrixSubhead: 'Проверенные критерии, сформированные Founder под вашу поездку.',
     cityBadgeFounder: 'Экспертный анализ',
     colDestination: 'Город',
     colLifestyle: 'Атмосфера и стиль жизни',
@@ -1300,14 +1728,14 @@ export const UI_STRINGS = {
 
     // Neighborhood View Labels
     neighRecTitle: 'Рекомендованные районы для вас',
-    badgeFounderMatched: 'Подбор основателя',
+    badgeFounderMatched: 'Подбор Founder',
     lblBeach: 'Пляж',
     lblQuiet: 'Тишина',
     lblRemoteWork: 'Работа',
-    lblFounderNote: 'Заметка основателя',
+    lblFounderNote: 'Заметка Founder',
     explorerTitle: 'Интерактивный навигатор по районам',
-    explorerSubhead: 'Настройте параметры ниже для фильтрации районов Вьетнама. Данные подготовлены основателем.',
-    badgeCurated: 'База данных основателя',
+    explorerSubhead: 'Настройте параметры ниже для фильтрации районов Вьетнама. Данные подготовлены Founder.',
+    badgeCurated: 'База данных Founder',
     sliderBeach: 'Мин. доступ к пляжу',
     sliderQuiet: 'Мин. тишина',
     sliderSocial: 'Мин. общение',
@@ -1316,7 +1744,7 @@ export const UI_STRINGS = {
     // Status Labels
     statusNew: 'Заказ получен',
     statusQuestionnaireCompleted: 'Анкета заполнена',
-    statusResearchInProgress: 'Основатель проводит анализ',
+    statusResearchInProgress: 'Founder проводит анализ',
     statusPlanReady: 'Персональный план опубликован',
     statusInProgress: 'План активен и изучается',
     statusCompleted: 'Проект завершён',
@@ -1328,11 +1756,11 @@ export const UI_STRINGS = {
     // FAQ
     faqTitle: 'Часто задаваемые вопросы',
     faq1Q: 'Это автоматический генератор от ИИ?',
-    faq1A: 'Нет. Каждый план исследуется и составляется лично основателем на основе вашей анкеты и общения. Интерактивные элементы в кабинете предназначены для вашего удобства.',
+    faq1A: 'Нет. Каждый план исследуется и составляется лично Founder на основе вашей анкеты и общения. Интерактивные элементы в кабинете предназначены для вашего удобства.',
     faq2Q: 'Проверяете ли вы квартиры лично и встречаетесь ли на месте?',
-    faq2A: 'Основатель ведёт общую стратегию, аналитику районов и онлайн-сопровождение релокации по всему Вьетнаму. При этом в Дананге работает наш проверенный локальный риелтор, который лично выезжает на просмотры квартир вместе с вами, помогает провести физический осмотр на месте и общается с хозяевами. По другим городам мы предоставляем детальные чек-листы для самостоятельного осмотра, аудит договоров и проверенные каналы поиска жилья.',
+    faq2A: 'Founder ведёт общую стратегию, аналитику районов и онлайн-сопровождение релокации по всему Вьетнаму. При этом в Дананге работает наш проверенный локальный риелтор, который лично выезжает на просмотры квартир вместе с вами, помогает провести физический осмотр на месте и общается с хозяевами. По другим городам мы предоставляем детальные чек-листы для самостоятельного осмотра, аудит договоров и проверенные каналы поиска жилья.',
     faq3Q: 'Как проходит общение после оплаты?',
-    faq3A: 'Основное общение происходит напрямую через WhatsApp или Telegram с основателем, плюс вся информация структурируется в вашем личном кабинете.',
+    faq3A: 'Основное общение происходит напрямую через WhatsApp или Telegram с Founder, плюс вся информация структурируется в вашем личном кабинете.',
     faq4Q: 'Какие города Вьетнама вы охватываете?',
     faq4A: 'Мы специализируемся на Дананге, Хойане, Хошимине (Сайгоне), Ханое и прибрежных локациях для удалёнщиков.',
     faq5Q: 'Я купил пакет "Планирование поездки" ($290), но решил переехать. Можно перейти на пакет релокации?',
@@ -1364,7 +1792,7 @@ export const UI_STRINGS = {
     serviceOrderBtn: 'Заказать услугу',
 
     // Admin Panel Translations
-    adminHeaderBadge: 'Панель основателя',
+    adminHeaderBadge: 'Панель Founder',
     adminHeaderTitle: 'Панель управления проектами',
     adminHeaderSubhead: 'Анализ анкет клиентов, обновление статусов и публикация персональных планов.',
     adminProfileTitle: 'Анкета и профиль клиента',
@@ -1379,7 +1807,7 @@ export const UI_STRINGS = {
     adminStatusLabel: 'Статус проекта',
     adminCityLabel: 'Рекомендованный город',
     adminRationaleLabel: 'Обоснование выбора города',
-    adminNoteLabel: 'Общая заметка основателя',
+    adminNoteLabel: 'Общая заметка Founder',
     adminPublishBtn: 'Опубликовать обновления клиенту',
     adminSuccessMsg: 'План опубликован в кабинете клиента!',
 
@@ -1392,20 +1820,20 @@ export const UI_STRINGS = {
     footerAesthetics: 'Разработано в премиальном стиле с абсолютной прозрачностью.',
 
     // Founder Auth & Access
-    founderLoginTitle: 'Панель управления основателя',
+    founderLoginTitle: 'Панель управления Founder',
     founderLoginDesc: 'Введите учетные данные для доступа к управлению проектами и публикации планов.',
     founderUsername: 'Логин',
     founderPassword: 'Пароль',
     founderLoginBtn: 'Войти в панель',
     founderLogoutBtn: 'Выйти',
     founderAuthError: 'Неверный логин или пароль. Попробуйте снова.',
-    founderFooterLink: 'Вход для основателя',
-    founderLoggedInBadge: 'Основатель онлайн',
+    founderFooterLink: 'Вход для Founder',
+    founderLoggedInBadge: 'Founder онлайн',
     clientWorkspaceUnlockedBadge: 'Кабинет активен',
 
-    // Express Booking ($50)
-    expressFormTitle: 'Запись на 60-минутную экспресс-консультацию ($50)',
-    expressFormSubhead: 'Личный звонок 1-на-1 с основателем. Зарегистрируйтесь, чтобы выбрать удобную дату, время и получить доступ в личный кабинет.',
+    // Express Booking ($25)
+    expressFormTitle: 'Запись на 60-минутную экспресс-консультацию ($25)',
+    expressFormSubhead: 'Личный звонок 1-на-1 с Founder. Зарегистрируйтесь, чтобы выбрать удобную дату, время и получить доступ в личный кабинет.',
     expressNameLabel: 'Имя и Фамилия',
     expressMessengerLabel: 'WhatsApp или Telegram (@ник / номер)',
     expressEmailLabel: 'Email (для ссылки на видеозвонок и входа в аккаунт)',
@@ -1415,7 +1843,7 @@ export const UI_STRINGS = {
     expressDateLabel: 'Выберите удобную дату',
     expressTimeLabel: 'Выберите удобное время',
     expressPlatformNote: 'Звонок будет совершен в Zoom или Google Meet. Ссылка на видеовстречу и подтверждение придут на вашу почту, в мессенджер и сохранятся в вашем личном кабинете.',
-    expressSubmitBtn: 'Зарегистрироваться на консультацию ($50)',
+    expressSubmitBtn: 'Зарегистрироваться на консультацию ($25)',
     expressConsultationBookedTitle: 'Ваша 60-минутная консультация запланирована!',
     expressMeetingPlatformLabel: 'Платформа видеосвязи',
     expressScheduledFor: 'Дата и время встречи',

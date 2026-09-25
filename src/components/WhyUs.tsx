@@ -1,9 +1,10 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { UserCheck, Sliders, ShieldCheck, MessageCircle } from 'lucide-react';
+import { MobileCarousel } from './ui/MobileCarousel';
 
 export const WhyUs: React.FC = () => {
-  const { t } = useApp();
+  const { t, language } = useApp();
 
   const advantages = [
     {
@@ -57,8 +58,8 @@ export const WhyUs: React.FC = () => {
           </p>
         </div>
 
-        {/* 4 Clean Cards */}
-        <div className="grid-2">
+        {/* 4 Clean Cards: Mobile Carousel, Desktop 2-Col Grid */}
+        <MobileCarousel desktopClassName="grid-2" ariaLabel={language === 'ru' ? 'Преимущества VietReloc' : 'Why Choose VietReloc'}>
           {advantages.map((adv, idx) => {
             const Icon = adv.icon;
             return (
@@ -89,7 +90,7 @@ export const WhyUs: React.FC = () => {
               </div>
             );
           })}
-        </div>
+        </MobileCarousel>
 
       </div>
     </section>

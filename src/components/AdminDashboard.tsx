@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import type {
   ClientFolderCategory
@@ -12,17 +13,21 @@ import {
   Eye,
   RotateCcw,
   FileText,
-  Calendar
+  Calendar,
+  X
 } from 'lucide-react';
 import { AdminScheduleView } from './AdminScheduleView';
 import { AdminTravelItineraryBuilder } from './AdminTravelItineraryBuilder';
 import { AdminRelocationManager } from './AdminRelocationManager';
+import { ClientDashboardPreviewModal } from './ClientDashboardPreviewModal';
+import { CITIES_DATA, normalizeCityId } from '../translations/content';
 
 export const AdminDashboard: React.FC = () => {
   const {
     adminClients,
     moveClientCategory,
     consultationBookings,
+    tiersConfig,
     language
   } = useApp();
 
@@ -30,6 +35,7 @@ export const AdminDashboard: React.FC = () => {
   const [activeFolder, setActiveFolder] = useState<ClientFolderCategory>('active');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [isQuestionnaireModalOpen, setIsQuestionnaireModalOpen] = useState<boolean>(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
   const [savedNotice, setSavedNotice] = useState<string | null>(null);
 
   // Filter clients by active folder
@@ -45,7 +51,7 @@ export const AdminDashboard: React.FC = () => {
   const completedCount = adminClients.filter((c) => c.category === 'completed').length;
 
   return (
-    <section style={{ padding: '3rem 0 5rem 0', background: 'var(--bg-main)' }}>
+    <section className="admin-scope" style={{ padding: '3rem 0 5rem 0', background: 'var(--bg-main)' }}>
       <div className="container" style={{ maxWidth: '1180px' }}>
         
         {/* Top Header */}
@@ -53,7 +59,7 @@ export const AdminDashboard: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div className="badge badge-terracotta" style={{ marginBottom: '0.4rem' }}>
-                <Settings size={14} /> {language === 'ru' ? 'Кабинет основателя • VietReloc' : 'Founder Workspace • VietReloc'}
+                <Settings size={14} /> {language === 'ru' ? 'Кабинет Founder • VietReloc' : 'Founder Workspace • VietReloc'}
               </div>
               <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', margin: '0.2rem 0' }}>
                 {language === 'ru' ? 'Управление клиентами и объектами' : 'Client Projects & Housing CMS'}
@@ -76,26 +82,19 @@ export const AdminDashboard: React.FC = () => {
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '1.25rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => setAdminSection('relocation_clients')}
+              className={`glass-button ${adminSection === 'relocation_clients' ? 'active' : ''}`}
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
                 gap: '0.5rem',
                 padding: '0.65rem 1.25rem',
-                borderRadius: 'var(--radius-md)',
                 fontSize: '0.92rem',
                 fontWeight: 700,
-                cursor: 'pointer',
-                border: adminSection === 'relocation_clients' ? '2px solid var(--accent-terracotta)' : '1px solid var(--border-subtle)',
-                background: adminSection === 'relocation_clients' ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
-                color: adminSection === 'relocation_clients' ? 'var(--accent-terracotta)' : 'var(--text-muted)',
-                boxShadow: adminSection === 'relocation_clients' ? '0 4px 12px rgba(194,94,32,0.12)' : 'none',
-                transition: 'all 0.2s ease'
+                color: adminSection === 'relocation_clients' ? '#FFFFFF' : 'var(--text-muted)'
               }}
             >
               <FileText size={16} />
               <span>{language === 'ru' ? 'Клиенты и квартиры (CMS)' : 'Client Projects & CMS'}</span>
               <span style={{
-                background: adminSection === 'relocation_clients' ? 'var(--accent-terracotta)' : '#9CA3AF',
+                background: adminSection === 'relocation_clients' ? 'rgba(255, 255, 255, 0.25)' : '#9CA3AF',
                 color: '#fff',
                 fontSize: '0.72rem',
                 fontWeight: 700,
@@ -108,27 +107,20 @@ export const AdminDashboard: React.FC = () => {
 
             <button
               onClick={() => setAdminSection('schedule_calls')}
+              className={`glass-button ${adminSection === 'schedule_calls' ? 'active' : ''}`}
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
                 gap: '0.5rem',
                 padding: '0.65rem 1.25rem',
-                borderRadius: 'var(--radius-md)',
                 fontSize: '0.92rem',
                 fontWeight: 700,
-                cursor: 'pointer',
-                border: adminSection === 'schedule_calls' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                background: adminSection === 'schedule_calls' ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
-                color: adminSection === 'schedule_calls' ? 'var(--accent-emerald)' : 'var(--text-muted)',
-                boxShadow: adminSection === 'schedule_calls' ? '0 4px 12px rgba(15,118,110,0.15)' : 'none',
-                transition: 'all 0.2s ease'
+                color: adminSection === 'schedule_calls' ? '#FFFFFF' : 'var(--text-muted)'
               }}
             >
               <Calendar size={16} />
-              <span>{language === 'ru' ? 'Расписание и звонки ($50)' : 'Schedule & Calls ($50)'}</span>
+              <span>{language === 'ru' ? 'Расписание и звонки ($25)' : 'Schedule & Calls ($25)'}</span>
               {consultationBookings.filter(b => b.status === 'confirmed').length > 0 && (
                 <span style={{
-                  background: 'var(--accent-emerald)',
+                  background: adminSection === 'schedule_calls' ? 'rgba(255, 255, 255, 0.25)' : 'var(--accent-emerald)',
                   color: '#fff',
                   fontSize: '0.72rem',
                   fontWeight: 700,
@@ -157,27 +149,20 @@ export const AdminDashboard: React.FC = () => {
         }}>
           <button
             onClick={() => { setActiveFolder('active'); setSelectedClientId(null); }}
+            className={`glass-button ${activeFolder === 'active' ? 'active' : ''}`}
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
               gap: '0.5rem',
-              padding: '0.75rem 1.4rem',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '0.95rem',
+              padding: '0.65rem 1.3rem',
+              fontSize: '0.92rem',
               fontWeight: 700,
-              cursor: 'pointer',
-              border: activeFolder === 'active' ? '2px solid var(--accent-terracotta)' : '1px solid var(--border-subtle)',
-              background: activeFolder === 'active' ? '#FFFFFF' : 'var(--bg-panel)',
-              color: activeFolder === 'active' ? 'var(--accent-terracotta)' : 'var(--text-muted)',
-              boxShadow: activeFolder === 'active' ? '0 4px 12px rgba(194,94,32,0.15)' : 'none',
-              transition: 'all 0.2s ease'
+              color: activeFolder === 'active' ? '#FFFFFF' : 'var(--text-muted)'
             }}
           >
             <FolderCheck size={18} />
             <span>{language === 'ru' ? 'Активные клиенты' : 'Active Clients'}</span>
             <span style={{
-              background: activeFolder === 'active' ? 'var(--accent-terracotta)' : '#D1D5DB',
-              color: '#FFFFFF',
+              background: activeFolder === 'active' ? 'rgba(255, 255, 255, 0.25)' : '#D1D5DB',
+              color: activeFolder === 'active' ? '#FFFFFF' : '#374151',
               borderRadius: '9999px',
               padding: '2px 8px',
               fontSize: '0.75rem',
@@ -189,27 +174,20 @@ export const AdminDashboard: React.FC = () => {
 
           <button
             onClick={() => { setActiveFolder('new'); setSelectedClientId(null); }}
+            className={`glass-button ${activeFolder === 'new' ? 'active' : ''}`}
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
               gap: '0.5rem',
-              padding: '0.75rem 1.4rem',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '0.95rem',
+              padding: '0.65rem 1.3rem',
+              fontSize: '0.92rem',
               fontWeight: 700,
-              cursor: 'pointer',
-              border: activeFolder === 'new' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-              background: activeFolder === 'new' ? '#FFFFFF' : 'var(--bg-panel)',
-              color: activeFolder === 'new' ? 'var(--accent-emerald)' : 'var(--text-muted)',
-              boxShadow: activeFolder === 'new' ? '0 4px 12px rgba(15,118,110,0.15)' : 'none',
-              transition: 'all 0.2s ease'
+              color: activeFolder === 'new' ? '#FFFFFF' : 'var(--text-muted)'
             }}
           >
             <FolderPlus size={18} />
             <span>{language === 'ru' ? 'Новые заявки' : 'New Inquiries'}</span>
             <span style={{
-              background: activeFolder === 'new' ? 'var(--accent-emerald)' : '#D1D5DB',
-              color: '#FFFFFF',
+              background: activeFolder === 'new' ? 'rgba(255, 255, 255, 0.25)' : '#D1D5DB',
+              color: activeFolder === 'new' ? '#FFFFFF' : '#374151',
               borderRadius: '9999px',
               padding: '2px 8px',
               fontSize: '0.75rem',
@@ -221,27 +199,20 @@ export const AdminDashboard: React.FC = () => {
 
           <button
             onClick={() => { setActiveFolder('completed'); setSelectedClientId(null); }}
+            className={`glass-button ${activeFolder === 'completed' ? 'active' : ''}`}
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
               gap: '0.5rem',
-              padding: '0.75rem 1.4rem',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '0.95rem',
+              padding: '0.65rem 1.3rem',
+              fontSize: '0.92rem',
               fontWeight: 700,
-              cursor: 'pointer',
-              border: activeFolder === 'completed' ? '2px solid var(--text-main)' : '1px solid var(--border-subtle)',
-              background: activeFolder === 'completed' ? '#FFFFFF' : 'var(--bg-panel)',
-              color: activeFolder === 'completed' ? 'var(--text-main)' : 'var(--text-muted)',
-              boxShadow: activeFolder === 'completed' ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
-              transition: 'all 0.2s ease'
+              color: activeFolder === 'completed' ? '#FFFFFF' : 'var(--text-muted)'
             }}
           >
             <Archive size={18} />
             <span>{language === 'ru' ? 'Архив / Завершенные' : 'Archive'}</span>
             <span style={{
-              background: activeFolder === 'completed' ? 'var(--text-main)' : '#D1D5DB',
-              color: '#FFFFFF',
+              background: activeFolder === 'completed' ? 'rgba(255, 255, 255, 0.25)' : '#D1D5DB',
+              color: activeFolder === 'completed' ? '#FFFFFF' : '#374151',
               borderRadius: '9999px',
               padding: '2px 8px',
               fontSize: '0.75rem',
@@ -279,9 +250,11 @@ export const AdminDashboard: React.FC = () => {
               {currentFolderClients.map((client) => {
                 const isSelected = selectedClient?.id === client.id;
                 const isTravel = client.tierId === 'tier2';
+                const isUpgraded = client.upgradedFromTier === 'tier2' || client.hasTravelPlan || Boolean(client.travelDays && client.travelDays.length > 0 && client.tierId !== 'tier2');
                 const countBadge = isTravel
                   ? `${client.travelDays?.length || 0} ${language === 'ru' ? 'дней' : 'days'}`
                   : `${client.roadmapTasks?.length || 12} ${language === 'ru' ? 'шагов' : 'steps'}`;
+                const effectivePrice = tiersConfig?.[client.tierId]?.price || client.priceUSD;
                 return (
                   <div
                     key={client.id}
@@ -296,9 +269,29 @@ export const AdminDashboard: React.FC = () => {
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem', gap: '0.4rem', flexWrap: 'wrap' }}>
                       <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>{client.clientName}</strong>
-                      <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>${client.priceUSD}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        {isUpgraded && (
+                          <span
+                            className="badge"
+                            style={{
+                              fontSize: '0.66rem',
+                              background: '#FEF3C7',
+                              color: '#92400E',
+                              border: '1px solid #FDE68A',
+                              padding: '0.1rem 0.45rem',
+                              borderRadius: '9999px'
+                            }}
+                            title={language === 'ru' ? 'Клиент перешел с тарифа $290 (доступен и маршрут путешествия, и релокация)' : 'Upgraded from $290'}
+                          >
+                            {language === 'ru' ? 'Апгрейд с $290' : 'From $290'}
+                          </span>
+                        )}
+                        <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
+                          ${effectivePrice}
+                        </span>
+                      </div>
                     </div>
 
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>
@@ -307,7 +300,7 @@ export const AdminDashboard: React.FC = () => {
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.76rem' }}>
                       <span style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>
-                        {client.recommendedCityId === 'danang' ? 'Дананг' : client.recommendedCityId === 'nhatrang' ? 'Нячанг' : client.recommendedCityId || (language === 'ru' ? 'Маршрут' : 'Itinerary')}
+                        {CITIES_DATA.find(c => c.id === normalizeCityId(client.recommendedCityId))?.name[language] || client.recommendedCityId || (language === 'ru' ? 'Город не выбран' : 'City not selected')}
                       </span>
                       <span style={{ color: 'var(--accent-terracotta)', fontWeight: 600 }}>
                         {countBadge}
@@ -342,9 +335,24 @@ export const AdminDashboard: React.FC = () => {
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                       type="button"
+                      onClick={() => setIsPreviewModalOpen(true)}
+                      className="glass-button"
+                      style={{
+                        fontSize: '0.82rem',
+                        padding: '0.45rem 0.85rem',
+                        gap: '0.35rem',
+                        color: 'var(--accent-terracotta)',
+                        fontWeight: 600
+                      }}
+                    >
+                      <Eye size={15} /> {language === 'ru' ? 'Предпросмотр ЛК' : 'Client Portal Preview'}
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={() => setIsQuestionnaireModalOpen(true)}
-                      className="btn btn-secondary"
-                      style={{ fontSize: '0.82rem', padding: '0.5rem 0.85rem' }}
+                      className="glass-button"
+                      style={{ fontSize: '0.82rem', padding: '0.45rem 0.85rem', gap: '0.35rem', color: 'var(--text-main)' }}
                     >
                       <FileText size={15} /> {language === 'ru' ? 'Анкета' : 'Intake'}
                     </button>
@@ -352,8 +360,8 @@ export const AdminDashboard: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => moveClientCategory(selectedClient.id, 'completed')}
-                      className="btn btn-secondary"
-                      style={{ fontSize: '0.82rem', padding: '0.5rem 0.85rem', color: 'var(--text-main)' }}
+                      className="glass-button"
+                      style={{ fontSize: '0.82rem', padding: '0.45rem 0.85rem', gap: '0.35rem', color: 'var(--text-main)' }}
                     >
                       <Archive size={15} /> {language === 'ru' ? 'В архив' : 'Archive'}
                     </button>
@@ -427,8 +435,8 @@ export const AdminDashboard: React.FC = () => {
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => { setSelectedClientId(client.id); setIsQuestionnaireModalOpen(true); }}
-                    className="btn btn-secondary"
-                    style={{ fontSize: '0.86rem', padding: '0.6rem 1rem' }}
+                    className="glass-button"
+                    style={{ fontSize: '0.86rem', padding: '0.55rem 1rem', gap: '0.4rem', color: 'var(--text-main)' }}
                   >
                     <Eye size={15} /> {language === 'ru' ? 'Смотреть анкету' : 'View Full Intake'}
                   </button>
@@ -439,8 +447,8 @@ export const AdminDashboard: React.FC = () => {
                       setSelectedClientId(client.id);
                       setActiveFolder('active');
                     }}
-                    className="btn btn-primary"
-                    style={{ fontSize: '0.86rem', padding: '0.6rem 1.25rem' }}
+                    className="glass-button active"
+                    style={{ fontSize: '0.86rem', padding: '0.55rem 1.25rem', gap: '0.4rem' }}
                   >
                     <FolderCheck size={16} /> {language === 'ru' ? 'Взять в работу → В активные' : 'Take to Active'}
                   </button>
@@ -477,7 +485,7 @@ export const AdminDashboard: React.FC = () => {
 
                   <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
                     <span><strong>Email:</strong> {client.email}</span>
-                    <span><strong>Город:</strong> {client.recommendedCityId === 'danang' ? 'Дананг' : client.recommendedCityId}</span>
+                    <span><strong>Город:</strong> {CITIES_DATA.find(c => c.id === normalizeCityId(client.recommendedCityId))?.name[language] || client.recommendedCityId || (language === 'ru' ? 'Не выбран' : 'Not selected')}</span>
                     <span><strong>Дата:</strong> {client.updatedAt}</span>
                   </div>
                 </div>
@@ -485,8 +493,8 @@ export const AdminDashboard: React.FC = () => {
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => { setSelectedClientId(client.id); setIsQuestionnaireModalOpen(true); }}
-                    className="btn btn-secondary"
-                    style={{ fontSize: '0.86rem', padding: '0.6rem 1rem' }}
+                    className="glass-button"
+                    style={{ fontSize: '0.86rem', padding: '0.55rem 1rem', gap: '0.4rem', color: 'var(--text-main)' }}
                   >
                     <Eye size={15} /> {language === 'ru' ? 'Анкета' : 'Intake'}
                   </button>
@@ -497,8 +505,8 @@ export const AdminDashboard: React.FC = () => {
                       setSelectedClientId(client.id);
                       setActiveFolder('active');
                     }}
-                    className="btn btn-secondary"
-                    style={{ fontSize: '0.86rem', padding: '0.6rem 1rem', color: 'var(--accent-terracotta)' }}
+                    className="glass-button"
+                    style={{ fontSize: '0.86rem', padding: '0.55rem 1rem', gap: '0.4rem', color: 'var(--accent-terracotta)' }}
                   >
                     <RotateCcw size={15} /> {language === 'ru' ? 'Вернуть в активные' : 'Reactivate'}
                   </button>
@@ -511,35 +519,46 @@ export const AdminDashboard: React.FC = () => {
         )}
 
         {/* Modal: Full Questionnaire Details Review */}
-        {isQuestionnaireModalOpen && selectedClient && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'rgba(19, 37, 34, 0.75)',
-            backdropFilter: 'blur(8px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1100,
-            padding: '1.5rem'
-          }}>
-            <div className="glass-card" style={{
-              maxWidth: '750px',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              background: '#FFFFFF',
-              boxShadow: '0 25px 50px rgba(0,0,0,0.25)',
-              padding: '2.5rem',
-              position: 'relative'
-            }}>
+        {isQuestionnaireModalOpen && selectedClient && createPortal(
+          <div
+            onClick={() => setIsQuestionnaireModalOpen(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(19, 37, 34, 0.75)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 99999,
+              padding: '1.5rem',
+              overflowY: 'auto'
+            }}
+          >
+            <div
+              className="glass-card"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                maxWidth: '750px',
+                width: '100%',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                background: '#FFFFFF',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+                padding: '2.25rem',
+                position: 'relative',
+                margin: 'auto'
+              }}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem' }}>
                 <div>
                   <div className="badge badge-emerald" style={{ marginBottom: '0.4rem' }}>
-                    {selectedClient.serviceName[language]} (${selectedClient.priceUSD})
+                    {selectedClient.serviceName[language]} (${tiersConfig?.[selectedClient.tierId]?.price || selectedClient.priceUSD})
                   </div>
                   <h2 style={{ fontSize: '1.75rem', fontFamily: 'var(--font-serif)', margin: 0 }}>
                     {language === 'ru' ? 'Анкета клиента:' : 'Client Intake:'} {selectedClient.clientName}
@@ -550,11 +569,13 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setIsQuestionnaireModalOpen(false)}
                   className="btn btn-secondary"
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                  style={{ padding: '0.45rem 0.85rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
-                  {language === 'ru' ? 'Закрыть' : 'Close'}
+                  <X size={15} />
+                  <span>{language === 'ru' ? 'Закрыть' : 'Close'}</span>
                 </button>
               </div>
 
@@ -580,6 +601,40 @@ export const AdminDashboard: React.FC = () => {
                   <strong style={{ color: 'var(--text-main)' }}>{selectedClient.questionnaire.travelersCount}</strong>
                 </div>
 
+                <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)' }}>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Города в анкете</div>
+                  <strong style={{ color: 'var(--text-main)' }}>
+                    {selectedClient.questionnaire.preferredCities && selectedClient.questionnaire.preferredCities.length > 0
+                      ? selectedClient.questionnaire.preferredCities.map(c => c === 'danang' ? 'Дананг' : c === 'nhatrang' ? 'Нячанг' : c === 'hoian' ? 'Хойан' : c === 'saigon' ? 'Хошимин' : c === 'hanoi' ? 'Ханой' : c).join(', ')
+                      : 'На усмотрение Founder'}
+                  </strong>
+                </div>
+
+                <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)' }}>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Предпочитаемая атмосфера</div>
+                  <strong style={{ color: 'var(--text-main)' }}>
+                    {selectedClient.questionnaire.environmentPreference === 'beach' ? 'Побережье и пляж' :
+                     selectedClient.questionnaire.environmentPreference === 'city' ? 'Большой мегаполис' :
+                     selectedClient.questionnaire.environmentPreference === 'quiet' ? 'Тишина и природа' :
+                     selectedClient.questionnaire.environmentPreference === 'social' ? 'Активное сообщество' :
+                     'Баланс природы и города'}
+                  </strong>
+                </div>
+
+                {selectedClient.questionnaire.climatePreference && (
+                  <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)' }}>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Климатические предпочтения</div>
+                    <div style={{ color: 'var(--text-main)', marginTop: '2px', fontWeight: 600 }}>{selectedClient.questionnaire.climatePreference}</div>
+                  </div>
+                )}
+
+                {selectedClient.questionnaire.transportationPreference && (
+                  <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)' }}>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Транспорт и передвижение</div>
+                    <div style={{ color: 'var(--text-main)', marginTop: '2px', fontWeight: 600 }}>{selectedClient.questionnaire.transportationPreference}</div>
+                  </div>
+                )}
+
                 <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)', gridColumn: '1 / -1' }}>
                   <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Формат работы и специализация</div>
                   <strong style={{ color: 'var(--text-main)' }}>{selectedClient.questionnaire.workSituation}</strong>
@@ -587,7 +642,7 @@ export const AdminDashboard: React.FC = () => {
 
                 <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)', gridColumn: '1 / -1' }}>
                   <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Пожелания по жилью</div>
-                  <div style={{ color: 'var(--text-main)', marginTop: '2px' }}>{selectedClient.questionnaire.accommodationType}</div>
+                  <div style={{ color: 'var(--text-main)', marginTop: '2px', fontWeight: 600 }}>{selectedClient.questionnaire.accommodationType}</div>
                 </div>
 
                 <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)', gridColumn: '1 / -1' }}>
@@ -604,11 +659,26 @@ export const AdminDashboard: React.FC = () => {
                   <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Вопросы и беспокойства</div>
                   <div style={{ color: 'var(--text-main)', marginTop: '2px' }}>{selectedClient.questionnaire.concerns}</div>
                 </div>
+
+                {selectedClient.questionnaire.longTermGoals && (
+                  <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)', gridColumn: '1 / -1' }}>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Долгосрочные цели (ВНЖ, бизнес, зимовка)</div>
+                    <div style={{ color: 'var(--text-main)', marginTop: '2px' }}>{selectedClient.questionnaire.longTermGoals}</div>
+                  </div>
+                )}
+
+                {selectedClient.questionnaire.additionalInfo && (
+                  <div style={{ background: 'var(--bg-panel)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)', gridColumn: '1 / -1' }}>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Дополнительные пожелания клиента</div>
+                    <div style={{ color: 'var(--text-main)', marginTop: '2px' }}>{selectedClient.questionnaire.additionalInfo}</div>
+                  </div>
+                )}
               </div>
 
               {/* Action in Modal */}
               <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
                 <button
+                  type="button"
                   onClick={() => setIsQuestionnaireModalOpen(false)}
                   className="btn btn-secondary"
                   style={{ padding: '0.75rem 1.25rem', fontSize: '0.92rem' }}
@@ -618,7 +688,21 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
             </div>
-          </div>
+          </div>,
+          document.body
+        )}
+
+        {/* Modal: Live Client Dashboard Preview */}
+        {selectedClient && (
+          <ClientDashboardPreviewModal
+            isOpen={isPreviewModalOpen}
+            onClose={() => setIsPreviewModalOpen(false)}
+            client={selectedClient}
+            onPublishSuccess={() => {
+              setSavedNotice(language === 'ru' ? 'Изменения успешно опубликованы в кабинете клиента!' : 'Published live to client!');
+              setTimeout(() => setSavedNotice(null), 3500);
+            }}
+          />
         )}
 
       </div>

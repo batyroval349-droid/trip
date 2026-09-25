@@ -13,6 +13,7 @@ import { DashboardTravelTransitView } from './dashboard/DashboardTravelTransitVi
 import { DashboardSimConnectivityView } from './dashboard/DashboardSimConnectivityView';
 import { DashboardEmergencySosView } from './dashboard/DashboardEmergencySosView';
 import { DashboardHousingView } from './dashboard/DashboardHousingView';
+import { DashboardRealtorView } from './dashboard/DashboardRealtorView';
 import { DashboardLeaseAuditView } from './dashboard/DashboardLeaseAuditView';
 import { DashboardVipConciergeView } from './dashboard/DashboardVipConciergeView';
 import {
@@ -32,18 +33,23 @@ import {
   Crown,
   Send,
   Printer,
-  Home
+  Home,
+  Users
 } from 'lucide-react';
 
-export const ClientDashboard: React.FC = () => {
+interface ClientDashboardProps {
+  isPreviewMode?: boolean;
+}
+
+export const ClientDashboard: React.FC<ClientDashboardProps> = ({ isPreviewMode = false }) => {
   const { project, setProject, setAdminClients, t, language, upgradeToRelocation, setViewMode } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'city' | 'neighborhoods' | 'budget' | 'roadmap' | 'housing' | 'resources' | 'realtor' | 'lease_audit' | 'vip_concierge' | 'itinerary'>('overview');
   const [travelTab, setTravelTab] = useState<'itinerary' | 'transit' | 'sim' | 'emergency'>('itinerary');
-  const isTravelPlan = project.tierId === 'tier2';
-  const hasTravelPlan = Boolean(project.hasTravelPlan || project.tierId === 'tier2' || (project.travelDays && project.travelDays.length > 0));
-  
   const isVipTier = project.tierId === 'tier4';
   const isRelocationTier = project.tierId === 'tier3' || project.tierId === 'tier4';
+  const isTravelPlan = project.tierId === 'tier2';
+  const hasTravelPlan = isRelocationTier || Boolean(project.hasTravelPlan || project.tierId === 'tier2' || (project.travelDays && project.travelDays.length > 0));
+  
   const isRelocationPlanPublished = isRelocationTier
     ? (project.isRelocationPlanPublished === true || (project.status === 'plan_ready' && !project.upgradedFromTier))
     : true;
@@ -55,6 +61,7 @@ export const ClientDashboard: React.FC = () => {
 
   // Automatically transition status from 'plan_ready' to 'in_progress' ("План активен и изучается") upon client viewing
   useEffect(() => {
+    if (isPreviewMode) return;
     if (project.status === 'plan_ready') {
       setProject((prev) => {
         const updated = {
@@ -83,32 +90,26 @@ export const ClientDashboard: React.FC = () => {
   }, [project.status, project.id, project.email, setProject, setAdminClients]);
 
   return (
-    <section style={{ padding: '2rem 0 5rem 0', background: 'var(--bg-main)' }}>
-      <div className="container">
+    <section className="client-dashboard-bg" style={{ padding: '2rem 0 5rem 0' }}>
+      <div className="client-dashboard-content container">
         
         {/* Return to Home / Pricing for seamless UX navigation */}
-        <div className="no-print" style={{ marginBottom: '1.25rem' }}>
-          <button
-            onClick={() => setViewMode('marketing')}
-            style={{
-              background: '#FFFFFF',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--accent-emerald)',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.45rem 0.9rem',
-              borderRadius: 'var(--radius-sm)',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            ← {language === 'ru' ? 'Назад на главную к тарифам' : 'Back to Home / Pricing'}
-          </button>
-        </div>
+        {!isPreviewMode && (
+          <div className="no-print" style={{ marginBottom: '1.25rem' }}>
+            <button
+              onClick={() => setViewMode('marketing')}
+              className="glass-button"
+              style={{
+                padding: '0.45rem 1rem',
+                fontSize: '0.84rem',
+                color: 'var(--text-main)',
+                gap: '0.35rem'
+              }}
+            >
+              ← {language === 'ru' ? 'Назад на главную к тарифам' : 'Back to Home / Pricing'}
+            </button>
+          </div>
+        )}
 
         {/* Workspace Top Header & Status Tracker */}
         <div className="no-print">
@@ -117,15 +118,8 @@ export const ClientDashboard: React.FC = () => {
 
         {isTravelPlan ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {/* Travel Navigation Bar */}
-            <div className="no-print" style={{
-              display: 'flex',
-              gap: '0.5rem',
-              overflowX: 'auto',
-              paddingBottom: '0.6rem',
-              marginBottom: '1.5rem',
-              borderBottom: '1px solid var(--border-subtle)'
-            }}>
+            {/* Travel Navigation Bar (Frosted Floating Dock) */}
+            <div className="dash-nav-bar no-print">
               {[
                 {
                   id: 'itinerary',
@@ -143,22 +137,7 @@ export const ClientDashboard: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setTravelTab(tab.id as any)}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.45rem',
-                      padding: '0.75rem 1.25rem',
-                      borderRadius: 'var(--radius-md)',
-                      fontSize: '0.9rem',
-                      fontWeight: 600,
-                      border: isActive ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      background: isActive ? 'var(--accent-emerald)' : '#FFFFFF',
-                      color: isActive ? '#FFFFFF' : 'var(--text-muted)',
-                      boxShadow: isActive ? '0 4px 12px rgba(15,118,110,0.2)' : '0 2px 4px rgba(0,0,0,0.02)',
-                      transition: 'all 0.2s ease'
-                    }}
+                    className={`dash-nav-tab ${isActive ? 'active' : ''}`}
                   >
                     <Icon size={16} />
                     <span>{tab.label}</span>
@@ -173,7 +152,7 @@ export const ClientDashboard: React.FC = () => {
                           fontWeight: 700,
                           padding: '0.1rem 0.45rem',
                           borderRadius: '9999px',
-                          background: isActive ? 'rgba(255, 255, 255, 0.25)' : '#FEF3C7',
+                          background: isActive ? 'rgba(255, 255, 255, 0.25)' : 'rgba(245, 158, 11, 0.15)',
                           color: isActive ? '#FFFFFF' : '#B45309'
                         }}
                       >
@@ -196,15 +175,8 @@ export const ClientDashboard: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Dashboard Navigation Bar */}
-            <div style={{
-              display: 'flex',
-              gap: '0.5rem',
-              overflowX: 'auto',
-              paddingBottom: '0.6rem',
-              marginBottom: '2rem',
-              borderBottom: '1px solid var(--border-subtle)'
-            }}>
+            {/* Relocation Dashboard Navigation Bar (Frosted Floating Dock) */}
+            <div className="dash-nav-bar no-print">
           {[
             {
               id: 'overview',
@@ -214,12 +186,16 @@ export const ClientDashboard: React.FC = () => {
             ...(hasTravelPlan ? [
               {
                 id: 'itinerary',
-                label: language === 'ru' ? 'Маршрут' : 'Itinerary',
-                icon: Compass
+                label: language === 'ru'
+                  ? (isRelocationTier ? 'Маршрут (14 дней)' : 'Маршрут')
+                  : (isRelocationTier ? 'Itinerary (14 Days)' : 'Itinerary'),
+                icon: Compass,
+                isPending: !isPlanPublished
               }
             ] : []),
             { id: 'budget', label: t('dashTabBudget'), icon: DollarSign, isPending: !isPlanPublished },
             { id: 'housing', label: language === 'ru' ? 'Жильё' : 'Housing', icon: Home, isPending: !isPlanPublished },
+            { id: 'realtor', label: language === 'ru' ? 'Риелтор' : 'Realtor', icon: Users, isPending: !isPlanPublished },
             { id: 'lease_audit', label: language === 'ru' ? 'Аудит договора' : 'Lease Audit', icon: ShieldCheck, isPending: !isPlanPublished },
             { id: 'roadmap', label: language === 'ru' ? 'Документы и визы' : 'Documents & Visas', icon: Calendar, isPending: !isPlanPublished },
             { id: 'city', label: language === 'ru' ? 'Город и районы' : 'City & Districts', icon: MapPin, isPending: !isPlanPublished },
@@ -240,22 +216,7 @@ export const ClientDashboard: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.75rem 1.25rem',
-                  borderRadius: 'var(--radius-md)',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  border: isActive ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  background: isActive ? 'var(--accent-emerald)' : '#FFFFFF',
-                  color: isActive ? '#FFFFFF' : 'var(--text-muted)',
-                  boxShadow: isActive ? '0 4px 12px rgba(15,118,110,0.2)' : '0 2px 4px rgba(0,0,0,0.02)',
-                  transition: 'all 0.2s ease'
-                }}
+                className={`dash-nav-tab ${isActive ? 'active' : ''}`}
               >
                 <Icon size={16} />
                 <span>{tab.label}</span>
@@ -268,8 +229,8 @@ export const ClientDashboard: React.FC = () => {
                       marginLeft: '4px',
                       fontSize: '0.68rem',
                       fontWeight: 800,
-                      background: isActive ? '#FFFFFF' : '#FEF3C7',
-                      color: isActive ? 'var(--accent-terracotta)' : '#B45309',
+                      background: isActive ? 'rgba(255, 255, 255, 0.25)' : '#FEF3C7',
+                      color: isActive ? '#FFFFFF' : '#B45309',
                       padding: '2px 6px',
                       borderRadius: '9999px'
                     }}
@@ -298,13 +259,13 @@ export const ClientDashboard: React.FC = () => {
                       alignItems: 'center',
                       gap: '3px',
                       marginLeft: '3px',
-                      fontSize: '0.72rem',
+                      fontSize: '0.7rem',
                       background: isActive ? 'rgba(255,255,255,0.25)' : 'rgba(194,94,32,0.1)',
                       color: isActive ? '#FFFFFF' : 'var(--accent-terracotta)',
                       padding: '2px 6px',
                       borderRadius: '9999px'
                     }}
-                    title={language === 'ru' ? 'Основатель проводит исследование' : 'Under founder research'}
+                    title={language === 'ru' ? 'Founder проводит исследование' : 'Under founder research'}
                   >
                     <Clock size={11} /> {language === 'ru' ? 'В процессе' : 'Pending'}
                   </span>
@@ -381,7 +342,7 @@ export const ClientDashboard: React.FC = () => {
               <div className="glass-card glass-card-terracotta" style={{ border: '2px dashed var(--accent-terracotta)', background: '#FFFDFB' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.6rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-terracotta)', fontWeight: 700 }}>
-                    <Lock size={18} /> {language === 'ru' ? 'Персональные заметки и сопровождение основателя' : 'Founder Notes & Relocation Advisory'}
+                    <Lock size={18} /> {language === 'ru' ? 'Персональные заметки и сопровождение Founder' : 'Founder Notes & Relocation Advisory'}
                   </div>
                   <div className="badge badge-terracotta">
                     {language === 'ru' ? 'Тариф: Поездка ($290)' : 'Plan: Travel ($290)'}
@@ -389,13 +350,18 @@ export const ClientDashboard: React.FC = () => {
                 </div>
                 <p style={{ fontSize: '0.98rem', color: 'var(--text-main)', lineHeight: 1.6, marginBottom: '0.85rem' }}>
                   {language === 'ru'
-                    ? 'Индивидуальный подбор городов и районов, интерактивный калькулятор бюджета, пошаговая дорожная карта с чек-листом, база проверенных ресурсов и гайд по жилью, а также персональные заметки и сопровождение основателя начинаются с тарифа «Планирование релокации во Вьетнам» ($490) и «Консьерж» ($890).'
+                    ? 'Индивидуальный подбор городов и районов, интерактивный калькулятор бюджета, пошаговая дорожная карта с чек-листом, база проверенных ресурсов и гайд по жилью, а также персональные заметки и сопровождение Founder начинаются с тарифа «Планирование релокации во Вьетнам» ($490) и «Консьерж» ($890).'
                     : 'City & neighborhood selection, cost modeler, relocation roadmap checklist, verified resources, and founder notes start from Vietnam Relocation Planning ($490) and Concierge ($890).'}
                 </p>
                 <button
                   onClick={upgradeToRelocation}
-                  className="btn btn-primary"
-                  style={{ fontSize: '0.86rem', padding: '0.55rem 1.15rem' }}
+                  className="glass-button active"
+                  style={{
+                    fontSize: '0.86rem',
+                    padding: '0.55rem 1.15rem',
+                    gap: '0.4rem',
+                    background: 'var(--accent-terracotta)'
+                  }}
                 >
                   <Sparkles size={15} /> {language === 'ru' ? 'Улучшить тариф до Релокации (+ $200) →' : 'Upgrade to Relocation (+ $200) →'}
                 </button>
@@ -444,7 +410,7 @@ export const ClientDashboard: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('itinerary')}
-                    className="btn btn-primary"
+                    className="glass-button active"
                     style={{ fontSize: '0.86rem', padding: '0.6rem 1.15rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
                   >
                     <Compass size={15} />
@@ -454,8 +420,8 @@ export const ClientDashboard: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => window.print()}
-                    className="btn btn-secondary"
-                    style={{ fontSize: '0.86rem', padding: '0.6rem 1.15rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                    className="glass-button"
+                    style={{ fontSize: '0.86rem', padding: '0.6rem 1.15rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}
                   >
                     <Printer size={15} />
                     <span>{language === 'ru' ? 'Печать A4 (PDF)' : 'Print A4 (PDF)'}</span>
@@ -469,136 +435,130 @@ export const ClientDashboard: React.FC = () => {
               
               {/* Recommended City Widget */}
               {isTravelPlan ? (
-                <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#FAF9F6', border: '1px dashed var(--accent-terracotta)' }}>
+                <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: 'var(--dash-bg-card-subtle)' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-terracotta)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
-                      <Lock size={14} /> {language === 'ru' ? 'Индивидуальный подбор городов и районов' : 'City & Neighborhood Matching'}
+                    <div className="dash-card-header">
+                      <div className="dash-card-title" style={{ fontSize: '0.92rem', color: 'var(--accent-terracotta)' }}>
+                        <Lock size={15} />
+                        <span>{language === 'ru' ? 'Город и районы' : 'City Matching'}</span>
+                      </div>
+                      <button onClick={() => setActiveTab('city')} className="dash-action-pill">
+                        {language === 'ru' ? 'Апгрейд' : 'Upgrade'} <ArrowRight size={12} />
+                      </button>
                     </div>
-                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
+                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.4rem', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--dash-text-main)' }}>
                       {language === 'ru' ? 'Начинается с тарифа Релокация' : 'Starts in Relocation Plan'}
                     </h3>
-                    <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                    <p style={{ fontSize: '0.86rem', color: 'var(--dash-text-muted)', lineHeight: 1.45 }}>
                       {language === 'ru' ? 'Индивидуальный подбор города и микрорайонов под ваши цели входит в тариф от $490.' : 'Bespoke city and neighborhood matching is included in packages from $490.'}
                     </p>
                   </div>
-                  <button
-                    onClick={() => setActiveTab('city')}
-                    className="btn btn-secondary"
-                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                  >
-                    <Lock size={14} /> {language === 'ru' ? 'Подробнее / Апгрейд' : 'View / Upgrade'}
-                  </button>
                 </div>
               ) : (
                 <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-emerald)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
-                      <MapPin size={14} /> {t('widgetDestTitle')}
+                    <div className="dash-card-header">
+                      <div className="dash-card-title" style={{ fontSize: '0.92rem', color: 'var(--dash-accent-emerald)' }}>
+                        <MapPin size={15} />
+                        <span>{t('widgetDestTitle')}</span>
+                      </div>
+                      <button onClick={() => setActiveTab('city')} className="dash-action-pill">
+                        {t('widgetDestBtn')} <ArrowRight size={12} />
+                      </button>
                     </div>
-                    <h3 style={{ fontSize: '1.6rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)' }}>
+                    <h3 style={{ fontSize: '1.5rem', marginBottom: '0.35rem', fontFamily: 'var(--font-sans)', fontWeight: 800, color: 'var(--dash-text-main)' }}>
                       {language === 'ru' ? 'Дананг, Вьетнам' : 'Da Nang, Vietnam'}
                     </h3>
-                    <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--dash-text-muted)' }}>
                       {t('widgetDestDesc')}
                     </p>
                   </div>
-                  <button
-                    onClick={() => setActiveTab('city')}
-                    className="btn btn-secondary"
-                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                  >
-                    {t('widgetDestBtn')} <ArrowRight size={14} />
-                  </button>
                 </div>
               )}
 
               {/* Monthly Budget Widget */}
               {isTravelPlan ? (
-                <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#FAF9F6', border: '1px dashed var(--border-subtle)' }}>
+                <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: 'var(--dash-bg-card-subtle)' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-terracotta)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
-                      <Lock size={14} /> {t('widgetBudgetTitle')}
+                    <div className="dash-card-header">
+                      <div className="dash-card-title" style={{ fontSize: '0.92rem', color: 'var(--accent-terracotta)' }}>
+                        <Lock size={15} />
+                        <span>{t('widgetBudgetTitle')}</span>
+                      </div>
+                      <button onClick={() => setActiveTab('budget')} className="dash-action-pill">
+                        {language === 'ru' ? 'Апгрейд' : 'Upgrade'} <ArrowRight size={12} />
+                      </button>
                     </div>
-                    <h3 style={{ fontSize: '1.35rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
+                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.4rem', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--dash-text-main)' }}>
                       {language === 'ru' ? 'Калькулятор бюджета' : 'Cost of Living Modeler'}
                     </h3>
-                    <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                    <p style={{ fontSize: '0.86rem', color: 'var(--dash-text-muted)', lineHeight: 1.45 }}>
                       {language === 'ru' ? 'Интерактивное моделирование расходов входит в тариф «Планирование релокации» ($490).' : 'Included in Vietnam Relocation Planning ($490).'}
                     </p>
                   </div>
-                  <button
-                    onClick={() => setActiveTab('budget')}
-                    className="btn btn-secondary"
-                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                  >
-                    <Lock size={14} /> {language === 'ru' ? 'Подробнее / Апгрейд' : 'View / Upgrade'}
-                  </button>
                 </div>
               ) : (
                 <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-terracotta)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
-                      <DollarSign size={14} /> {t('widgetBudgetTitle')}
+                    <div className="dash-card-header">
+                      <div className="dash-card-title" style={{ fontSize: '0.92rem', color: 'var(--dash-accent-emerald)' }}>
+                        <DollarSign size={15} />
+                        <span>{t('widgetBudgetTitle')}</span>
+                      </div>
+                      <button onClick={() => setActiveTab('budget')} className="dash-action-pill">
+                        {t('widgetBudgetBtn')} <ArrowRight size={12} />
+                      </button>
                     </div>
-                    <h3 style={{ fontSize: '1.6rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-emerald)' }}>
+                    <h3 style={{ fontSize: '1.5rem', marginBottom: '0.35rem', fontFamily: 'var(--font-sans)', fontWeight: 800, color: 'var(--dash-text-main)' }}>
                       ${project.userCurrentBudget.accommodation + project.userCurrentBudget.food + project.userCurrentBudget.coworking + project.userCurrentBudget.transportation + project.userCurrentBudget.entertainment} {language === 'ru' ? '/ мес' : '/ mo'}
                     </h3>
-                    <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--dash-text-muted)' }}>
                       {t('widgetBudgetRent')}: ${project.userCurrentBudget.accommodation} &bull; {t('widgetBudgetFood')}: ${project.userCurrentBudget.food} &bull; {t('widgetBudgetWork')}: ${project.userCurrentBudget.coworking}
                     </p>
                   </div>
-                  <button
-                    onClick={() => setActiveTab('budget')}
-                    className="btn btn-secondary"
-                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                  >
-                    {t('widgetBudgetBtn')} <ArrowRight size={14} />
-                  </button>
                 </div>
               )}
 
               {/* Roadmap Progress Widget */}
               {isTravelPlan ? (
-                <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#FAF9F6', border: '1px dashed var(--border-subtle)' }}>
+                <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: 'var(--dash-bg-card-subtle)' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-emerald)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
-                      <Lock size={14} /> {t('widgetRoadmapTitle')}
+                    <div className="dash-card-header">
+                      <div className="dash-card-title" style={{ fontSize: '0.92rem', color: 'var(--accent-terracotta)' }}>
+                        <Lock size={15} />
+                        <span>{t('widgetRoadmapTitle')}</span>
+                      </div>
+                      <button onClick={() => setActiveTab('roadmap')} className="dash-action-pill">
+                        {language === 'ru' ? 'Апгрейд' : 'Upgrade'} <ArrowRight size={12} />
+                      </button>
                     </div>
-                    <h3 style={{ fontSize: '1.35rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
+                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.4rem', fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--dash-text-main)' }}>
                       {language === 'ru' ? 'Дорожная карта релокации' : 'Relocation Roadmap'}
                     </h3>
-                    <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
+                    <p style={{ fontSize: '0.86rem', color: 'var(--dash-text-muted)', lineHeight: 1.45 }}>
                       {language === 'ru' ? 'Пошаговый чек-лист подготовки доступен в тарифе «Планирование релокации» ($490).' : 'Step-by-step checklist is included in Relocation package ($490).'}
                     </p>
                   </div>
-                  <button
-                    onClick={() => setActiveTab('roadmap')}
-                    className="btn btn-secondary"
-                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                  >
-                    <Lock size={14} /> {language === 'ru' ? 'Подробнее / Апгрейд' : 'View / Upgrade'}
-                  </button>
                 </div>
               ) : (
                 <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-emerald)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
-                      <Calendar size={14} /> {t('widgetRoadmapTitle')}
+                    <div className="dash-card-header">
+                      <div className="dash-card-title" style={{ fontSize: '0.92rem', color: 'var(--dash-accent-emerald)' }}>
+                        <Calendar size={15} />
+                        <span>{t('widgetRoadmapTitle')}</span>
+                      </div>
+                      <button onClick={() => setActiveTab('roadmap')} className="dash-action-pill">
+                        {t('widgetRoadmapBtn')} <ArrowRight size={12} />
+                      </button>
                     </div>
-                    <h3 style={{ fontSize: '1.6rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)' }}>
+                    <h3 style={{ fontSize: '1.5rem', marginBottom: '0.35rem', fontFamily: 'var(--font-sans)', fontWeight: 800, color: 'var(--dash-text-main)' }}>
                       {project.roadmapTasks.filter(t => t.completed).length} / {project.roadmapTasks.length} {t('widgetRoadmapTasks')}
                     </h3>
-                    <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--dash-text-muted)' }}>
                       {t('widgetRoadmapPhase1')} {project.roadmapTasks.filter(t => t.phase === 'before_arrival' && t.completed).length}/5 {t('widgetRoadmapCompleted')}.
                     </p>
                   </div>
-                  <button
-                    onClick={() => setActiveTab('roadmap')}
-                    className="btn btn-secondary"
-                    style={{ width: '100%', marginTop: '1.25rem', fontSize: '0.85rem' }}
-                  >
-                    {t('widgetRoadmapBtn')} <ArrowRight size={14} />
-                  </button>
                 </div>
               )}
 
@@ -615,48 +575,40 @@ export const ClientDashboard: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('housing')}
-                className="glass-card"
+                className="dash-inner-item"
                 style={{
-                  padding: '1rem 1.25rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   cursor: 'pointer',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
-                  background: '#FFFFFF',
                   textAlign: 'left'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-main)', fontWeight: 600, fontSize: '0.92rem' }}>
-                  <Home size={18} color="var(--accent-emerald)" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--dash-text-main)', fontWeight: 600, fontSize: '0.9rem' }}>
+                  <Home size={17} color="var(--dash-accent-emerald)" />
                   <span>{language === 'ru' ? 'Жильё и риелтор' : 'Housing & Realtor'}</span>
                 </div>
-                <ArrowRight size={16} color="var(--text-muted)" />
+                <ArrowRight size={15} color="var(--dash-text-muted)" />
               </button>
 
               {/* Lease Audit Link */}
               <button
                 type="button"
                 onClick={() => setActiveTab('lease_audit')}
-                className="glass-card"
+                className="dash-inner-item"
                 style={{
-                  padding: '1rem 1.25rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   cursor: 'pointer',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
-                  background: '#FFFFFF',
                   textAlign: 'left'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-main)', fontWeight: 600, fontSize: '0.92rem' }}>
-                  <ShieldCheck size={18} color="var(--accent-terracotta)" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--dash-text-main)', fontWeight: 600, fontSize: '0.9rem' }}>
+                  <ShieldCheck size={17} color="var(--accent-terracotta)" />
                   <span>{language === 'ru' ? 'Аудит договора' : 'Lease Audit'}</span>
                 </div>
-                <ArrowRight size={16} color="var(--text-muted)" />
+                <ArrowRight size={15} color="var(--dash-text-muted)" />
               </button>
 
               {/* VIP Concierge Link (tier4 only) */}
@@ -664,24 +616,22 @@ export const ClientDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab('vip_concierge')}
-                  className="glass-card"
+                  className="dash-inner-item"
                   style={{
-                    padding: '1rem 1.25rem',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     cursor: 'pointer',
-                    border: '1px solid #FCD34D',
-                    borderRadius: 'var(--radius-md)',
+                    textAlign: 'left',
                     background: '#FFFDF0',
-                    textAlign: 'left'
+                    borderColor: 'rgba(252, 211, 77, 0.6)'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: '#B45309', fontWeight: 600, fontSize: '0.92rem' }}>
-                    <Crown size={18} color="#B45309" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: '#B45309', fontWeight: 600, fontSize: '0.9rem' }}>
+                    <Crown size={17} color="#B45309" />
                     <span>{language === 'ru' ? 'VIP Консьерж & Психолог' : 'VIP Concierge & Psychologist'}</span>
                   </div>
-                  <ArrowRight size={16} color="#B45309" />
+                  <ArrowRight size={15} color="#B45309" />
                 </button>
               )}
 
@@ -691,23 +641,21 @@ export const ClientDashboard: React.FC = () => {
                   href="https://t.me/Likqwerty"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="glass-card"
+                  className="dash-inner-item"
                   style={{
-                    padding: '1rem 1.25rem',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     textDecoration: 'none',
-                    border: '1px solid var(--border-emerald)',
-                    borderRadius: 'var(--radius-md)',
-                    background: '#F0FDF4'
+                    background: '#F0FDF4',
+                    borderColor: 'rgba(15, 118, 110, 0.3)'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: '#0F766E', fontWeight: 600, fontSize: '0.92rem' }}>
-                    <Send size={18} color="#0F766E" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: '#0F766E', fontWeight: 600, fontSize: '0.9rem' }}>
+                    <Send size={17} color="#0F766E" />
                     <span>{language === 'ru' ? 'Личное сопровождение' : 'Personal Accompaniment'}</span>
                   </div>
-                  <ArrowRight size={16} color="#0F766E" />
+                  <ArrowRight size={15} color="#0F766E" />
                 </a>
               )}
             </div>
@@ -790,6 +738,20 @@ export const ClientDashboard: React.FC = () => {
             />
           ) : (
             <DashboardHousingView />
+          )
+        )}
+        {activeTab === 'realtor' && (
+          isTravelPlan ? (
+            <LockedFeatureCard
+              title={language === 'ru' ? 'Проверенный партнер-риелтор во Вьетнаме' : 'Vetted Local Partner Realtor'}
+              desc={language === 'ru'
+                ? 'Прямой контакт с проверенным партнером-риелтором, видеообзоры квартир и сопровождение на показах доступны в тарифах релокации ($490 / $890).'
+                : 'Direct connection with a vetted partner realtor is included in Relocation packages ($490 / $890).'}
+              upgradeAction={upgradeToRelocation}
+              language={language}
+            />
+          ) : (
+            <DashboardRealtorView />
           )
         )}
         {activeTab === 'resources' && (

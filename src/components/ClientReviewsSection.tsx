@@ -140,92 +140,95 @@ export const ClientReviewsSection: React.FC = () => {
       <div className="container">
 
         {/* ============================================================ */}
-        {/* PART 1: FOUNDER'S MANIFEST (FEMALE FIRST-PERSON DIRECT VOICE) */}
-        {/* ============================================================ */}
-        <div style={{
-          marginBottom: '3.5rem'
-        }}>
+        {/* PART 1: FOUNDER'S MANIFEST */}
+        <div style={{ marginBottom: '3.5rem' }}>
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 1.35fr) minmax(0, 0.85fr)',
-            alignItems: 'center'
-          }} className="founder-manifest-grid">
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            border: '1px solid var(--border-subtle)',
+            padding: '1.25rem',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.03)'
+          }} className="founder-compact-card">
             
-            {/* Left: Text Manifesto */}
-            <div style={{ padding: 'clamp(2rem, 4vw, 3.25rem)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.35rem 0.85rem', borderRadius: '9999px', background: 'var(--accent-emerald-light)', border: '1px solid var(--border-emerald)', color: 'var(--accent-emerald)', fontSize: '0.8rem', fontWeight: 600, width: 'fit-content', marginBottom: '1.1rem' }}>
-                <Sparkles size={13} />
-                <span>{language === 'ru' ? 'Личный подход и принципы работы' : 'Founder Manifesto & Direct Accountability'}</span>
+              {/* Top row: Text Left, Photo Right */}
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.25rem 0.6rem', borderRadius: '9999px', background: 'var(--accent-emerald-light)', border: '1px solid var(--border-emerald)', color: 'var(--accent-emerald)', fontSize: '0.7rem', fontWeight: 700, marginBottom: '0.75rem', textTransform: 'uppercase' }}>
+                    <Sparkles size={11} />
+                    <span>Founder</span>
+                  </div>
+                  
+                  <h2 style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '1.25rem',
+                    lineHeight: 1.25,
+                    color: 'var(--text-main)',
+                    margin: 0,
+                    letterSpacing: '-0.02em'
+                  }}>
+                    {language === 'ru'
+                      ? '«Я прошла этот путь сама — и знаю, где во Вьетнаме теряют деньги и нервы»'
+                      : '"I navigated this journey myself — and know exactly where newcomers lose money"'}
+                  </h2>
+                </div>
+                
+                <img
+                  src="/founder-photo.jpg"
+                  alt="Founder VietReloc"
+                  style={{
+                    width: '65px',
+                    height: '65px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '2px solid #FFFFFF',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                    flexShrink: 0
+                  }}
+                />
               </div>
 
-              <h2 style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: 'clamp(1.75rem, 2.6vw, 2.35rem)',
-                lineHeight: 1.22,
-                color: 'var(--text-main)',
-                margin: '0 0 1.15rem 0',
-                letterSpacing: '-0.02em'
-              }}>
-                {language === 'ru'
-                  ? '«Я прошла этот путь сама — и знаю, где во Вьетнаме теряют деньги и нервы»'
-                  : '"I navigated this journey myself — and know exactly where newcomers lose money and peace of mind"'}
-              </h2>
-
+              {/* Shortened Text */}
               <p style={{
-                fontSize: '1.02rem',
-                lineHeight: 1.62,
+                fontSize: '0.88rem',
+                lineHeight: 1.5,
                 color: 'var(--text-muted)',
-                margin: '0 0 1.5rem 0'
+                margin: '0'
               }}>
                 {language === 'ru' ? (
-                  <>
-                    Когда я переехала во Вьетнам, я на собственном опыте столкнулась со всеми подводными камнями: от попыток удержать залог при выезде и завысить счета за свет до фейковых объявлений в чатах. Я создала VietReloc, чтобы вам не пришлось проходить через этот стресс. Я живу здесь, знаю реальные правила и лично отвечаю за каждый проверенный договор и маршрут — <strong>без наёмных операторов и без скрытых комиссий риелторов</strong>.
-                  </>
+                  <>Я на собственном опыте столкнулась с невозвратными депозитами и фейковыми квартирами. Я живу здесь и лично отвечаю за каждый договор и маршрут — <strong>без скрытых комиссий</strong>.</>
                 ) : (
-                  <>
-                    When I relocated to Vietnam, I experienced firsthand the full spectrum of local pitfalls: from deposit retention disputes to inflated utility bills and bait-and-switch listings. I built VietReloc so you don’t have to suffer through that stress. I live here, understand the real market mechanics, and personally guarantee every contract audit and daily itinerary — <strong>with zero call center operators and zero hidden broker commissions</strong>.
-                  </>
+                  <>I experienced firsthand the deposit retention disputes and bait-and-switch listings. I live here and personally guarantee every audit — <strong>with zero hidden commissions</strong>.</>
                 )}
               </p>
 
-              {/* 3 Core Principles */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', marginBottom: '1.75rem' }}>
-                
-                <div style={{ background: '#FAF8F5', borderRadius: '14px', padding: '0.85rem 1rem', border: '1px solid rgba(0,0,0,0.05)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.25rem' }}>
-                    <ShieldCheck size={16} />
-                    <span>{language === 'ru' ? 'Защищаю только вас' : 'Your Sole Advocate'}</span>
+              {/* 3 Core Principles as a horizontal row (wrap) */}
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div style={{ background: '#FAF8F5', borderRadius: '8px', padding: '0.5rem 0.75rem', border: '1px solid rgba(0,0,0,0.04)', flex: '1 1 120px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '0.78rem', marginBottom: '0.15rem' }}>
+                    <ShieldCheck size={14} /> <span>{language === 'ru' ? 'Защищаю вас' : 'Your Advocate'}</span>
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-                    {language === 'ru' ? 'Никаких скрытых комиссий от риелторов или собственников.' : 'Zero hidden kickbacks from brokers or landlords.'}
-                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', lineHeight: 1.3 }}>{language === 'ru' ? 'Без скрытых комиссий.' : 'No hidden fees.'}</div>
                 </div>
 
-                <div style={{ background: '#FAF8F5', borderRadius: '14px', padding: '0.85rem 1rem', border: '1px solid rgba(0,0,0,0.05)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.25rem' }}>
-                    <Lock size={16} />
-                    <span>{language === 'ru' ? 'Аудит как для себя' : 'Thorough Lease Audit'}</span>
+                <div style={{ background: '#FAF8F5', borderRadius: '8px', padding: '0.5rem 0.75rem', border: '1px solid rgba(0,0,0,0.04)', flex: '1 1 120px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '0.78rem', marginBottom: '0.15rem' }}>
+                    <Lock size={14} /> <span>{language === 'ru' ? 'Аудит договоров' : 'Lease Audit'}</span>
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-                    {language === 'ru' ? 'Защита залога, фиксация тарифов и контроль регистрации tạm trú.' : 'Deposit recovery terms, utility caps, and mandatory police registration.'}
-                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', lineHeight: 1.3 }}>{language === 'ru' ? 'Возврат залога и тарифы.' : 'Deposit & utilities checked.'}</div>
                 </div>
 
-                <div style={{ background: '#FAF8F5', borderRadius: '14px', padding: '0.85rem 1rem', border: '1px solid rgba(0,0,0,0.05)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.25rem' }}>
-                    <Send size={15} />
-                    <span>{language === 'ru' ? 'Лично в Telegram' : 'Direct on Telegram'}</span>
+                <div style={{ background: '#FAF8F5', borderRadius: '8px', padding: '0.5rem 0.75rem', border: '1px solid rgba(0,0,0,0.04)', flex: '1 1 120px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '0.78rem', marginBottom: '0.15rem' }}>
+                    <Send size={14} /> <span>{language === 'ru' ? 'Лично в Telegram' : 'Direct on TG'}</span>
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-                    {language === 'ru' ? 'Прямой диалог со мной без шаблонных скриптов и чат-ботов.' : 'Direct personal chat with me without bot filters or scripts.'}
-                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', lineHeight: 1.3 }}>{language === 'ru' ? 'Прямой диалог со мной.' : 'Direct chat with me.'}</div>
                 </div>
-
               </div>
 
-              {/* Founder Telegram Direct Action */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              {/* Action Button - Small */}
+              <div>
                 <a
                   href="https://t.me/Likqwerty"
                   target="_blank"
@@ -234,83 +237,18 @@ export const ClientReviewsSection: React.FC = () => {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.55rem',
-                    padding: '0.85rem 1.6rem',
+                    gap: '0.4rem',
+                    fontSize: '0.82rem',
+                    padding: '0.5rem 1.1rem',
                     borderRadius: '9999px',
-                    fontSize: '0.94rem',
                     textDecoration: 'none'
                   }}
                 >
-                  <Send size={16} />
-                  <span>{language === 'ru' ? 'Написать лично основательнице' : 'Message Founder on Telegram'}</span>
+                  <Send size={13} /> {language === 'ru' ? 'Написать Founder' : 'Message Founder'}
                 </a>
               </div>
 
             </div>
-
-            {/* Right: Founder Photo in Circle */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 'clamp(2.25rem, 4vw, 3.5rem) clamp(1.5rem, 2.5vw, 2.5rem)',
-              textAlign: 'center'
-            }} className="founder-photo-col">
-              
-              {/* Circular portrait with ring */}
-              <div style={{
-                position: 'relative',
-                marginBottom: '1.25rem'
-              }}>
-                <div style={{
-                  width: 'clamp(215px, 20vw, 285px)',
-                  height: 'clamp(215px, 20vw, 285px)',
-                  aspectRatio: '1 / 1',
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  border: '4px solid #FFFFFF',
-                  boxShadow: '0 16px 36px -8px rgba(28, 45, 42, 0.16), 0 0 0 1px rgba(0,0,0,0.06)',
-                  position: 'relative',
-                  background: '#1A1A1A'
-                }}>
-                  <img
-                    src="/founder-photo.jpg"
-                    alt="Основательница VietReloc"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      objectPosition: 'center 15%',
-                      display: 'block'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Founder caption */}
-              <div style={{ marginTop: '0.25rem' }}>
-                <div style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '1.22rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  letterSpacing: '-0.01em',
-                  marginBottom: '0.35rem'
-                }}>
-                  {language === 'ru' ? 'Основательница VietReloc' : 'VietReloc Founder'}
-                </div>
-                <div style={{
-                  fontSize: '0.86rem',
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.45
-                }}>
-                  {language === 'ru' ? 'Дананг · Нячанг · Личный контакт' : 'Da Nang · Nha Trang · Direct Support'}
-                </div>
-              </div>
-
-            </div>
-
           </div>
         </div>
 
@@ -344,7 +282,7 @@ export const ClientReviewsSection: React.FC = () => {
           gap: '0.5rem',
           flexWrap: 'wrap',
           marginBottom: '2rem'
-        }}>
+        }} className="situations-tabs-wrapper">
           {Object.values(situations).map((sit) => {
             const Icon = sit.icon;
             const isActive = activeTab === sit.id;

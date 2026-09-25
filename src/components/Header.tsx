@@ -21,21 +21,33 @@ export const Header: React.FC = () => {
 
   const scrollTo = (id: string, sec: 'home' | 'why' | 'cabinet' | 'pricing' | 'reviews' | 'faq') => {
     setActiveSection(sec);
-    if (viewMode !== 'marketing') {
-      setViewMode('marketing');
-      setTimeout(() => {
-        if (id === 'top') {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 50);
-    } else {
+    setMobileMenuOpen(false);
+
+    const performScroll = () => {
       if (id === 'top') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        return;
       }
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      // Base sticky header height is ~64px, provide 16px breathing room
+      const headerOffset = 80;
+      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+      const targetPosition = Math.max(0, elementPosition - headerOffset);
+
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    };
+
+    if (viewMode !== 'marketing') {
+      setViewMode('marketing');
+      setTimeout(performScroll, 120);
+    } else {
+      // 80ms allows React to unmount mobile drawer so document geometry stabilizes
+      setTimeout(performScroll, 80);
     }
   };
 
@@ -329,7 +341,7 @@ export const Header: React.FC = () => {
               <button
                 className={`btn ${viewMode === 'marketing' && activeSection === 'cabinet' ? 'btn-primary' : 'btn-secondary'}`}
                 style={{ width: '100%', justifyContent: 'flex-start' }}
-                onClick={() => { scrollTo('cabinet-preview', 'cabinet'); setMobileMenuOpen(false); }}
+                onClick={() => { window.dispatchEvent(new CustomEvent('open-mobile-demo')); scrollTo('cabinet-preview', 'cabinet'); }}
               >
                 {t('navPreview' as any) || (language === 'ru' ? 'Демо кабинета' : 'Demo')}
               </button>

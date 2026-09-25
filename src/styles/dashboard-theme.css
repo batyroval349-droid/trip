@@ -1,0 +1,753 @@
+/* ==========================================================================
+   CLIENT DASHBOARD DESIGN TOKENS & GLASSMORPHISM THEME
+   Inspired by clean, soft, airy frosted glass reference with misty backdrop.
+   ========================================================================== */
+
+:root {
+  /* Surface & Backgrounds */
+  --dash-bg-page: #F1F5F9;
+  --dash-bg-card: rgba(255, 255, 255, 0.82);
+  --dash-bg-card-subtle: rgba(248, 250, 252, 0.7);
+  --dash-bg-card-hover: rgba(255, 255, 255, 0.95);
+  --dash-bg-inner-item: rgba(255, 255, 255, 0.65);
+  --dash-bg-pill: rgba(241, 245, 249, 0.75);
+
+  /* Borders */
+  --dash-border-card: rgba(255, 255, 255, 0.85);
+  --dash-border-subtle: rgba(226, 232, 240, 0.7);
+  --dash-border-focus: rgba(30, 41, 59, 0.25);
+
+  /* Shadows (Soft, diffused, airy ambient shadows) */
+  --dash-shadow-card: 0 10px 30px -5px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+  --dash-shadow-hover: 0 18px 38px -6px rgba(15, 23, 42, 0.08), 0 6px 16px rgba(0, 0, 0, 0.03);
+  --dash-shadow-pill: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+  /* Radii */
+  --dash-radius-card: 20px;
+  --dash-radius-item: 14px;
+  --dash-radius-pill: 9999px;
+
+  /* Typography Colors (Ensures high contrast on light cards) */
+  --dash-text-main: #0F172A;
+  --dash-text-muted: #64748B;
+  --dash-text-dim: #94A3B8;
+
+  /* Accents */
+  --dash-accent-dark: #1E293B;       /* Dark navy/slate for active elements (like reference dock) */
+  --dash-accent-emerald: #0F766E;    /* Brand teal */
+  --dash-accent-sky: #0284C7;        /* Soft sky blue */
+  --dash-accent-amber: #D97706;      /* VIP accent */
+
+  /* Backdrop Blur */
+  --dash-backdrop-blur: blur(20px) saturate(150%);
+  --dash-backdrop-blur-subtle: blur(12px);
+
+  /* Glass Button Tokens */
+  --dash-btn-bg: rgba(255, 255, 255, 0.35);
+  --dash-btn-bg-active: rgba(15, 118, 110, 0.55);
+  --dash-btn-border: rgba(255, 255, 255, 0.6);
+  --dash-btn-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --dash-btn-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  --dash-btn-blur: blur(12px) saturate(160%);
+  --dash-btn-radius: 9999px;
+}
+
+/* ==========================================================================
+   GLASS BUTTON COMPONENT
+   ========================================================================== */
+
+.glass-button {
+  background: var(--dash-btn-bg);
+  -webkit-backdrop-filter: var(--dash-btn-blur);
+  backdrop-filter: var(--dash-btn-blur);
+  border: 1px solid var(--dash-btn-border);
+  border-radius: var(--dash-btn-radius);
+  box-shadow: var(--dash-btn-shadow), var(--dash-btn-highlight);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.glass-button:active {
+  transform: scale(0.96);
+}
+
+.glass-button.active {
+  background: var(--dash-btn-bg-active);
+  color: #FFFFFF !important;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-button {
+    background: #FFFFFF !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Optimized glass effect for Admin Tool to avoid rendering lag during table scrolling */
+.admin-scope .glass-button {
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* ==========================================================================
+   PAGE WRAPPER & BACKGROUND
+   Misty blurred natural landscape underneath, calm frosted atmosphere.
+   ========================================================================== */
+
+.client-dashboard-bg {
+  position: relative;
+  min-height: 100vh;
+  background-color: #F1F5F9;
+  background-image: 
+    radial-gradient(at 10% 20%, rgba(224, 242, 254, 0.7) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(241, 245, 249, 0.8) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, rgba(226, 232, 240, 0.8) 0px, transparent 50%),
+    url('https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=2000&q=80');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+}
+
+.client-dashboard-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(248, 250, 252, 0.82);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.client-dashboard-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   CARDS OVERRIDE FOR CLIENT DASHBOARD
+   ========================================================================== */
+
+.client-dashboard-bg .glass-card {
+  background: var(--dash-bg-card) !important;
+  backdrop-filter: var(--dash-backdrop-blur) !important;
+  -webkit-backdrop-filter: var(--dash-backdrop-blur) !important;
+  border: 1px solid var(--dash-border-card) !important;
+  border-radius: var(--dash-radius-card) !important;
+  box-shadow: var(--dash-shadow-card) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.client-dashboard-bg .glass-card:hover {
+  background: var(--dash-bg-card-hover) !important;
+  border-color: rgba(255, 255, 255, 1) !important;
+  box-shadow: var(--dash-shadow-hover) !important;
+  transform: translateY(-2px) !important;
+}
+
+.client-dashboard-bg .glass-card-emerald {
+  border-color: rgba(15, 118, 110, 0.25) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 253, 244, 0.8) 100%) !important;
+}
+
+.client-dashboard-bg .glass-card-terracotta {
+  border-color: rgba(194, 94, 32, 0.25) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 247, 237, 0.8) 100%) !important;
+}
+
+/* ==========================================================================
+   GREETING & UTILITY BUTTONS (Reference Style)
+   ========================================================================== */
+
+.dash-greeting-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--dash-radius-pill);
+  padding: 0.45rem 1.1rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--dash-text-main);
+  box-shadow: var(--dash-shadow-pill);
+}
+
+.dash-utility-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dash-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.dash-utility-btn:hover {
+  background: #FFFFFF;
+  color: var(--dash-text-main);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   HERO METRIC, DYNAMIC WEATHER & COMPACT PROGRESS CENTERPIECE
+   ========================================================================== */
+
+.dash-hero-metric-wrap {
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
+
+.dash-hero-metric-number {
+  font-size: clamp(2.6rem, 5vw, 3.8rem);
+  font-weight: 800;
+  color: var(--dash-text-main);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-family: var(--font-sans);
+  margin-bottom: 0.4rem;
+}
+
+.dash-hero-metric-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--dash-text-muted);
+  letter-spacing: 0.01em;
+}
+
+/* Focal Row: Weather Widget on left/center + Compact Progress on side */
+.dash-hero-focal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  max-width: 680px;
+  margin: 0 auto 0.5rem auto;
+  flex-wrap: wrap;
+}
+
+.dash-weather-widget {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 0.85rem 1.35rem;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+  flex: 1 1 320px;
+  transition: all 0.25s ease;
+  position: relative;
+  text-align: left;
+}
+
+.dash-weather-widget:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.dash-weather-widget-pending {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1.5px dashed rgba(203, 213, 225, 0.9);
+}
+
+.dash-weather-visual-wrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-weather-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.dash-weather-temp-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.dash-weather-temp {
+  font-size: clamp(1.85rem, 3.5vw, 2.35rem);
+  font-weight: 800;
+  color: var(--dash-text-main);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
+}
+
+.dash-weather-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #0F766E;
+  background: rgba(15, 118, 110, 0.08);
+  border-radius: var(--dash-radius-pill);
+  padding: 0.15rem 0.55rem;
+  line-height: 1.2;
+}
+
+.dash-weather-city {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--dash-text-main);
+}
+
+.dash-weather-country {
+  color: var(--dash-text-muted);
+  font-weight: 400;
+}
+
+.dash-weather-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22C55E;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.7);
+  margin-left: 2px;
+  animation: weather-dot-pulse 2s infinite;
+}
+
+@keyframes weather-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.85); }
+}
+
+/* Compact Progress Side Element */
+.dash-compact-progress-widget {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 0.85rem 1.25rem;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+  flex: 0 1 auto;
+  min-width: 190px;
+  text-align: left;
+  transition: all 0.25s ease;
+}
+
+.dash-compact-progress-widget:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.dash-compact-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.dash-compact-progress-title {
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dash-text-muted);
+}
+
+.dash-compact-progress-percent {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #0F766E;
+  line-height: 1;
+  font-family: var(--font-sans);
+}
+
+.dash-compact-progress-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.2rem;
+}
+
+.dash-compact-progress-step-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dash-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.dash-compact-progress-counts {
+  font-size: 0.72rem;
+  color: var(--dash-text-muted);
+}
+
+/* --- ANIMATION: SUN --- */
+.weather-sun-box {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weather-sun-core {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FDE047 0%, #F59E0B 75%, #D97706 100%);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  animation: weather-sun-pulse 3.2s ease-in-out infinite;
+  z-index: 2;
+}
+
+.weather-sun-rays-svg {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  animation: weather-sun-spin 20s linear infinite;
+  z-index: 1;
+}
+
+@keyframes weather-sun-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes weather-sun-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.4)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.7)); }
+}
+
+/* --- ANIMATION: CLOUDS --- */
+.weather-clouds-box {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+
+.weather-cloud-back {
+  position: absolute;
+  top: 8px;
+  left: 3px;
+  color: #94A3B8;
+  opacity: 0.65;
+  animation: weather-cloud-drift-back 7.5s ease-in-out infinite alternate;
+}
+
+.weather-cloud-front {
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  color: #64748B;
+  opacity: 0.95;
+  animation: weather-cloud-drift-front 6s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+.weather-mist-overlay {
+  position: absolute;
+  bottom: 6px;
+  left: 4px;
+  right: 4px;
+  height: 8px;
+  background: linear-gradient(90deg, transparent, rgba(226, 232, 240, 0.85), transparent);
+  filter: blur(1.5px);
+  animation: weather-mist-shimmer 4s ease-in-out infinite alternate;
+  z-index: 3;
+}
+
+@keyframes weather-cloud-drift-front {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(6px); }
+}
+
+@keyframes weather-cloud-drift-back {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-5px); }
+}
+
+@keyframes weather-mist-shimmer {
+  0% { opacity: 0.35; transform: scaleX(0.9); }
+  100% { opacity: 0.8; transform: scaleX(1.1); }
+}
+
+/* --- ANIMATION: RAIN --- */
+.weather-rain-box {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+
+.weather-rain-cloud {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  color: #475569;
+  z-index: 2;
+}
+
+.weather-rain-drop {
+  position: absolute;
+  width: 2px;
+  height: 7px;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.4), #0284C7);
+  border-radius: 2px;
+  animation: weather-rain-fall 0.85s linear infinite;
+  z-index: 1;
+}
+
+.weather-rain-drop-1 { left: 16px; top: 29px; animation-delay: 0s; }
+.weather-rain-drop-2 { left: 24px; top: 29px; animation-delay: 0.32s; }
+.weather-rain-drop-3 { left: 32px; top: 29px; animation-delay: 0.16s; }
+.weather-rain-drop-4 { left: 40px; top: 29px; animation-delay: 0.48s; }
+
+@keyframes weather-rain-fall {
+  0% { transform: translateY(-3px) scaleY(0.7); opacity: 0; }
+  35% { opacity: 1; }
+  85% { opacity: 0.85; }
+  100% { transform: translateY(16px) scaleY(1.1); opacity: 0; }
+}
+
+/* --- ANIMATION: STORM --- */
+.weather-storm-box {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+
+.weather-storm-cloud {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  color: #334155;
+  z-index: 2;
+}
+
+.weather-lightning-bolt {
+  position: absolute;
+  top: 24px;
+  left: 21px;
+  z-index: 3;
+  animation: weather-lightning-strike 5.5s infinite;
+}
+
+@keyframes weather-lightning-strike {
+  0%, 88%, 94%, 100% {
+    opacity: 0;
+    transform: scale(0.95);
+    filter: none;
+  }
+  89% {
+    opacity: 0.85;
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 8px #FACC15);
+  }
+  90.5% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  92% {
+    opacity: 0.75;
+    transform: scale(1.02);
+    filter: drop-shadow(0 0 6px #FACC15);
+  }
+}
+
+/* Pending plan icon */
+.weather-pending-pulse {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 118, 110, 0.1);
+  color: #0F766E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: weather-pending-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes weather-pending-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 14px rgba(15, 118, 110, 0.25); }
+}
+
+.dash-weather-pending-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--dash-text-main);
+}
+
+.dash-weather-pending-sub {
+  font-size: 0.78rem;
+  color: var(--dash-text-muted);
+}
+
+/* Sleek Minimal Progress Track (Reference "To Do" style) */
+.dash-progress-track {
+  height: 6px;
+  background: rgba(226, 232, 240, 0.85);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.dash-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #0F766E 0%, #0284C7 100%);
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   NAVIGATION BAR (Floating Frosted Dock / Pill Bar)
+   ========================================================================== */
+
+.dash-nav-bar {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0.45rem;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+  margin-bottom: 2rem;
+  scrollbar-width: none;
+}
+
+.dash-nav-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.dash-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--dash-text-muted);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dash-nav-tab:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--dash-text-main);
+}
+
+/* Active tab styled as dark navy/slate matching reference dock active icon */
+.dash-nav-tab.active {
+  background: #1E293B !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(30, 41, 59, 0.25) !important;
+}
+
+.dash-nav-tab.active svg {
+  color: #FFFFFF !important;
+}
+
+/* ==========================================================================
+   CARD HEADER PATTERN & ACTION BUTTONS (Reference Style)
+   ========================================================================== */
+
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.dash-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--dash-text-main);
+  font-family: var(--font-sans);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Right-aligned action pill (View all, Edit, + Add, etc.) */
+.dash-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(241, 245, 249, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: var(--dash-radius-pill);
+  padding: 0.3rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.dash-action-pill:hover {
+  background: #FFFFFF;
+  color: var(--dash-text-main);
+  border-color: #CBD5E1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Inner List Item (Bookmarks / To Do rows in reference) */
+.dash-inner-item {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  border-radius: var(--dash-radius-item);
+  padding: 0.85rem 1.1rem;
+  transition: all 0.2s ease;
+}
+
+.client-dashboard-bg .dash-inner-item:hover {
+  background: #FFFFFF;
+  border-color: rgba(203, 213, 225, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Check, Sparkles, Star, ShieldCheck, Compass } from 'lucide-react';
+import { MobileCarousel } from './ui/MobileCarousel';
 
 export const PricingTiers: React.FC = () => {
   const { t, startBooking, language } = useApp();
@@ -10,16 +11,16 @@ export const PricingTiers: React.FC = () => {
       id: 'tier1',
       title: t('tier1Title'),
       price: t('tier1Price'),
-      badge: language === 'ru' ? '100% зачёт $50 в тариф' : '100% $50 Credit to Any Plan',
+      badge: language === 'ru' ? '100% зачёт $25 в тариф' : '100% $25 Credit to Any Plan',
       badgeColor: 'badge-emerald',
       badgeIcon: Sparkles,
       description: t('tier1Desc'),
       features: [
-        { strong: language === 'ru' ? '60 минут' : '60 minutes', text: language === 'ru' ? 'личной видео-встречи с основателем' : '1-on-1 personal video call with founder' },
+        { strong: language === 'ru' ? '60 минут' : '60 minutes', text: language === 'ru' ? 'личной видео-встречи с Founder' : '1-on-1 personal video call with founder' },
         { strong: language === 'ru' ? 'Оценка целесообразности' : 'Feasibility assessment', text: language === 'ru' ? 'переезда под ваши цели' : 'tailored to your personal goals' },
         { strong: language === 'ru' ? 'Обзор городов' : 'City & season overview', text: language === 'ru' ? 'и сезонов под ваши задачи' : 'matched to your profile' },
         { strong: language === 'ru' ? 'Резюме рекомендаций' : 'Written summary', text: language === 'ru' ? 'с выводами после созвона' : 'of key takeaways after the call' },
-        { strong: language === 'ru' ? '100% зачёт $50' : '100% $50 credit', text: language === 'ru' ? 'в стоимость тарифа поездки или релокации' : 'credited towards any full package' }
+        { strong: language === 'ru' ? '100% зачёт $25' : '100% $25 credit', text: language === 'ru' ? 'в стоимость тарифа поездки или релокации' : 'credited towards any full package' }
       ],
       ctaText: language === 'ru' ? 'Записаться на звонок' : 'Book a Call',
       isHero: false,
@@ -35,6 +36,7 @@ export const PricingTiers: React.FC = () => {
       description: t('tier2Desc'),
       features: [
         { strong: language === 'ru' ? 'Маршрут 1–30 дней' : '1–30 day itinerary', text: language === 'ru' ? 'под ваши даты и бюджет' : 'tailored to dates and budget' },
+        { strong: language === 'ru' ? 'Чек-лист по визе' : 'e-Visa checklist', text: language === 'ru' ? 'и помощь в вашем кабинете' : 'and guidance in your client portal' },
         { strong: language === 'ru' ? 'Подбор городов' : 'City selection', text: language === 'ru' ? 'и локаций под ваши интересы' : 'matched to your interests' },
         { strong: language === 'ru' ? 'Связь и SIM/eSIM' : 'SIM / eSIM guidance', text: language === 'ru' ? 'рекомендации и адреса точек' : 'recommendations and store spots' },
         { strong: language === 'ru' ? 'Поддержка в WhatsApp' : 'WhatsApp support', text: language === 'ru' ? 'на 14 дней во время поездки' : 'for 14 days during your trip' },
@@ -53,9 +55,10 @@ export const PricingTiers: React.FC = () => {
       badgeIcon: Star,
       description: t('tier3Desc'),
       features: [
+        { strong: language === 'ru' ? 'Чек-лист по визе' : 'e-Visa checklist', text: language === 'ru' ? 'и помощь в вашем кабинете' : 'and guidance in your client portal' },
+        { strong: language === 'ru' ? 'Маршрут переезда (14 дней)' : '14-day relocation route', text: language === 'ru' ? 'пошаговый план обустройства' : 'step-by-step settling-in plan' },
         { strong: language === 'ru' ? 'Интерактивный калькулятор' : 'Interactive calculator', text: language === 'ru' ? 'бюджета в личном кабинете' : 'in your client dashboard' },
         { strong: language === 'ru' ? 'Проверенный риелтор' : 'Verified partner-realtor', text: language === 'ru' ? 'реальные варианты жилья' : 'real vetted housing options' },
-        { strong: language === 'ru' ? 'Персональный чек-лист' : 'Personalized checklist', text: language === 'ru' ? 'документы, визы, сроки' : 'documents, visas, timelines' },
         { strong: language === 'ru' ? 'Подбор районов' : 'Neighborhood matching', text: language === 'ru' ? 'и инфраструктуры под ваш стиль' : 'and lifestyle infrastructure' },
         { strong: language === 'ru' ? 'Чат-сопровождение' : '1 month chat support', text: language === 'ru' ? 'и консультации — 1 месяц' : 'and founder advisory' }
       ],
@@ -72,7 +75,7 @@ export const PricingTiers: React.FC = () => {
       badgeIcon: Star,
       description: t('tier4Desc'),
       features: [
-        { strong: language === 'ru' ? 'Всё из тарифа Релокация' : 'Everything in Relocation', text: language === 'ru' ? 'полный комплект материалов' : 'complete planning package' },
+        { strong: language === 'ru' ? 'Всё, что входит в тариф $490' : 'Everything in $490 Relocation', text: language === 'ru' ? 'полный комплект материалов' : 'complete planning package' },
         { strong: language === 'ru' ? 'Приоритетная связь' : 'Priority communication', text: language === 'ru' ? 'в WhatsApp и Telegram' : 'in WhatsApp & Telegram' },
         { strong: language === 'ru' ? 'Сопровождение показов' : 'Viewing accompaniment', text: language === 'ru' ? 'жилья через риелтора-партнёра' : 'via our partner-realtor' },
         { strong: language === 'ru' ? '1 месяц поддержки' : '1 month adaptation', text: language === 'ru' ? 'по бюджету и адаптации' : 'budget & local settlement' },
@@ -170,8 +173,12 @@ export const PricingTiers: React.FC = () => {
           </div>
         </div>
 
-        {/* Pricing Cards Grid with perfect horizontal baseline alignment */}
-        <div className="grid-4" style={{ alignItems: 'stretch' }}>
+        {/* Pricing Cards: Mobile Carousel, Desktop 4-Col Grid */}
+        <MobileCarousel
+          desktopClassName="grid-4"
+          desktopStyle={{ alignItems: 'stretch' }}
+          ariaLabel={language === 'ru' ? 'Тарифы и стоимость' : 'Pricing & Plans'}
+        >
           {tiers.map((tier) => (
             <div
               key={tier.id}
@@ -264,10 +271,10 @@ export const PricingTiers: React.FC = () => {
 
             </div>
           ))}
-        </div>
+        </MobileCarousel>
 
         {/* Disclaimer under Card 3 stretching to Card 4 */}
-        <div style={{
+        <div className="pricing-disclaimer-grid" style={{
           marginTop: '1.5rem',
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',

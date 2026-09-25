@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { FileText, GraduationCap, Laptop, CreditCard, BookOpen, Send } from 'lucide-react';
+import { MobileCarousel } from './ui/MobileCarousel';
 
 export const AdditionalServices: React.FC = () => {
   const { t, language } = useApp();
@@ -76,13 +77,16 @@ export const AdditionalServices: React.FC = () => {
           </p>
         </div>
 
-        {/* Services Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.5rem',
-          alignItems: 'stretch'
-        }}>
+        {/* Services: Mobile Carousel, Desktop Auto-fit Grid */}
+        <MobileCarousel
+          desktopStyle={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '1.5rem',
+            alignItems: 'stretch'
+          }}
+          ariaLabel={language === 'ru' ? 'Дополнительные услуги' : 'Additional Services'}
+        >
           {services.map((svc) => {
             const Icon = svc.icon;
             return (
@@ -159,7 +163,7 @@ export const AdditionalServices: React.FC = () => {
               </div>
             );
           })}
-        </div>
+        </MobileCarousel>
 
       </div>
     </section>

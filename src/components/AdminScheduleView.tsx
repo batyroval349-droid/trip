@@ -32,6 +32,7 @@ export const AdminScheduleView: React.FC = () => {
     completeConsultationBooking,
     confirmExpressBookingPayment,
     sendTestTelegramNotification,
+    sendTestPackageTelegramNotification,
     sendTestEmailNotification,
     language
   } = useApp();
@@ -53,6 +54,7 @@ export const AdminScheduleView: React.FC = () => {
   const [emailWebhookUrl, setEmailWebhookUrl] = useState(scheduleConfig.emailWebhookUrl || 'https://script.google.com/macros/s/AKfycbwx8A1phRs4yvSykbWX9TXrOT3fvY28pvAzz1EM7jnFTo47DBTozUFxSgTD2v-lh6An/exec');
   const [tgFeedback, setTgFeedback] = useState<{ success?: boolean; message: string } | null>(null);
   const [isTestingTg, setIsTestingTg] = useState(false);
+  const [isTestingTgPackage, setIsTestingTgPackage] = useState(false);
   const [isTestingEmail, setIsTestingEmail] = useState(false);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
 
@@ -83,7 +85,7 @@ export const AdminScheduleView: React.FC = () => {
   const confirmedCount = consultationBookings.filter((b) => b.status === 'confirmed').length;
   const pendingCount = consultationBookings.filter((b) => b.status === 'pending_payment').length;
   const completedCount = consultationBookings.filter((b) => b.status === 'completed').length;
-  const totalRevenueUSD = (confirmedCount + completedCount) * 50;
+  const totalRevenueUSD = (confirmedCount + completedCount) * 25;
 
   const handleSaveTelegram = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +108,18 @@ export const AdminScheduleView: React.FC = () => {
     });
     const result = await sendTestTelegramNotification();
     setIsTestingTg(false);
+    setTgFeedback(result);
+  };
+
+  const handleTestPackageTelegram = async () => {
+    setIsTestingTgPackage(true);
+    setTgFeedback(null);
+    updateScheduleConfig({
+      telegramBotToken: botToken.trim(),
+      telegramChatId: chatId.trim()
+    });
+    const result = await sendTestPackageTelegramNotification('tier3');
+    setIsTestingTgPackage(false);
     setTgFeedback(result);
   };
 
@@ -149,7 +163,7 @@ export const AdminScheduleView: React.FC = () => {
           meetingPlatform: 'Google Meet',
           topic: 'Тестирование вебхука Google Apps Script',
           paymentMethod: 'card_ru',
-          amountUSD: 50
+          amountUSD: 25
         })
       });
       setTgFeedback({
@@ -217,7 +231,7 @@ export const AdminScheduleView: React.FC = () => {
             ${totalRevenueUSD}
           </div>
           <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            {language === 'ru' ? 'По $50 за 60-мин созвон' : '$50 per 60-min call'}
+            {language === 'ru' ? 'По $25 за 60-мин созвон' : '$25 per 60-min call'}
           </div>
         </div>
 
@@ -444,7 +458,7 @@ export const AdminScheduleView: React.FC = () => {
                             </span>
                           )}
                           <span style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)', fontWeight: 700 }}>
-                            $50
+                            ${b.priceUSD || 25}
                           </span>
                         </div>
 
@@ -500,7 +514,7 @@ export const AdminScheduleView: React.FC = () => {
                         )}
 
                         <a
-                          href={`https://wa.me/?text=${encodeURIComponent(`Здравствуйте, ${b.name}! Я основатель VietReloc по поводу нашей консультации ${b.bookingDate} в ${b.bookingTime}.`)}`}
+                          href={`https://wa.me/?text=${encodeURIComponent(`Здравствуйте, ${b.name}! Я Founder VietReloc по поводу нашей консультации ${b.bookingDate} в ${b.bookingTime}.`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-secondary"
@@ -517,7 +531,7 @@ export const AdminScheduleView: React.FC = () => {
                               onClick={() => confirmExpressBookingPayment(b.id, 'card_ru')}
                               className="btn btn-secondary"
                               style={{ fontSize: '0.82rem', padding: '0.45rem 0.85rem', color: 'var(--accent-emerald)', borderColor: 'var(--accent-emerald)' }}
-                              title={language === 'ru' ? 'Подтвердить получение оплаты $50' : 'Confirm $50 payment'}
+                              title={language === 'ru' ? 'Подтвердить получение оплаты $25' : 'Confirm $25 payment'}
                             >
                               <CheckCircle2 size={14} /> {language === 'ru' ? 'Подтвердить оплату' : 'Confirm Payment'}
                             </button>
@@ -877,12 +891,12 @@ export const AdminScheduleView: React.FC = () => {
         <div style={{ background: '#FFFFFF', borderRadius: 'var(--radius-md)', padding: '2rem', border: '1px solid var(--border-subtle)', maxWidth: '740px' }}>
           <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Send size={20} color="var(--accent-emerald)" />
-            {language === 'ru' ? 'Уведомления о новых бронированиях (Telegram и Email)' : 'Booking Alerts (Telegram & Email)'}
+            {language === 'ru' ? 'Уведомления о бронированиях и покупках (Telegram и Email)' : 'Booking & Purchase Alerts (Telegram & Email)'}
           </h3>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
             {language === 'ru'
-              ? 'Когда клиент выбирает дату и бронирует созвон на сайте, уведомление мгновенно отправляется вам в Telegram и на вашу почту с полными контактами клиента и датой.'
-              : 'When a client books a call, instant alerts are dispatched to your Telegram and email with full client details.'}
+              ? 'Уведомления мгновенно отправляются вам в Telegram-бот и на email при двух ключевых событиях: 1) Запись на созвон за $25 (дата, время, платформа и тема), 2) Покупка тарифа $290 / $490 / $890 (тариф, сумма, контакты клиента, города, даты поездки и дедлайн первого шага по SLA 48 часов).'
+              : 'Alerts are dispatched to your Telegram bot and email instantly on two events: 1) $25 consultation bookings, and 2) $290 / $490 / $890 package purchases with full client dossier and 48h SLA deadline.'}
           </p>
 
           <form onSubmit={handleSaveTelegram} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -934,15 +948,25 @@ export const AdminScheduleView: React.FC = () => {
                   />
                 </div>
 
-                <div>
+                <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
                   <button
                     type="button"
                     onClick={handleTestTelegram}
-                    disabled={isTestingTg}
+                    disabled={isTestingTg || isTestingTgPackage}
                     className="btn btn-secondary"
-                    style={{ padding: '0.55rem 1.1rem', fontSize: '0.84rem' }}
+                    style={{ padding: '0.55rem 1rem', fontSize: '0.84rem' }}
                   >
-                    <Send size={14} /> {isTestingTg ? (language === 'ru' ? 'Отправка...' : 'Sending...') : (language === 'ru' ? 'Протестировать Telegram' : 'Test Telegram')}
+                    <Send size={14} /> {isTestingTg ? (language === 'ru' ? 'Отправка...' : 'Sending...') : (language === 'ru' ? 'Тест: Запись на созвон ($25)' : 'Test: Call Booking ($25)')}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleTestPackageTelegram}
+                    disabled={isTestingTg || isTestingTgPackage}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.55rem 1rem', fontSize: '0.84rem', borderColor: 'var(--accent-terracotta)', color: 'var(--accent-terracotta)', fontWeight: 600 }}
+                  >
+                    <DollarSign size={14} /> {isTestingTgPackage ? (language === 'ru' ? 'Отправка...' : 'Sending...') : (language === 'ru' ? 'Тест: Покупка тарифа ($490)' : 'Test: Package Purchase ($490)')}
                   </button>
                 </div>
               </div>
@@ -958,7 +982,7 @@ export const AdminScheduleView: React.FC = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
-                    Email основательницы для получения заявок
+                    Email Founder для получения заявок
                   </label>
                   <input
                     type="email"

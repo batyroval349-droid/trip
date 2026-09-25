@@ -47,7 +47,7 @@ export const DashboardResourcesView: React.FC = () => {
       </div>
 
       {/* 2. Emergency Hotlines */}
-      <div className="glass-card" style={{ background: '#FFFFFF' }}>
+      <div className="glass-card">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
           <ShieldAlert size={20} color="var(--accent-terracotta)" />
           <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', margin: 0, color: 'var(--text-main)' }}>
@@ -56,10 +56,7 @@ export const DashboardResourcesView: React.FC = () => {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-          <div style={{
-            background: '#FEF2F2',
-            border: '1px solid #FECACA',
-            borderRadius: 'var(--radius-md)',
+          <div className="dash-inner-item" style={{
             padding: '1.25rem',
             display: 'flex',
             alignItems: 'center',
@@ -69,8 +66,8 @@ export const DashboardResourcesView: React.FC = () => {
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              background: '#DC2626',
-              color: '#FFFFFF',
+              background: 'rgba(220, 38, 38, 0.1)',
+              color: '#DC2626',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -89,10 +86,7 @@ export const DashboardResourcesView: React.FC = () => {
             </div>
           </div>
 
-          <div style={{
-            background: '#EFF6FF',
-            border: '1px solid #BFDBFE',
-            borderRadius: 'var(--radius-md)',
+          <div className="dash-inner-item" style={{
             padding: '1.25rem',
             display: 'flex',
             alignItems: 'center',
@@ -102,8 +96,8 @@ export const DashboardResourcesView: React.FC = () => {
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              background: '#2563EB',
-              color: '#FFFFFF',
+              background: 'rgba(37, 99, 235, 0.1)',
+              color: '#2563EB',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -122,10 +116,7 @@ export const DashboardResourcesView: React.FC = () => {
             </div>
           </div>
 
-          <div style={{
-            background: '#FFF7ED',
-            border: '1px solid #FED7AA',
-            borderRadius: 'var(--radius-md)',
+          <div className="dash-inner-item" style={{
             padding: '1.25rem',
             display: 'flex',
             alignItems: 'center',
@@ -135,8 +126,8 @@ export const DashboardResourcesView: React.FC = () => {
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              background: '#EA580C',
-              color: '#FFFFFF',
+              background: 'rgba(234, 88, 12, 0.1)',
+              color: '#EA580C',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -158,7 +149,7 @@ export const DashboardResourcesView: React.FC = () => {
       </div>
 
       {/* 3. SIM / eSIM Connectivity Guide */}
-      <div className="glass-card" style={{ background: '#FFFFFF' }}>
+      <div className="glass-card">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
           <Smartphone size={20} color="var(--accent-emerald)" />
           <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', margin: 0, color: 'var(--text-main)' }}>
@@ -170,11 +161,8 @@ export const DashboardResourcesView: React.FC = () => {
           {DEFAULT_TRAVEL_SIM_GUIDE.map((sim, index) => (
             <div
               key={index}
+              className="dash-inner-item"
               style={{
-                background: 'var(--bg-panel)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                padding: '1.25rem',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between'
@@ -271,7 +259,7 @@ export const DashboardResourcesView: React.FC = () => {
       </div>
 
       {/* 4. Verified Hospitals by City */}
-      <div className="glass-card" style={{ background: '#FFFFFF' }}>
+      <div className="glass-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Hospital size={20} color="var(--accent-emerald)" />
@@ -281,22 +269,15 @@ export const DashboardResourcesView: React.FC = () => {
           </div>
 
           {/* City Filter Pills */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
             {hospitalCities.map((cityName) => (
               <button
                 key={cityName}
                 onClick={() => setSelectedHospitalCity(cityName)}
+                className={`glass-button ${selectedHospitalCity === cityName ? 'active' : ''}`}
                 style={{
-                  padding: '0.35rem 0.8rem',
-                  fontSize: '0.78rem',
-                  borderRadius: '9999px',
-                  border: '1px solid',
-                  cursor: 'pointer',
-                  fontWeight: selectedHospitalCity === cityName ? 700 : 500,
-                  background: selectedHospitalCity === cityName ? 'var(--accent-emerald)' : 'transparent',
-                  color: selectedHospitalCity === cityName ? '#FFFFFF' : 'var(--text-muted)',
-                  borderColor: selectedHospitalCity === cityName ? 'var(--accent-emerald)' : 'var(--border-subtle)',
-                  transition: 'all 0.15s ease'
+                  padding: '0.35rem 0.85rem',
+                  fontSize: '0.78rem'
                 }}
               >
                 {cityName}
@@ -309,11 +290,8 @@ export const DashboardResourcesView: React.FC = () => {
           {filteredHospitals.map((hospital, index) => (
             <div
               key={index}
+              className="dash-inner-item"
               style={{
-                background: 'var(--bg-panel)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                padding: '1.25rem',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between'
@@ -405,11 +383,8 @@ export const DashboardResourcesView: React.FC = () => {
                 {items.map((item) => (
                   <div
                     key={item.id}
+                    className="dash-inner-item"
                     style={{
-                      background: 'var(--bg-panel)',
-                      border: '1px solid var(--border-subtle)',
-                      borderRadius: 'var(--radius-md)',
-                      padding: '1.25rem',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between'

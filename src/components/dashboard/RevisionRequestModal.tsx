@@ -113,7 +113,7 @@ export const RevisionRequestModal: React.FC<RevisionRequestModalProps> = ({ isOp
               </h4>
               <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)' }}>
                 {language === 'ru'
-                  ? 'Основатель получил ваши пожелания и обновит маршрут в течение 24–48 часов.'
+                  ? 'Founder получил ваши пожелания и обновит маршрут в течение 24–48 часов.'
                   : 'The founder has received your feedback and will update your route within 24–48 hours.'}
               </p>
             </div>
@@ -131,7 +131,7 @@ export const RevisionRequestModal: React.FC<RevisionRequestModalProps> = ({ isOp
               </h4>
               <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: '#B45309' }}>
                 {language === 'ru'
-                  ? 'Вы уже отправили запрос на изменение маршрута. Основатель вносит правки.'
+                  ? 'Вы уже отправили запрос на изменение маршрута. Founder вносит правки.'
                   : 'You have already submitted a revision request. The founder is applying updates.'}
               </p>
               {revState?.requestText && (
@@ -162,7 +162,7 @@ export const RevisionRequestModal: React.FC<RevisionRequestModalProps> = ({ isOp
               </h4>
               <p style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                 {language === 'ru'
-                  ? 'Если вам требуются дополнительные изменения или помощь на маршруте, напишите основателю напрямую в WhatsApp поддержки (14 дней).'
+                  ? 'Если вам требуются дополнительные изменения или помощь на маршруте, напишите Founder напрямую в WhatsApp поддержки (14 дней).'
                   : 'If you need additional changes or real-time assistance during your trip, contact the founder directly via your 14-day WhatsApp concierge support.'}
               </p>
               <a

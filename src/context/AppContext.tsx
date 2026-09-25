@@ -25,7 +25,7 @@ import type {
   TravelSimGuideItem,
   TravelEmergencyHospital
 } from '../types';
-import { DEMO_CLIENT_PROJECT, UI_STRINGS } from '../translations/content';
+import { DEMO_CLIENT_PROJECT, UI_STRINGS, normalizeCityId } from '../translations/content';
 import { INITIAL_ADMIN_CLIENTS } from '../translations/adminClientsData';
 import {
   DEFAULT_TRAVEL_DAYS,
@@ -34,9 +34,10 @@ import {
   DEFAULT_TRAVEL_SIM_GUIDE,
   DEFAULT_TRAVEL_HOSPITALS
 } from '../translations/defaultTravelData';
+import { DEFAULT_RELOCATION_14_DAYS } from '../translations/defaultRelocationTravelData';
 
 export const TIERS_CONFIG: Record<TierId, { id: TierId; price: number; name: { en: string; ru: string } }> = {
-  tier1: { id: 'tier1', price: 50, name: { en: 'Should I Move to Vietnam? (60 Min)', ru: 'Стоит ли переезжать во Вьетнам? (60 мин)' } },
+  tier1: { id: 'tier1', price: 25, name: { en: 'Should I Move to Vietnam? (60 Min)', ru: 'Стоит ли переезжать во Вьетнам? (60 мин)' } },
   tier2: { id: 'tier2', price: 290, name: { en: 'Personal Travel Planning', ru: 'Персональное планирование поездки' } },
   tier3: { id: 'tier3', price: 490, name: { en: 'Vietnam Relocation Planning', ru: 'Планирование релокации во Вьетнам' } },
   tier4: { id: 'tier4', price: 890, name: { en: 'Relocation Concierge', ru: 'Консьерж-сопровождение релокации' } }
@@ -71,7 +72,7 @@ export const INITIAL_DEMO_BOOKINGS: ExpressConsultationBooking[] = [
     bookingTime: '14:00 - 15:00',
     meetingPlatform: 'Google Meet',
     bookedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-    priceUSD: 50,
+    priceUSD: 25,
     status: 'confirmed',
     founderNotes: 'Интересуется кондоминиумами Monarchy и Hiyori.'
   },
@@ -85,7 +86,7 @@ export const INITIAL_DEMO_BOOKINGS: ExpressConsultationBooking[] = [
     bookingTime: '16:00 - 17:00',
     meetingPlatform: 'Zoom',
     bookedAt: new Date(Date.now() - 3600000 * 14).toISOString(),
-    priceUSD: 50,
+    priceUSD: 25,
     status: 'confirmed'
   }
 ];
@@ -122,6 +123,7 @@ interface AppContextType {
     slots: SlotAvailability[];
   };
   sendTestTelegramNotification: () => Promise<{ success: boolean; message: string }>;
+  sendTestPackageTelegramNotification: (tierId?: TierId) => Promise<{ success: boolean; message: string }>;
   sendTestEmailNotification: (targetEmail?: string) => Promise<{ success: boolean; message: string }>;
   startBooking: (tierId: string) => void;
   updateAdminProject: (updates: Partial<ClientProject>) => void;
@@ -199,7 +201,7 @@ const normalizeHospitals = (hospitals?: TravelEmergencyHospital[]): TravelEmerge
   return hospitals;
 };
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
+export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [viewMode, setViewModeState] = useState<ViewMode>('marketing');
@@ -229,7 +231,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             status: matched.status,
             progressPercent: matched.status === 'plan_ready' || matched.status === 'in_progress' || matched.status === 'completed' ? 75 : 50,
             questionnaire: matched.questionnaire,
-            recommendedCityId: matched.recommendedCityId,
+            recommendedCityId: normalizeCityId(matched.recommendedCityId || 'danang'),
             recommendedCityWhy: matched.recommendedCityWhy,
             recommendedNeighborhoodIds: [],
             recommendedStartingBudget: matched.userCurrentBudget,
@@ -248,9 +250,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             slaDeadline: matched.slaDeadline,
             paidAt: matched.paidAt,
             paymentMethod: matched.paymentMethod,
-            hasTravelPlan: matched.hasTravelPlan ?? (matched.tierId === 'tier2' || Boolean(matched.travelDays && matched.travelDays.length > 0)),
+            hasTravelPlan: matched.hasTravelPlan ?? (matched.tierId === 'tier2' || matched.tierId === 'tier3' || matched.tierId === 'tier4' || Boolean(matched.travelDays && matched.travelDays.length > 0)),
             upgradedFromTier: matched.upgradedFromTier,
-            travelDays: matched.travelDays,
+            travelDays: (matched.travelDays && matched.travelDays.length > 0)
+              ? matched.travelDays
+              : ((matched.tierId === 'tier3' || matched.tierId === 'tier4')
+                ? DEFAULT_RELOCATION_14_DAYS
+                : matched.travelDays),
             travelTransitLegs: matched.travelTransitLegs,
             travelRevision: matched.travelRevision,
             travelSimGuide: normalizeSimGuide(matched.travelSimGuide),
@@ -270,6 +276,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const parsed = JSON.parse(savedProj);
         return {
           ...parsed,
+          recommendedCityId: normalizeCityId(parsed.recommendedCityId || 'danang'),
           travelSimGuide: normalizeSimGuide(parsed.travelSimGuide),
           travelEmergencyHospitals: normalizeHospitals(parsed.travelEmergencyHospitals)
         };
@@ -322,15 +329,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const saved = localStorage.getItem('indochine_all_clients');
       if (saved) {
         const parsed: AdminClientRecord[] = JSON.parse(saved);
-        return parsed.map((c) => ({
-          ...c,
-          travelSimGuide: normalizeSimGuide(c.travelSimGuide),
-          travelEmergencyHospitals: normalizeHospitals(c.travelEmergencyHospitals)
-        }));
+        return parsed.map((c) => {
+          const isUpgraded = c.upgradedFromTier === 'tier2' || c.hasTravelPlan || Boolean(c.travelDays && c.travelDays.length > 0 && c.tierId !== 'tier2');
+          const tierPrice = TIERS_CONFIG[c.tierId]?.price;
+          return {
+            ...c,
+            recommendedCityId: normalizeCityId(c.recommendedCityId || 'danang'),
+            priceUSD: (c.tierId === 'tier4' && c.priceUSD === 290) || (c.tierId === 'tier3' && c.priceUSD === 290)
+              ? (tierPrice || c.priceUSD)
+              : (tierPrice || c.priceUSD),
+            category: c.category || 'active',
+            travelDays: (isUpgraded && (!c.travelDays || c.travelDays.length === 0))
+              ? DEFAULT_TRAVEL_DAYS
+              : c.travelDays,
+            travelTransitLegs: (isUpgraded && (!c.travelTransitLegs || c.travelTransitLegs.length === 0))
+              ? DEFAULT_TRAVEL_TRANSIT_LEGS
+              : c.travelTransitLegs,
+            travelRevision: (isUpgraded && !c.travelRevision)
+              ? DEFAULT_TRAVEL_REVISION
+              : c.travelRevision,
+            travelSimGuide: normalizeSimGuide(c.travelSimGuide || (isUpgraded ? DEFAULT_TRAVEL_SIM_GUIDE : undefined)),
+            travelEmergencyHospitals: normalizeHospitals(c.travelEmergencyHospitals || (isUpgraded ? DEFAULT_TRAVEL_HOSPITALS : undefined))
+          };
+        });
       }
     } catch (e) {}
     return INITIAL_ADMIN_CLIENTS.map((c) => ({
       ...c,
+      recommendedCityId: normalizeCityId(c.recommendedCityId || 'danang'),
       travelSimGuide: normalizeSimGuide(c.travelSimGuide),
       travelEmergencyHospitals: normalizeHospitals(c.travelEmergencyHospitals)
     }));
@@ -377,8 +403,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           };
         } else if (matched.tierId === 'tier2' && (matched.travelRevision?.status === 'applied' || matched.travelRevision?.requested) && founderNote?.ru?.includes('Включена 1 бесплатная корректировка')) {
           founderNote = matched.travelRevision?.status === 'applied'
-            ? { ru: 'Ваш персональный маршрут обновлен основателем с учетом запрошенных правок. Приятного путешествия!', en: 'Your travel itinerary has been updated by the founder based on your requested revisions.' }
-            : { ru: 'Ваш запрос на корректировку маршрута принят и находится в работе у основателя.', en: 'Your route revision request has been received and is being processed by the founder.' };
+            ? { ru: 'Ваш персональный маршрут обновлен Founder с учетом запрошенных правок. Приятного путешествия!', en: 'Your travel itinerary has been updated by the founder based on your requested revisions.' }
+            : { ru: 'Ваш запрос на корректировку маршрута принят и находится в работе у Founder.', en: 'Your route revision request has been received and is being processed by the founder.' };
         }
 
         const updated: ClientProject = {
@@ -391,8 +417,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           tierId: matched.tierId,
           isRelocationPlanPublished: isPlanPub,
           questionnaire: matched.questionnaire,
-          recommendedCityId: matched.recommendedCityId,
+          recommendedCityId: normalizeCityId(matched.recommendedCityId || 'danang'),
           recommendedCityWhy: matched.recommendedCityWhy,
+          recommendedNeighborhoodIds: matched.recommendedNeighborhoodIds || prev.recommendedNeighborhoodIds,
+          customCityBudgets: matched.customCityBudgets || prev.customCityBudgets,
+          recommendedCityBudgetRange: matched.recommendedCityBudgetRange || prev.recommendedCityBudgetRange,
           overallFounderNote: founderNote,
           userCurrentBudget: matched.userCurrentBudget,
           verifiedHousing: (matched.verifiedHousing || []).filter((h) => h.publishedToClient),
@@ -447,12 +476,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateClientRecord = (clientId: string, updates: Partial<AdminClientRecord>) => {
+    const normalizedUpdates: Partial<AdminClientRecord> = {
+      ...updates,
+      ...(updates.recommendedCityId ? { recommendedCityId: normalizeCityId(updates.recommendedCityId) } : {})
+    };
     setAdminClients((prev) => {
       const updated = prev.map((c) =>
         c.id === clientId
           ? {
               ...c,
-              ...updates,
+              ...normalizedUpdates,
               updatedAt: new Date().toISOString().split('T')[0]
             }
           : c
@@ -463,14 +496,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return updated;
     });
 
-    if (project.email && updates) {
+    if (project.email && normalizedUpdates) {
       setProject((prev) => ({
         ...prev,
-        ...(updates.status ? { status: updates.status } : {}),
-        ...(updates.recommendedCityId ? { recommendedCityId: updates.recommendedCityId } : {}),
-        ...(updates.recommendedCityWhy ? { recommendedCityWhy: updates.recommendedCityWhy } : {}),
-        ...(updates.overallFounderNote ? { overallFounderNote: updates.overallFounderNote } : {}),
-        ...(updates.userCurrentBudget ? { userCurrentBudget: updates.userCurrentBudget } : {}),
+        ...(normalizedUpdates.status ? { status: normalizedUpdates.status } : {}),
+        ...(normalizedUpdates.recommendedCityId ? { recommendedCityId: normalizedUpdates.recommendedCityId } : {}),
+        ...(normalizedUpdates.recommendedCityWhy ? { recommendedCityWhy: normalizedUpdates.recommendedCityWhy } : {}),
+        ...(normalizedUpdates.recommendedNeighborhoodIds ? { recommendedNeighborhoodIds: normalizedUpdates.recommendedNeighborhoodIds } : {}),
+        ...(normalizedUpdates.customCityBudgets ? { customCityBudgets: normalizedUpdates.customCityBudgets } : {}),
+        ...(normalizedUpdates.recommendedCityBudgetRange ? { recommendedCityBudgetRange: normalizedUpdates.recommendedCityBudgetRange } : {}),
+        ...(normalizedUpdates.overallFounderNote ? { overallFounderNote: normalizedUpdates.overallFounderNote } : {}),
+        ...(normalizedUpdates.userCurrentBudget ? { userCurrentBudget: normalizedUpdates.userCurrentBudget } : {}),
         updatedAt: new Date().toISOString().split('T')[0]
       }));
     }
@@ -591,8 +627,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         tierId: adminRecord.tierId,
         serviceName: adminRecord.serviceName,
         questionnaire: adminRecord.questionnaire,
-        recommendedCityId: adminRecord.recommendedCityId,
+        recommendedCityId: normalizeCityId(adminRecord.recommendedCityId || 'danang'),
         recommendedCityWhy: adminRecord.recommendedCityWhy,
+        recommendedNeighborhoodIds: adminRecord.recommendedNeighborhoodIds || prev.recommendedNeighborhoodIds,
+        customCityBudgets: adminRecord.customCityBudgets,
+        recommendedCityBudgetRange: adminRecord.recommendedCityBudgetRange,
         overallFounderNote: adminRecord.overallFounderNote,
         userCurrentBudget: adminRecord.userCurrentBudget,
         verifiedHousing: (adminRecord.verifiedHousing || []).filter((h) => h.publishedToClient),
@@ -652,7 +691,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           ...prev,
           clientName: matched.name,
           email: matched.email,
-          serviceName: { en: '60-Min Strategic Consultation ($50)', ru: 'Стратегическая консультация 60 мин ($50)' },
+          serviceName: { en: '60-Min Strategic Consultation ($25)', ru: 'Стратегическая консультация 60 мин ($25)' },
           consultationBooking: matched.booking
         }));
       }
@@ -902,7 +941,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             viet_qr: '🇻🇳 Вьетнамский VietQR (VND)'
           };
 
-          const text = `💰 *Новая ОПЛАЧЕННАЯ запись на консультацию ($50)*\n\n` +
+          const text = `💰 *Новая ОПЛАЧЕННАЯ запись на консультацию ($25)*\n\n` +
             `👤 *Клиент:* ${(confirmedBooking as ExpressConsultationBooking).name}\n` +
             `📅 *Дата:* ${(confirmedBooking as ExpressConsultationBooking).bookingDate}\n` +
             `⏰ *Время во Вьетнаме (ваше):* ${(confirmedBooking as ExpressConsultationBooking).vietnamBookingTime || (confirmedBooking as ExpressConsultationBooking).bookingTime}\n` +
@@ -911,7 +950,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             `💬 *Контакты:* ${(confirmedBooking as ExpressConsultationBooking).messenger} (${(confirmedBooking as ExpressConsultationBooking).email})\n` +
             `💳 *Способ оплаты:* ${methodLabels[paymentMethod] || paymentMethod}\n` +
             `🎯 *Тема:* ${(confirmedBooking as ExpressConsultationBooking).topic || 'Общая консультация'}\n` +
-            `✅ *Статус:* Оплачено ($50 зачтены в депозит сопровождения)`;
+            `✅ *Статус:* Оплачено ($25 зачтены в депозит сопровождения)`;
 
           const cleanMessenger = (confirmedBooking as ExpressConsultationBooking).messenger.replace('@', '').trim();
           const inlineKeyboard = cleanMessenger ? [
@@ -950,7 +989,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               'Accept': 'application/json'
             },
             body: JSON.stringify({
-              _subject: `VietReloc: Новая бронь консультации ($50) — ${(confirmedBooking as ExpressConsultationBooking).name}`,
+              _subject: `VietReloc: Новая бронь консультации ($25) — ${(confirmedBooking as ExpressConsultationBooking).name}`,
               'Клиент': (confirmedBooking as ExpressConsultationBooking).name,
               'Email клиента': (confirmedBooking as ExpressConsultationBooking).email,
               'Контакты / Мессенджер': (confirmedBooking as ExpressConsultationBooking).messenger,
@@ -960,7 +999,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               'Платформа': (confirmedBooking as ExpressConsultationBooking).meetingPlatform,
               'Способ оплаты': methodLabels[paymentMethod] || paymentMethod,
               'Тема': (confirmedBooking as ExpressConsultationBooking).topic || 'Общая консультация по релокации',
-              'Сумма': '$50 (зачтены в депозит)'
+              'Сумма': '$25 (зачтены в депозит)'
             })
           });
         } catch (err) {
@@ -988,7 +1027,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               meetingPlatform: (confirmedBooking as ExpressConsultationBooking).meetingPlatform,
               topic: (confirmedBooking as ExpressConsultationBooking).topic,
               paymentMethod: paymentMethod,
-              amountUSD: 50
+              amountUSD: 25
             })
           });
         } catch (err) {
@@ -1018,7 +1057,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: scheduleConfig.telegramChatId.trim(),
-          text: `🟢 *Тестовое уведомление VietReloc*\n\nСвязка с Telegram-ботом работает отлично! Сюда будут мгновенно приходить все записи клиентов на созвоны за $50.`,
+          text: `🟢 *Тестовое уведомление VietReloc (Созвон $25)*\n\nСвязка с Telegram-ботом работает отлично! Сюда будут мгновенно приходить все записи клиентов на созвоны за $25.`,
           parse_mode: 'Markdown'
         })
       });
@@ -1031,6 +1070,124 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch (err: any) {
       return { success: false, message: `Сетевая ошибка: ${err.message}` };
     }
+  };
+
+  const sendPackageTelegramAlert = async (params: {
+    tierKey: TierId;
+    tierName: string;
+    priceUSD: number;
+    paymentMethod: string;
+    clientName: string;
+    clientEmail: string;
+    clientMessenger?: string;
+    clientCountry?: string;
+    travelDates?: string;
+    duration?: string;
+    preferredCities?: string[];
+    monthlyBudgetUSD?: number;
+    slaDeadline: string;
+    isUpgrade?: boolean;
+    upgradedFromTier?: string;
+    diffAmount?: number;
+    isTest?: boolean;
+  }): Promise<{ success: boolean; message: string }> => {
+    if (!scheduleConfig.telegramBotToken || !scheduleConfig.telegramChatId) {
+      return { success: false, message: 'Заполните Telegram Bot Token и Chat ID в настройках' };
+    }
+
+    const methodLabels: Record<string, string> = {
+      card_ru: '💳 Карта РФ / СБП (МИР, Сбер, Т-Банк)',
+      card_intl: '🌍 Зарубежная карта (Visa / Mastercard)',
+      crypto_usdt: '💎 Криптовалюта USDT (TRC-20)',
+      viet_qr: '🇻🇳 Вьетнамский VietQR (VND)'
+    };
+
+    const tierIcons: Record<string, string> = {
+      tier2: '🗺',
+      tier3: '⭐️',
+      tier4: '👑'
+    };
+
+    const priceRUB = Math.round(params.priceUSD * 93).toLocaleString('ru-RU');
+    const priceVND = (params.priceUSD * 25000).toLocaleString('ru-RU');
+    const icon = tierIcons[params.tierKey] || '💎';
+
+    let header = `${icon} *НОВАЯ ОПЛАТА ТАРИФА НА САЙТЕ!*`;
+    if (params.isUpgrade) {
+      header = `⚡️ *АПГРЕЙД ТАРИФА КЛИЕНТОМ!*`;
+    } else if (params.isTest) {
+      header = `🧪 *ТЕСТ: УВЕДОМЛЕНИЕ О ПОКУПКЕ ТАРИФА*`;
+    }
+
+    const text = `${header}\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `📦 *Тариф:* ${params.tierName}\n` +
+      `💰 *Сумма:* $${params.priceUSD} USD (≈ ${priceRUB} ₽ / ≈ ${priceVND} ₫)` +
+      (params.diffAmount ? ` _(доплата $${params.diffAmount})_` : '') + `\n` +
+      `💳 *Способ оплаты:* ${methodLabels[params.paymentMethod] || params.paymentMethod}\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `👤 *Клиент:* ${params.clientName}\n` +
+      `📧 *Email:* ${params.clientEmail}\n` +
+      (params.clientMessenger ? `💬 *Мессенджер:* ${params.clientMessenger}\n` : '') +
+      (params.clientCountry ? `🌍 *Локация/Страна:* ${params.clientCountry}\n` : '') +
+      (params.travelDates ? `📅 *Даты поездки:* ${params.travelDates} (${params.duration || 'срок не указан'})\n` : '') +
+      (params.preferredCities && params.preferredCities.length > 0 ? `🏙 *Города:* ${params.preferredCities.join(', ')}\n` : '') +
+      (params.monthlyBudgetUSD ? `💵 *Бюджет на жилье/жизнь:* $${params.monthlyBudgetUSD}/мес\n` : '') +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `⏱ *SLA старта:* до 48 часов (до ${new Date(params.slaDeadline).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })})\n` +
+      `🔑 *Кабинет клиента:* Активирован автоматически\n` +
+      `🧾 *Чек:* Отправлен эквайрингом на email клиента`;
+
+    const cleanMessenger = (params.clientMessenger || '').replace('@', '').trim();
+    const inlineKeyboard: { text: string; url: string }[][] = [];
+    if (cleanMessenger && !cleanMessenger.includes('+') && !cleanMessenger.includes(' ')) {
+      inlineKeyboard.push([{ text: `💬 Написать клиенту: @${cleanMessenger}`, url: `https://t.me/${cleanMessenger}` }]);
+    }
+    inlineKeyboard.push([{ text: '📂 Открыть CRM Founder', url: 'https://indochineremote.com/#admin' }]);
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${scheduleConfig.telegramBotToken.trim()}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: scheduleConfig.telegramChatId.trim(),
+          text,
+          parse_mode: 'Markdown',
+          reply_markup: inlineKeyboard.length > 0 ? { inline_keyboard: inlineKeyboard } : undefined
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        return { success: true, message: 'Уведомление о покупке тарифа успешно доставлено в Telegram!' };
+      }
+      return { success: false, message: `Ошибка Telegram: ${data.description || 'Не удалось отправить'}` };
+    } catch (err: any) {
+      console.warn('Telegram package send error:', err);
+      return { success: false, message: `Сетевая ошибка: ${err.message}` };
+    }
+  };
+
+  const sendTestPackageTelegramNotification = async (tierId: TierId = 'tier3'): Promise<{ success: boolean; message: string }> => {
+    const tier = TIERS_CONFIG[tierId] || TIERS_CONFIG['tier3'];
+    const now = new Date();
+    const slaDeadline = new Date(now.getTime() + 48 * 60 * 60 * 1000).toISOString();
+
+    return sendPackageTelegramAlert({
+      tierKey: tierId,
+      tierName: tier.name.ru,
+      priceUSD: tier.price,
+      paymentMethod: 'card_ru',
+      clientName: 'Екатерина Смирнова (Тест)',
+      clientEmail: 'ekaterina.reloc@gmail.com',
+      clientMessenger: '@ekaterina_vn',
+      clientCountry: 'Россия, Москва',
+      travelDates: '15 октября 2026',
+      duration: '6 месяцев',
+      preferredCities: ['Дананг', 'Нячанг'],
+      monthlyBudgetUSD: 1400,
+      slaDeadline,
+      isTest: true
+    });
   };
 
   const sendTestEmailNotification = async (targetEmail?: string): Promise<{ success: boolean; message: string }> => {
@@ -1048,7 +1205,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         body: JSON.stringify({
           _subject: 'VietReloc: Тестовое уведомление о бронировании',
           'Статус': 'Тест связи успешен',
-          'Сообщение': 'Уведомления о бронированиях экспресс-консультаций за $50 подключены!',
+          'Сообщение': 'Уведомления о бронированиях экспресс-консультаций за $25 подключены!',
           'Время отправки': new Date().toLocaleString()
         })
       });
@@ -1143,7 +1300,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         id: 't-visa-' + Date.now(),
         phase: 'before_arrival' as const,
         title: { en: 'Vietnam 90-day e-Visa application', ru: 'Подача на e-Visa во Вьетнам на 90 дней' },
-        description: { en: 'Founder will verify your passport scan & entry checkpoint before submission.', ru: 'Основатель проверит скан паспорта и КПП въезда перед отправкой.' },
+        description: { en: 'Founder will verify your passport scan & entry checkpoint before submission.', ru: 'Founder проверит скан паспорта и КПП въезда перед отправкой.' },
         completed: false
       },
       {
@@ -1195,7 +1352,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       priceUSD: tierData.price,
       status: 'questionnaire_completed',
       questionnaire: q,
-      recommendedCityId: (q.preferredCities && q.preferredCities[0]) || 'danang',
+      recommendedCityId: normalizeCityId((q.preferredCities && q.preferredCities[0]) || 'danang'),
       recommendedCityWhy: {
         en: tierKey === 'tier2' ? 'Tailored 1–30 days travel route curated for your trip.' : 'Personalized recommendation based on your questionnaire priorities.',
         ru: tierKey === 'tier2' ? 'Индивидуальный маршрут путешествия 1–30 дней по Вьетнаму.' : 'Персональная рекомендация на основе ваших приоритетов из анкеты.'
@@ -1206,7 +1363,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           : `Welcome ${q.name}! The founder has received your payment ($${tierData.price}) via ${method} and is preparing your vetted housing options. SLA: 48 hours.`,
         ru: tierKey === 'tier2'
           ? `Добро пожаловать, ${q.name}! Ваш персональный маршрут путешествия формируется. Включена 1 бесплатная корректировка и поддержка в WhatsApp на 14 дней.`
-          : `Добро пожаловать, ${q.name}! Оплата ($${tierData.price}) получена. Основатель изучает анкету и готовит персональные проверенные объекты. SLA: до 48 часов.`
+          : `Добро пожаловать, ${q.name}! Оплата ($${tierData.price}) получена. Founder изучает анкету и готовит персональные проверенные объекты. SLA: до 48 часов.`
       },
       userCurrentBudget: {
         accommodation: Math.round((q.monthlyBudgetUSD || 1500) * 0.4),
@@ -1220,11 +1377,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       slaDeadline,
       verifiedHousing: [],
       roadmapTasks: initialTasks,
-      travelDays: tierKey === 'tier2' ? DEFAULT_TRAVEL_DAYS : undefined,
-      travelTransitLegs: tierKey === 'tier2' ? DEFAULT_TRAVEL_TRANSIT_LEGS : undefined,
+      hasTravelPlan: tierKey === 'tier2' || tierKey === 'tier3' || tierKey === 'tier4',
+      travelDays: tierKey === 'tier2'
+        ? DEFAULT_TRAVEL_DAYS
+        : ((tierKey === 'tier3' || tierKey === 'tier4') ? DEFAULT_RELOCATION_14_DAYS : undefined),
+      travelTransitLegs: (tierKey === 'tier2' || tierKey === 'tier3' || tierKey === 'tier4') ? DEFAULT_TRAVEL_TRANSIT_LEGS : undefined,
       travelRevision: tierKey === 'tier2' ? DEFAULT_TRAVEL_REVISION : undefined,
-      travelSimGuide: tierKey === 'tier2' ? DEFAULT_TRAVEL_SIM_GUIDE : undefined,
-      travelEmergencyHospitals: tierKey === 'tier2' ? DEFAULT_TRAVEL_HOSPITALS : undefined,
+      travelSimGuide: DEFAULT_TRAVEL_SIM_GUIDE,
+      travelEmergencyHospitals: DEFAULT_TRAVEL_HOSPITALS,
       hasUnpublishedChanges: false,
       createdAt: now.toISOString().split('T')[0],
       updatedAt: now.toISOString().split('T')[0]
@@ -1238,8 +1398,88 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return updated;
     });
 
+    // 3. Dispatch instant Telegram alert for package purchase ($290, $490, $890)
+    if (scheduleConfig.telegramBotToken && scheduleConfig.telegramChatId) {
+      sendPackageTelegramAlert({
+        tierKey,
+        tierName: tierData.name.ru,
+        priceUSD: tierData.price,
+        paymentMethod: method,
+        clientName: q.name,
+        clientEmail: q.email,
+        clientMessenger: q.messenger,
+        clientCountry: q.country,
+        travelDates: q.travelDates,
+        duration: q.duration,
+        preferredCities: q.preferredCities,
+        monthlyBudgetUSD: q.monthlyBudgetUSD,
+        slaDeadline
+      }).catch((e) => console.warn('Failed to send package telegram alert:', e));
+    }
+
+    // 4. Trigger Email notification to founder via FormSubmit if founder email is configured
+    if (scheduleConfig.founderEmail && scheduleConfig.founderEmail.includes('@')) {
+      try {
+        const methodLabels: Record<string, string> = {
+          card_ru: '💳 Карта РФ / СБП (МИР, Сбер, Т-Банк)',
+          card_intl: '🌍 Зарубежная карта (Visa / Mastercard)',
+          crypto_usdt: '💎 Криптовалюта USDT (TRC-20)',
+          viet_qr: '🇻🇳 Вьетнамский VietQR (VND)'
+        };
+        fetch(`https://formsubmit.co/ajax/${encodeURIComponent(scheduleConfig.founderEmail.trim())}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            _subject: `VietReloc: Оплата тарифа «${tierData.name.ru}» ($${tierData.price}) — ${q.name}`,
+            'Клиент': q.name,
+            'Email клиента': q.email,
+            'Мессенджер': q.messenger || 'Не указан',
+            'Тариф': `${tierData.name.ru} ($${tierData.price})`,
+            'Способ оплаты': methodLabels[method] || method,
+            'Страна / Город': q.country || 'Не указано',
+            'Даты поездки': q.travelDates || 'Не указаны',
+            'Срок пребывания': q.duration || 'Не указан',
+            'Города': (q.preferredCities && q.preferredCities.length > 0) ? q.preferredCities.join(', ') : 'Дананг',
+            'Бюджет': q.monthlyBudgetUSD ? `$${q.monthlyBudgetUSD} / мес` : 'Не указан',
+            'SLA первого ответа': `до ${new Date(slaDeadline).toLocaleString('ru-RU')}`,
+            'Статус': 'Оплачено и активировано'
+          })
+        }).catch((e) => console.warn('FormSubmit founder email error:', e));
+      } catch (err) {
+        console.warn('FormSubmit error:', err);
+      }
+    }
+
+    // 5. Trigger Email Webhook (for client confirmation / receipt / welcome email via Zapier/Make/Google Apps Script)
+    if (scheduleConfig.emailWebhookUrl) {
+      try {
+        fetch(scheduleConfig.emailWebhookUrl.trim(), {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            event: 'package_purchased',
+            founderEmail: scheduleConfig.founderEmail,
+            clientEmail: q.email,
+            clientName: q.name,
+            clientMessenger: q.messenger,
+            tierId: tierKey,
+            tierName: tierData.name.ru,
+            amountUSD: tierData.price,
+            paymentMethod: method,
+            slaDeadline,
+            cities: q.preferredCities,
+            travelDates: q.travelDates,
+            accountPassword: q.password || 'client123',
+            receiptSent: true
+          })
+        }).catch((e) => console.warn('Email Webhook error:', e));
+      } catch (err) {
+        console.warn('Email Webhook error:', err);
+      }
+    }
+
     unlockClientWorkspace();
-    setIsPaymentModalOpen(false);
     setViewModeState('dashboard');
   };
 
@@ -1280,11 +1520,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updatedAt: today,
         hasTravelPlan: hadTravel ? true : prev.hasTravelPlan,
         upgradedFromTier: prev.upgradedFromTier || prev.tierId,
-        travelDays: prev.travelDays,
-        travelTransitLegs: prev.travelTransitLegs,
-        travelRevision: prev.travelRevision,
-        travelSimGuide: prev.travelSimGuide,
-        travelEmergencyHospitals: prev.travelEmergencyHospitals,
+        travelDays: prev.travelDays && prev.travelDays.length > 0 ? prev.travelDays : (hadTravel ? DEFAULT_TRAVEL_DAYS : undefined),
+        travelTransitLegs: prev.travelTransitLegs || (hadTravel ? DEFAULT_TRAVEL_TRANSIT_LEGS : undefined),
+        travelRevision: prev.travelRevision || (hadTravel ? DEFAULT_TRAVEL_REVISION : undefined),
+        travelSimGuide: prev.travelSimGuide || (hadTravel ? DEFAULT_TRAVEL_SIM_GUIDE : undefined),
+        travelEmergencyHospitals: prev.travelEmergencyHospitals || (hadTravel ? DEFAULT_TRAVEL_HOSPITALS : undefined),
         leaseContractAudit: {
           status: 'waiting_for_client_draft' as LeaseAuditStatus,
           contractDraftTitle: '',
@@ -1301,24 +1541,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAdminClients((prev) => {
       const updated = prev.map((c) => {
         if (c.id === project.id || c.email.toLowerCase() === project.email.toLowerCase()) {
-          const hadTravel = c.tierId === 'tier2' || c.hasTravelPlan || Boolean(c.travelDays && c.travelDays.length > 0);
           return {
             ...c,
             tierId: targetTierId,
             serviceName: newServiceName,
+            priceUSD: TIERS_CONFIG[targetTierId]?.price || c.priceUSD,
+            category: c.category,
             paymentMethod: paymentMethod,
             status: 'questionnaire_completed' as ProjectStatus,
             isRelocationPlanPublished: false,
             overallFounderNote: newFounderNote,
             paidAt: nowIso,
             updatedAt: today,
-            hasTravelPlan: hadTravel ? true : c.hasTravelPlan,
+            hasTravelPlan: true,
             upgradedFromTier: c.upgradedFromTier || c.tierId,
-            travelDays: c.travelDays,
-            travelTransitLegs: c.travelTransitLegs,
-            travelRevision: c.travelRevision,
-            travelSimGuide: c.travelSimGuide,
-            travelEmergencyHospitals: c.travelEmergencyHospitals,
+            travelDays: (c.travelDays && c.travelDays.length > 0)
+              ? c.travelDays
+              : ((targetTierId === 'tier3' || targetTierId === 'tier4')
+                ? DEFAULT_RELOCATION_14_DAYS
+                : DEFAULT_TRAVEL_DAYS),
+            travelTransitLegs: c.travelTransitLegs || DEFAULT_TRAVEL_TRANSIT_LEGS,
+            travelRevision: c.travelRevision || DEFAULT_TRAVEL_REVISION,
+            travelSimGuide: c.travelSimGuide || DEFAULT_TRAVEL_SIM_GUIDE,
+            travelEmergencyHospitals: c.travelEmergencyHospitals || DEFAULT_TRAVEL_HOSPITALS,
             leaseContractAudit: {
               status: 'waiting_for_client_draft' as LeaseAuditStatus,
               contractDraftTitle: '',
@@ -1334,6 +1579,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       } catch (e) {}
       return updated;
     });
+
+    // Dispatch Telegram alert for upgrade
+    if (scheduleConfig.telegramBotToken && scheduleConfig.telegramChatId) {
+      sendPackageTelegramAlert({
+        tierKey: targetTierId,
+        tierName: newServiceName.ru,
+        priceUSD: TIERS_CONFIG[targetTierId]?.price || 490,
+        diffAmount: _diffAmount,
+        paymentMethod: paymentMethod,
+        clientName: project.clientName,
+        clientEmail: project.email,
+        clientMessenger: project.questionnaire?.messenger,
+        clientCountry: project.questionnaire?.country,
+        slaDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+        isUpgrade: true,
+        upgradedFromTier: project.tierId
+      }).catch((e) => console.warn('Upgrade telegram send error:', e));
+    }
 
     setIsUpgradeModalOpen(false);
   };
@@ -1394,8 +1657,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             tierId: rec.tierId,
             serviceName: rec.serviceName,
             questionnaire: rec.questionnaire,
-            recommendedCityId: rec.recommendedCityId,
+            recommendedCityId: normalizeCityId(rec.recommendedCityId || 'danang'),
             recommendedCityWhy: rec.recommendedCityWhy,
+            recommendedNeighborhoodIds: rec.recommendedNeighborhoodIds || prev.recommendedNeighborhoodIds,
+            customCityBudgets: rec.customCityBudgets,
+            recommendedCityBudgetRange: rec.recommendedCityBudgetRange,
             overallFounderNote: rec.overallFounderNote,
             userCurrentBudget: rec.userCurrentBudget,
             verifiedHousing: (rec.verifiedHousing || []).filter((h) => h.publishedToClient),
@@ -1473,7 +1739,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const nowStr = new Date().toISOString();
     const targetEmail = (project.email || currentClient?.email || '').toLowerCase();
     const revNote = {
-      ru: 'Ваш запрос на корректировку маршрута принят и находится в работе у основателя.',
+      ru: 'Ваш запрос на корректировку маршрута принят и находится в работе у Founder.',
       en: 'Your route revision request has been received and is being processed by the founder.'
     };
 
@@ -1527,7 +1793,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const applyTravelRevision = (clientId: string) => {
     const nowStr = new Date().toISOString();
     const appliedNote = {
-      ru: 'Ваш персональный маршрут обновлен основателем с учетом запрошенных правок. Приятного путешествия!',
+      ru: 'Ваш персональный маршрут обновлен Founder с учетом запрошенных правок. Приятного путешествия!',
       en: 'Your travel itinerary has been updated by the founder based on your requested revisions.'
     };
 
@@ -1747,6 +2013,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         completeConsultationBooking,
         getDateSlotAvailability,
         sendTestTelegramNotification,
+        sendTestPackageTelegramNotification,
         sendTestEmailNotification
       }}
     >

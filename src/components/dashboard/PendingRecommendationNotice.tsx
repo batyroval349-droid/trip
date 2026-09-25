@@ -33,13 +33,13 @@ export const PendingRecommendationNotice: React.FC<Props> = ({ sectionName, onGo
 
       <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', marginBottom: '0.75rem', color: 'var(--text-main)' }}>
         {language === 'ru'
-          ? `Раздел «${sectionName}» еще формируется основателем`
+          ? `Раздел «${sectionName}» еще формируется Founder`
           : `Section "${sectionName}" is currently being prepared`}
       </h2>
 
       <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.6, maxWidth: '580px', margin: '0 auto 1.75rem auto' }}>
         {language === 'ru'
-          ? 'Основатель прямо сейчас детально анализирует вашу анкету и готовит персональные рекомендации. Эти данные появятся здесь сразу, как только статус проекта сменится на «План опубликован и готов к просмотру».'
+          ? 'Founder прямо сейчас детально анализирует вашу анкету и готовит персональные рекомендации. Эти данные появятся здесь сразу, как только статус проекта сменится на «План опубликован и готов к просмотру».'
           : 'The founder is currently analyzing your questionnaire and crafting your bespoke recommendations. This data will unlock automatically as soon as the project status changes to "Plan Ready & Published".'}
       </p>
 
@@ -62,7 +62,7 @@ export const PendingRecommendationNotice: React.FC<Props> = ({ sectionName, onGo
         <div>
           <strong>{language === 'ru' ? 'Срок подготовки:' : 'Preparation Timeline:'}</strong>{' '}
           {language === 'ru'
-            ? 'Обычно занимает 2–4 рабочих дня. Если статус не поменялся в течение недели — напишите основателю напрямую.'
+            ? 'Обычно занимает 2–4 рабочих дня. Если статус не поменялся в течение недели — напишите Founder напрямую.'
             : 'Usually takes 2–4 business days. If the status has not changed within a week, please reach out to the founder directly.'}
         </div>
       </div>

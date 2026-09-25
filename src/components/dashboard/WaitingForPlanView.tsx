@@ -7,17 +7,15 @@ import {
   Send,
   Sparkles,
   Sun,
-  Wifi,
   Car,
   CreditCard,
-  ShieldPlus,
   AlertCircle,
   HelpCircle
 } from 'lucide-react';
 
 export const WaitingForPlanView: React.FC = () => {
   const { project, language } = useApp();
-  const [selectedGuideTab, setSelectedGuideTab] = useState<'climate' | 'sim' | 'transport' | 'money' | 'health'>('climate');
+  const [selectedGuideTab, setSelectedGuideTab] = useState<'climate' | 'transport' | 'money'>('climate');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
@@ -60,8 +58,8 @@ export const WaitingForPlanView: React.FC = () => {
             <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', margin: '0.2rem 0 0.75rem 0' }}>
               {language === 'ru'
                 ? (project.tierId === 'tier2'
-                    ? 'Основательница формирует ваш авторский маршрут путешествия'
-                    : 'Основатель проводит персональное исследование по вашей анкете')
+                    ? 'Founder формирует ваш авторский маршрут путешествия'
+                    : 'Founder проводит персональное исследование по вашей анкете')
                 : (project.tierId === 'tier2'
                     ? 'The Founder is Curating Your Custom Travel Itinerary'
                     : 'The Founder is Conducting Bespoke Research on Your Intake')}
@@ -70,8 +68,8 @@ export const WaitingForPlanView: React.FC = () => {
             <p style={{ color: 'var(--text-muted)', fontSize: '0.96rem', lineHeight: 1.6, margin: 0 }}>
               {language === 'ru'
                 ? (project.tierId === 'tier2'
-                    ? `Мы приняли вашу анкету (даты: ${project.questionnaire.travelDates || 'в планах'}, состав: ${project.questionnaire.travelersCount || 1} чел., бюджет: $${project.questionnaire.monthlyBudgetUSD}). Основательница лично формирует подробный маршрут на 1–30 дней с таймингом (Утро / День / Вечер), точными геолокациями, проверенным транспортом и бюджетом (SLA первого аудита: до 48 часов). Как только маршрут будет готов, здесь появится интерактивный план, а также активируются кнопки «Печать / PDF» и «1 корректировка». А пока вы можете ознакомиться с общими базами знаний: «Города и Логистика», «Связь и SIM / eSIM» и «SOS & Госпитали».`
-                    : `Мы приняли вашу анкету (бюджет $${project.questionnaire.monthlyBudgetUSD}/мес, даты: ${project.questionnaire.travelDates || 'в планах'}). Основатель лично анализирует параметры, проверяет доступность проверенного жилья с надежным интернетом и просчитывает реалистичный бюджет. Как только всё будет готово, статус в кабинете изменится на «План опубликован и готов к просмотру», и откроются все персональные рекомендации.`)
+                    ? `Мы приняли вашу анкету (даты: ${project.questionnaire.travelDates || 'в планах'}, состав: ${project.questionnaire.travelersCount || 1} чел., бюджет: $${project.questionnaire.monthlyBudgetUSD}). Founder лично формирует подробный маршрут на 1–30 дней с таймингом (Утро / День / Вечер), точными геолокациями, проверенным транспортом и бюджетом (SLA первого аудита: до 48 часов). Как только маршрут будет готов, здесь появится интерактивный план, а также активируются кнопки «Печать / PDF» и «1 корректировка». А пока вы можете ознакомиться с общими базами знаний: «Города и Логистика», «Связь и SIM / eSIM» и «SOS & Госпитали».`
+                    : `Мы приняли вашу анкету (бюджет $${project.questionnaire.monthlyBudgetUSD}/мес, даты: ${project.questionnaire.travelDates || 'в планах'}). Founder лично анализирует параметры, проверяет доступность проверенного жилья с надежным интернетом и просчитывает реалистичный бюджет. Как только всё будет готово, статус в кабинете изменится на «План опубликован и готов к просмотру», и откроются все персональные рекомендации.`)
                 : (project.tierId === 'tier2'
                     ? `We received your intake (dates: ${project.questionnaire.travelDates || 'planned'}, travelers: ${project.questionnaire.travelersCount || 1}, budget: $${project.questionnaire.monthlyBudgetUSD}). The founder is personally crafting your 1–30 day daily itinerary with Morning/Day/Evening schedule, GPS spots and transit (SLA: within 48h). Once ready, the interactive plan, PDF export and revision request will be unlocked. In the meantime, explore the unlocked Cities, SIM, and SOS tabs.`
                     : `We received your intake (budget $${project.questionnaire.monthlyBudgetUSD}/mo, target date: ${project.questionnaire.travelDates || 'upcoming'}). The founder is personally auditing living options, verified fiber Wi-Fi spaces, and realistic cost models. Once ready, the status will advance to "Plan Ready & Published".`)}
@@ -98,7 +96,7 @@ export const WaitingForPlanView: React.FC = () => {
             <div>
               <div style={{ fontWeight: 700, color: '#92400E', fontSize: '0.92rem' }}>
                 {language === 'ru'
-                  ? 'Если статус не поменялся в течение недели — напишите основателю'
+                  ? 'Если статус не поменялся в течение недели — напишите Founder'
                   : 'If status has not updated within a week — please message the founder'}
               </div>
               <div style={{ fontSize: '0.82rem', color: '#B45309' }}>
@@ -114,13 +112,13 @@ export const WaitingForPlanView: React.FC = () => {
               href="https://t.me/Likqwerty"
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-secondary"
+              className="glass-button"
               style={{
                 fontSize: '0.85rem',
                 padding: '0.55rem 1rem',
-                background: '#FFFFFF',
-                borderColor: '#FCD34D',
-                color: '#92400E'
+                gap: '0.45rem',
+                color: '#92400E',
+                borderColor: '#FCD34D'
               }}
             >
               <Send size={15} /> Telegram
@@ -129,13 +127,13 @@ export const WaitingForPlanView: React.FC = () => {
               href="https://wa.me/84900000000"
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-secondary"
+              className="glass-button"
               style={{
                 fontSize: '0.85rem',
                 padding: '0.55rem 1rem',
-                background: '#FFFFFF',
-                borderColor: '#FCD34D',
-                color: '#92400E'
+                gap: '0.45rem',
+                color: '#92400E',
+                borderColor: '#FCD34D'
               }}
             >
               <MessageCircle size={15} /> WhatsApp
@@ -157,8 +155,8 @@ export const WaitingForPlanView: React.FC = () => {
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', margin: 0 }}>
             {language === 'ru'
-              ? 'Собрали ключевые практические аспекты: сезоны и климат, связь и SIM-карты, такси Grab, банкоматы без комиссии и медицину.'
-              : 'Essential practical guides: weather patterns, eSIM & mobile data, Grab transport, ATMs, and healthcare.'}
+              ? 'Собрали ключевые практические аспекты: сезоны и климат, такси и аренда скутера в Grab, банкоматы без комиссии и обмен валюты.'
+              : 'Essential practical guides: weather patterns, Grab transport & scooter rentals, ATMs, and currency exchange.'}
           </p>
         </div>
 
@@ -172,10 +170,8 @@ export const WaitingForPlanView: React.FC = () => {
         }}>
           {[
             { id: 'climate', label: language === 'ru' ? 'Климат и сезоны' : 'Climate & Seasons', icon: Sun },
-            { id: 'sim', label: language === 'ru' ? 'Связь и SIM / eSIM' : 'SIM & Connectivity', icon: Wifi },
             { id: 'transport', label: language === 'ru' ? 'Транспорт и Grab' : 'Transport & Grab', icon: Car },
-            { id: 'money', label: language === 'ru' ? 'Деньги и банкоматы' : 'Money & ATMs', icon: CreditCard },
-            { id: 'health', label: language === 'ru' ? 'Медицина и аптеки' : 'Healthcare', icon: ShieldPlus }
+            { id: 'money', label: language === 'ru' ? 'Деньги и банкоматы' : 'Money & ATMs', icon: CreditCard }
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = selectedGuideTab === tab.id;
@@ -183,19 +179,14 @@ export const WaitingForPlanView: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setSelectedGuideTab(tab.id as any)}
+                className={`glass-button ${isActive ? 'active' : ''}`}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.45rem',
                   padding: '0.65rem 1.15rem',
-                  borderRadius: 'var(--radius-md)',
                   fontSize: '0.88rem',
                   fontWeight: 600,
-                  cursor: 'pointer',
-                  border: isActive ? '1px solid var(--accent-emerald)' : '1px solid var(--border-subtle)',
-                  background: isActive ? 'var(--accent-emerald)' : '#FFFFFF',
-                  color: isActive ? '#FFFFFF' : 'var(--text-muted)',
-                  transition: 'all 0.15s ease',
                   whiteSpace: 'nowrap'
                 }}
               >
@@ -213,7 +204,7 @@ export const WaitingForPlanView: React.FC = () => {
               {language === 'ru' ? 'Климатические зоны и когда лучше приезжать' : 'Climate Zones & Best Arrival Seasons'}
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', fontSize: '0.92rem', lineHeight: 1.6 }}>
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
+              <div className="dash-inner-item" style={{ padding: '1.25rem' }}>
                 <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
                   🌴 {language === 'ru' ? 'Центральный Вьетнам (Дананг, Хойан, Нячанг)' : 'Central Vietnam (Da Nang, Hoi An, Nha Trang)'}
                 </strong>
@@ -224,7 +215,7 @@ export const WaitingForPlanView: React.FC = () => {
                 </p>
               </div>
 
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
+              <div className="dash-inner-item" style={{ padding: '1.25rem' }}>
                 <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
                   ☀️ {language === 'ru' ? 'Южный Вьетнам (Хошимин / Сайгон, Фукуок)' : 'Southern Vietnam (Saigon, Phu Quoc)'}
                 </strong>
@@ -238,46 +229,14 @@ export const WaitingForPlanView: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 2: SIM & Connectivity */}
-        {selectedGuideTab === 'sim' && (
-          <div className="glass-card" style={{ padding: '2rem' }}>
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', marginBottom: '1rem', color: 'var(--accent-emerald)' }}>
-              {language === 'ru' ? 'Мобильная связь, интернет и выбор оператора' : 'Mobile Operators, eSIM & Wi-Fi Speed'}
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', fontSize: '0.92rem', lineHeight: 1.6 }}>
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
-                <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                  📶 Viettel vs Vinaphone
-                </strong>
-                <p style={{ color: 'var(--text-muted)', margin: 0 }}>
-                  {language === 'ru'
-                    ? 'Viettel — крупнейший оператор с лучшим покрытием в стране (отличный 4G/5G даже в горах и на пляже). Туристический тариф на 30 дней с 4-6 ГБ в день стоит около $8–12. Пополняется через приложение My Viettel или карты предоплаты.'
-                    : 'Viettel offers the premier nationwide coverage with lightning-fast 4G/5G. Tourist packages (4-6 GB/day for 30 days) cost roughly $8–12.'}
-                </p>
-              </div>
-
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
-                <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                  ⚡ {language === 'ru' ? 'Оптоволоконный интернет для работы' : 'Home Fiber for Remote Work'}
-                </strong>
-                <p style={{ color: 'var(--text-muted)', margin: 0 }}>
-                  {language === 'ru'
-                    ? 'Во Вьетнаме один из самых быстрых и дешевых интернетов в Азии. В арендованных апартаментах стандартная скорость составляет 100–250 Мбит/с. Для подстраховки на созвонах всегда можно раздать 4G со смартфона.'
-                    : 'Vietnam has fast, affordable fiber. Serviced apartments usually feature 100–250 Mbps connection. 4G smartphone hotspot serves as a solid backup.'}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 3: Transport & Grab */}
+        {/* Tab 2: Transport & Grab */}
         {selectedGuideTab === 'transport' && (
           <div className="glass-card" style={{ padding: '2rem' }}>
             <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', marginBottom: '1rem', color: 'var(--accent-emerald)' }}>
               {language === 'ru' ? 'Транспорт: приложение Grab и аренда скутера' : 'Transport: Grab Super-app & Scooter Rentals'}
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', fontSize: '0.92rem', lineHeight: 1.6 }}>
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
+              <div className="dash-inner-item" style={{ padding: '1.25rem' }}>
                 <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
                   🚗 Приложение Grab
                 </strong>
@@ -288,7 +247,7 @@ export const WaitingForPlanView: React.FC = () => {
                 </p>
               </div>
 
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
+              <div className="dash-inner-item" style={{ padding: '1.25rem' }}>
                 <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
                   🛵 {language === 'ru' ? 'Аренда скутера' : 'Scooter Rentals'}
                 </strong>
@@ -302,14 +261,14 @@ export const WaitingForPlanView: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 4: Money & ATMs */}
+        {/* Tab 3: Money & ATMs */}
         {selectedGuideTab === 'money' && (
           <div className="glass-card" style={{ padding: '2rem' }}>
             <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', marginBottom: '1rem', color: 'var(--accent-emerald)' }}>
               {language === 'ru' ? 'Деньги, обмен валюты и банкоматы без комиссии' : 'Money Exchange, Best Rates & 0% ATM Withdrawals'}
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', fontSize: '0.92rem', lineHeight: 1.6 }}>
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
+              <div className="dash-inner-item" style={{ padding: '1.25rem' }}>
                 <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
                   🏧 {language === 'ru' ? 'Банкоматы без комиссии (TPBank & VPBank)' : 'No-Fee ATMs'}
                 </strong>
@@ -320,7 +279,7 @@ export const WaitingForPlanView: React.FC = () => {
                 </p>
               </div>
 
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
+              <div className="dash-inner-item" style={{ padding: '1.25rem' }}>
                 <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
                   💵 {language === 'ru' ? 'Обмен наличных долларов' : 'USD Cash Exchange Rule'}
                 </strong>
@@ -328,38 +287,6 @@ export const WaitingForPlanView: React.FC = () => {
                   {language === 'ru'
                     ? 'Берите с собой купюры по $100 нового образца («синяя полоса», чистые, без заломов и чернильных отметок). Самый выгодный курс традиционно дают в ювелирных магазинах (gold shops).'
                     : 'Bring crisp new-series $100 bills (blue ribbon, no ink marks or tears). Gold shops traditionally offer the most competitive market exchange rates.'}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 5: Health & Hospitals */}
-        {selectedGuideTab === 'health' && (
-          <div className="glass-card" style={{ padding: '2rem' }}>
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', marginBottom: '1rem', color: 'var(--accent-emerald)' }}>
-              {language === 'ru' ? 'Медицина, международные госпитали и аптеки' : 'International Hospitals & Pharmacies'}
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', fontSize: '0.92rem', lineHeight: 1.6 }}>
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
-                <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                  🏥 Vinmec & Family Medical Practice
-                </strong>
-                <p style={{ color: 'var(--text-muted)', margin: 0 }}>
-                  {language === 'ru'
-                    ? 'Современные медицинские центры с аккредитацией JCI. Врачи говорят на английском, принимают международные страховки (Genki, SafetyWing, Allianz). Скорая помощь и оперативные палаты европейского уровня.'
-                    : 'JCI-accredited modern facilities with English-speaking staff. Direct billing with international nomad insurances (SafetyWing, Genki, Allianz).'}
-                </p>
-              </div>
-
-              <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: 'var(--radius-md)' }}>
-                <strong style={{ display: 'block', fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
-                  💊 Pharmacity & Long Chau
-                </strong>
-                <p style={{ color: 'var(--text-muted)', margin: 0 }}>
-                  {language === 'ru'
-                    ? 'Федеральные сети современных аптек. Большинство базовых медикаментов, антигистаминных и витаминов доступны без рецепта по очень доступным ценам.'
-                    : 'Major nationwide pharmacy chains. Most everyday medicines, allergy relief, and antibiotics are available over the counter at low prices.'}
                 </p>
               </div>
             </div>

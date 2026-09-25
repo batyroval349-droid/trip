@@ -252,7 +252,7 @@ export const ExpressBookingForm: React.FC = () => {
       bookingDate: formData.bookingDate,
       bookingTime: formData.bookingTime, // Canonical Vietnam time
       meetingPlatform: formData.meetingPlatform,
-      priceUSD: 50,
+      priceUSD: 25,
       clientTimezone,
       clientBookingTime: converted.clientTime,
       vietnamBookingTime: formData.bookingTime
@@ -302,7 +302,7 @@ export const ExpressBookingForm: React.FC = () => {
     const gCalDates = `${startDateUtc.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDateUtc.toISOString().replace(/[-:]/g, '').split('.')[0]}Z`;
     const gCalTitle = encodeURIComponent(`VietReloc: Экспресс-консультация (${activeBooking.name})`);
     const gCalDetails = encodeURIComponent(
-      `Экспресс-консультация по переезду во Вьетнам VietReloc.\nПлатформа: ${activeBooking.meetingPlatform}\nТема: ${activeBooking.topic}\nВремя (клиент): ${activeBooking.clientBookingTime || activeBooking.bookingTime} (${activeBooking.clientTimezone || 'местное'})\nВремя (Вьетнам): ${activeBooking.vietnamBookingTime || activeBooking.bookingTime} ICT\nОплачено: $50`
+      `Экспресс-консультация по переезду во Вьетнам VietReloc.\nПлатформа: ${activeBooking.meetingPlatform}\nТема: ${activeBooking.topic}\nВремя (клиент): ${activeBooking.clientBookingTime || activeBooking.bookingTime} (${activeBooking.clientTimezone || 'местное'})\nВремя (Вьетнам): ${activeBooking.vietnamBookingTime || activeBooking.bookingTime} ICT\nОплачено: $25`
     );
     const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${gCalTitle}&dates=${gCalDates}&details=${gCalDetails}&location=${encodeURIComponent(activeBooking.meetingPlatform)}`;
 
@@ -335,7 +335,7 @@ export const ExpressBookingForm: React.FC = () => {
 
             <div className="badge badge-emerald" style={{ display: 'inline-flex', marginBottom: '0.75rem', gap: '0.4rem', padding: '0.4rem 0.9rem' }}>
               <ShieldCheck size={14} />
-              {language === 'ru' ? 'Оплата $50 успешно подтверждена' : '$50 Payment Confirmed'}
+              {language === 'ru' ? 'Оплата $25 успешно подтверждена' : '$25 Payment Confirmed'}
             </div>
 
             <h1 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', marginBottom: '0.75rem' }}>
@@ -344,7 +344,7 @@ export const ExpressBookingForm: React.FC = () => {
 
             <p style={{ color: 'var(--text-muted)', fontSize: '1.02rem', lineHeight: 1.6, maxWidth: '560px', margin: '0 auto 1.75rem auto' }}>
               {language === 'ru'
-                ? 'Слот зафиксирован. Уведомление о бронировании мгновенно отправлено основательнице, а вам на почту направлены детали созвона и персональная ссылка на встречу.'
+                ? 'Слот зафиксирован. Уведомление о бронировании мгновенно отправлено Founder, а вам на почту направлены детали созвона и персональная ссылка на встречу.'
                 : 'Your slot is officially secured. Instant booking alerts have been dispatched to the founder, and meeting details were sent to your inbox.'}
             </p>
 
@@ -365,8 +365,8 @@ export const ExpressBookingForm: React.FC = () => {
               <div style={{ color: 'var(--text-main)' }}>
                 <strong>{language === 'ru' ? 'Депозит зафиксирован:' : 'Deposit Credited:'}</strong>{' '}
                 {language === 'ru'
-                  ? 'Оплаченные $50 будут на 100% вычтены из стоимости любого пакета релокации (Light, Comfort, VIP), если вы решите продолжить работу с нами.'
-                  : 'Your $50 payment will be 100% credited towards any relocation package should you choose to work with us.'}
+                  ? 'Оплаченные $25 будут на 100% вычтены из стоимости любого пакета релокации (Light, Comfort, VIP), если вы решите продолжить работу с нами.'
+                  : 'Your $25 payment will be 100% credited towards any relocation package should you choose to work with us.'}
               </div>
             </div>
 
@@ -541,7 +541,7 @@ export const ExpressBookingForm: React.FC = () => {
                   </h1>
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: 1.5 }}>
                     {language === 'ru'
-                      ? 'После завершения оплаты вам мгновенно поступит персональная ссылка на Google Meet / Zoom и чек, а основательница сразу получит уведомление о вашей записи.'
+                      ? 'После завершения оплаты вам мгновенно поступит персональная ссылка на Google Meet / Zoom и чек, а Founder сразу получит уведомление о вашей записи.'
                       : 'Upon payment completion, your personal meeting link and receipt will be issued immediately, and instant alerts are dispatched to the founder.'}
                   </p>
                 </div>
@@ -564,8 +564,8 @@ export const ExpressBookingForm: React.FC = () => {
                     </div>
                     <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
                       {language === 'ru'
-                        ? 'Стоимость консультации ($50) в полном объеме засчитывается в качестве аванса за любой пакет полного сопровождения (Light $290, Comfort $490, VIP $890). Вы ничего не теряете.'
-                        : 'Your $50 payment will be 100% deducted from the total fee of any relocation package (Light $290, Comfort $490, VIP $890). Zero financial risk.'}
+                        ? 'Стоимость консультации ($25) в полном объеме засчитывается в качестве аванса за любой пакет полного сопровождения (Light $290, Comfort $490, VIP $890). Вы ничего не теряете.'
+                        : 'Your $25 payment will be 100% deducted from the total fee of any relocation package (Light $290, Comfort $490, VIP $890). Zero financial risk.'}
                     </div>
                   </div>
                 </div>
@@ -606,9 +606,9 @@ export const ExpressBookingForm: React.FC = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.3rem' }}>
                     <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)' }}>{language === 'ru' ? 'К оплате:' : 'Total due:'}</span>
                     <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>$50</span>
+                      <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>$25</span>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                        (~4,850 ₽ / 1,280,000 ₫)
+                        (~2,450 ₽ / 640,000 ₫)
                       </span>
                     </div>
                   </div>
@@ -625,7 +625,7 @@ export const ExpressBookingForm: React.FC = () => {
                       { id: 'card_ru', labelRu: 'Карта РФ / СБП', labelEn: 'RU Card / SBP', icon: CreditCard, subRu: 'МИР, Т-Банк, Сбер', subEn: 'RUB' },
                       { id: 'card_intl', labelRu: 'Зарубежная карта', labelEn: 'Intl Card', icon: CreditCard, subRu: 'Visa, Mastercard', subEn: 'USD / EUR' },
                       { id: 'crypto_usdt', labelRu: 'USDT (TRC-20)', labelEn: 'USDT Crypto', icon: Sparkles, subRu: 'Криптовалюта', subEn: 'TRC-20' },
-                      { id: 'viet_qr', labelRu: 'VietQR / VND', labelEn: 'VietQR / VND', icon: QrCode, subRu: 'Вьетнамский банк', subEn: '1,280,000 ₫' }
+                      { id: 'viet_qr', labelRu: 'VietQR / VND', labelEn: 'VietQR / VND', icon: QrCode, subRu: 'Вьетнамский банк', subEn: '640,000 ₫' }
                     ].map((item) => {
                       const isSelected = selectedPaymentMethod === item.id;
                       const IconComp = item.icon;
@@ -678,8 +678,8 @@ export const ExpressBookingForm: React.FC = () => {
                         </strong>
                         <p style={{ margin: 0, color: 'var(--text-muted)' }}>
                           {language === 'ru'
-                            ? 'Сумма к списанию: 4,850 ₽. Чек поступит вам на почту.'
-                            : 'Amount: 4,850 ₽. The receipt will be sent to your email.'}
+                            ? 'Сумма к списанию: 2,450 ₽. Чек поступит вам на почту.'
+                            : 'Amount: 2,450 ₽. The receipt will be sent to your email.'}
                         </p>
                       </div>
                     )}
@@ -691,8 +691,8 @@ export const ExpressBookingForm: React.FC = () => {
                         </strong>
                         <p style={{ margin: 0, color: 'var(--text-muted)' }}>
                           {language === 'ru'
-                            ? 'Сумма к списанию: $50. Чек поступит вам на почту.'
-                            : 'Amount: $50 USD. The receipt will be sent to your email.'}
+                            ? 'Сумма к списанию: $25. Чек поступит вам на почту.'
+                            : 'Amount: $25 USD. The receipt will be sent to your email.'}
                         </p>
                       </div>
                     )}
@@ -704,8 +704,8 @@ export const ExpressBookingForm: React.FC = () => {
                         </strong>
                         <p style={{ margin: '0 0 0.5rem 0', color: 'var(--text-muted)' }}>
                           {language === 'ru'
-                            ? 'Сумма к переводу: 50 USDT (TRC-20).'
-                            : 'Amount to transfer: 50 USDT (TRC-20).'}
+                            ? 'Сумма к переводу: 25 USDT (TRC-20).'
+                            : 'Amount to transfer: 25 USDT (TRC-20).'}
                         </p>
                         <div style={{
                           background: '#FFFFFF',
@@ -733,8 +733,8 @@ export const ExpressBookingForm: React.FC = () => {
                         </div>
                         <p style={{ margin: '0 0 0.6rem 0', color: 'var(--text-muted)', fontSize: '0.84rem' }}>
                           {language === 'ru'
-                            ? 'Сумма: 1,280,000 VND ($50). Чек поступит вам на почту. Отсканируйте QR-код в приложении любого вьетнамского банка или переведите по реквизитам:'
-                            : 'Amount: 1,280,000 VND ($50). The receipt will be sent to your email. Scan QR or transfer via account details:'}
+                            ? 'Сумма: 640,000 VND ($25). Чек поступит вам на почту. Отсканируйте QR-код в приложении любого вьетнамского банка или переведите по реквизитам:'
+                            : 'Amount: 640,000 VND ($25). The receipt will be sent to your email. Scan QR or transfer via account details:'}
                         </p>
 
                         <div style={{ textAlign: 'center', marginBottom: '0.85rem' }}>
@@ -797,7 +797,7 @@ export const ExpressBookingForm: React.FC = () => {
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--border-subtle)', paddingTop: '0.35rem', marginTop: '0.15rem' }}>
                             <span style={{ color: 'var(--text-muted)' }}>{language === 'ru' ? 'Сумма к списанию:' : 'Amount:'}</span>
-                            <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.88rem' }}>1,280,000 VND ($50)</strong>
+                            <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.88rem' }}>640,000 VND ($25)</strong>
                           </div>
                         </div>
                       </div>
@@ -899,8 +899,8 @@ export const ExpressBookingForm: React.FC = () => {
                     <>
                       <CheckCircle2 size={20} />
                       {language === 'ru'
-                        ? 'Подтвердить оплату ($50) и зафиксировать слот'
-                        : 'Confirm Payment ($50) & Lock Slot'}
+                        ? 'Подтвердить оплату ($25) и зафиксировать слот'
+                        : 'Confirm Payment ($25) & Lock Slot'}
                     </>
                   )}
                 </button>
@@ -915,7 +915,7 @@ export const ExpressBookingForm: React.FC = () => {
                     rel="noopener noreferrer"
                     style={{ color: 'var(--accent-emerald)', fontWeight: 600, textDecoration: 'none' }}
                   >
-                    {language === 'ru' ? 'Написать напрямую основателю в Telegram' : 'Chat with founder on Telegram'} &rarr;
+                    {language === 'ru' ? 'Написать напрямую Founder в Telegram' : 'Chat with founder on Telegram'} &rarr;
                   </a>
                 </div>
               </>
@@ -956,14 +956,14 @@ export const ExpressBookingForm: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
             <div>
               <div className="badge badge-emerald" style={{ marginBottom: '0.5rem' }}>
-                <Clock size={14} /> {language === 'ru' ? '60 минут • $50' : '60 Min • $50'}
+                <Clock size={14} /> {language === 'ru' ? '60 минут • $25' : '60 Min • $25'}
               </div>
               <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)', marginBottom: '0.4rem' }}>
                 {language === 'ru' ? 'Запись на экспресс-консультацию' : 'Book Express Strategy Call'}
               </h1>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.94rem', lineHeight: 1.5 }}>
                 {language === 'ru'
-                  ? 'Выберите удобный день и время. При бронировании уведомление мгновенно поступает основателю (в Telegram и на email), а вам приходит подтверждение с деталями встречи.'
+                  ? 'Выберите удобный день и время. При бронировании уведомление мгновенно поступает Founder (в Telegram и на email), а вам приходит подтверждение с деталями встречи.'
                   : 'Select your preferred date and time. Instant notifications are sent to the founder (Telegram & email) and confirmation is delivered to your inbox.'}
               </p>
             </div>
@@ -980,7 +980,7 @@ export const ExpressBookingForm: React.FC = () => {
                 {language === 'ru' ? 'Стоимость' : 'Price'}
               </div>
               <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent-emerald)' }}>
-                $50
+                $25
               </div>
             </div>
           </div>
@@ -1001,8 +1001,8 @@ export const ExpressBookingForm: React.FC = () => {
             <span style={{ color: 'var(--text-main)' }}>
               <strong>{language === 'ru' ? 'Гарантия VietReloc:' : 'VietReloc Guarantee:'}</strong>{' '}
               {language === 'ru'
-                ? '100% стоимости консультации ($50) засчитывается в любой пакет релокации и поиска жилья.'
-                : '100% of the $50 fee is credited towards any relocation or housing package.'}
+                ? '100% стоимости консультации ($25) засчитывается в любой пакет релокации и поиска жилья.'
+                : '100% of the $25 fee is credited towards any relocation or housing package.'}
             </span>
           </div>
 
@@ -1257,7 +1257,7 @@ export const ExpressBookingForm: React.FC = () => {
               {currentAvailability.slots.length === 0 || !currentAvailability.isWorkingDay ? (
                 <div style={{ padding: '1.5rem', textAlign: 'center', background: '#F8FAFC', borderRadius: 'var(--radius-sm)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                   <Ban size={24} style={{ margin: '0 auto 0.5rem auto', color: '#94A3B8' }} />
-                  <div>{language === 'ru' ? 'На этот день основательница не принимает записи. Пожалуйста, выберите другой день в календаре.' : 'No slots available on this date. Please select another date above.'}</div>
+                  <div>{language === 'ru' ? 'На этот день Founder не принимает записи. Пожалуйста, выберите другой день в календаре.' : 'No slots available on this date. Please select another date above.'}</div>
                 </div>
               ) : (
                 <div style={{
@@ -1411,7 +1411,7 @@ export const ExpressBookingForm: React.FC = () => {
               <Video size={20} style={{ color: 'var(--accent-emerald)', flexShrink: 0, marginTop: '2px' }} />
               <div style={{ fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: 1.5 }}>
                 {language === 'ru'
-                  ? 'Звонок проходит 1 на 1 лично с основательницей. Ссылка на видеовстречу придет вам в Telegram и на Email сразу после подтверждения бронирования.'
+                  ? 'Звонок проходит 1 на 1 лично с Founder. Ссылка на видеовстречу придет вам в Telegram и на Email сразу после подтверждения бронирования.'
                   : 'The call is 1-on-1 with the founder. Meeting link is sent directly to your Telegram and Email upon booking.'}
               </div>
             </div>
@@ -1431,7 +1431,7 @@ export const ExpressBookingForm: React.FC = () => {
               }}
             >
               <CheckCircle2 size={20} />
-              {language === 'ru' ? 'Перейти к подтверждению и оплате ($50) →' : 'Proceed to Confirmation & Payment ($50) →'}
+              {language === 'ru' ? 'Перейти к подтверждению и оплате ($25) →' : 'Proceed to Confirmation & Payment ($25) →'}
             </button>
 
           </form>

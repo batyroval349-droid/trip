@@ -49,7 +49,7 @@ export const DashboardVipConciergeView: React.FC = () => {
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', margin: 0, maxWidth: '680px' }}>
             {language === 'ru'
-              ? 'Ваш премиальный пакет включает персональную психологическую сессию во время переезда, 30 дней прямого сопровождения с основателем в Telegram и приоритетное решение любых вопросов.'
+              ? 'Ваш премиальный пакет включает персональную психологическую сессию во время переезда, 30 дней прямого сопровождения с Founder в Telegram и приоритетное решение любых вопросов.'
               : 'Your premium package includes a dedicated psychological adaptation session, 30 days of direct founder Telegram accompaniment, and priority support.'}
           </p>
         </div>
@@ -82,7 +82,7 @@ export const DashboardVipConciergeView: React.FC = () => {
           
           <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
             <img
-              src={psy.specialistPhotoUrl || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80'}
+              src={psy.specialistPhotoUrl || '/psychologist-photo.png'}
               alt={psy.specialistName}
               style={{
                 width: '88px',
@@ -178,11 +178,11 @@ export const DashboardVipConciergeView: React.FC = () => {
               <span>{language === 'ru' ? 'Персональное сопровождение (1 месяц)' : 'Personal Accompaniment (1 Month)'}</span>
             </div>
             <h3 style={{ margin: 0, fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--text-main)' }}>
-              {language === 'ru' ? '30 дней прямого сопровождения с основателем в Telegram' : '30-Day Direct Accompaniment with Founder in Telegram'}
+              {language === 'ru' ? '30 дней прямого сопровождения с Founder в Telegram' : '30-Day Direct Accompaniment with Founder in Telegram'}
             </h3>
             <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.92rem', color: 'var(--text-muted)', maxWidth: '640px' }}>
               {language === 'ru'
-                ? 'Прямой закрытый чат 1-на-1 с основателем VietReloc. Оперативная поддержка и решение любых вопросов на протяжении первого месяца жизни во Вьетнаме.'
+                ? 'Прямой закрытый чат 1-на-1 с Founder VietReloc. Оперативная поддержка и решение любых вопросов на протяжении первого месяца жизни во Вьетнаме.'
                 : 'Direct 1-on-1 private chat with the VietReloc founder. Prompt assistance throughout your first month in Vietnam.'}
             </p>
           </div>
